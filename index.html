@@ -50,7 +50,7 @@ body{font-family:var(--font);background:var(--off-white);color:var(--text);font-
 
 /* TAB BAR */
 .tab-bar{background:var(--navy-dark);border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:100}
-.tab-bar-inner{max-width:1200px;margin:0 auto;display:flex;overflow-x:auto}
+.tab-bar-inner{max-width:1200px;margin:0 auto;display:flex;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}.tab-bar-inner::-webkit-scrollbar{display:none}
 .tab-btn{padding:12px 18px;background:none;border:none;color:rgba(255,255,255,.6);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-3px;transition:all .2s}
 .tab-btn:hover{color:var(--gold-light)}
 .tab-btn.active{color:var(--gold-light);border-bottom-color:var(--gold)}
@@ -449,6 +449,15 @@ function fmt(v) {
   return v;
 }
 
+function driveImg(id, alt='', icon='🖼') {
+  if (!id || String(id).trim() === '' || String(id).trim() === '—') {
+    return `<div class="img-ph"><div class="ico">${icon}</div><div class="lbl">${alt}</div></div>`;
+  }
+  return `<img src="https://drive.google.com/thumbnail?id=${String(id).trim()}&sz=w400"
+    alt="${alt}" style="width:100%;border-radius:4px;object-fit:cover;max-height:110px"
+    onerror="this.outerHTML='<div class=\'img-ph\'><div class=\'ico\'>${icon}</div><div class=\'lbl\'>${alt}</div></div>'">`;
+}
+
 /* ── GAS FETCH ──────────────────────────── */
 
 function fetchSheet(sheetName) {
@@ -599,11 +608,14 @@ function renderEventsFromSheet(rows, live) {
   const dataRows = rows.slice(2).filter(r => r[0] && !isNaN(parseInt(String(r[0]).trim())));
   if (!dataRows.length) { renderFallbackEvents(); return; }
   const grid = document.getElementById('eventsGrid');
-  grid.innerHTML = dataRows.map(r => `
-    <div class="event-card">
-      <div class="event-imgs">
-        <div class="img-ph"><div class="ico">🖼</div><div class="lbl">Event Photo<br><small>Add GDrive link</small></div></div>
-      </div>
+  grid.innerHTML = dataRows.map(r => {
+    // cols 7,8,9 = Image1,Image2,Image3 Drive IDs
+    const imgIds = [r[7],r[8],r[9]].filter(id => id && String(id).trim() && String(id).trim() !== '—');
+    const imgsHTML = imgIds.length
+      ? imgIds.map(id => `<div style="margin-bottom:6px">${driveImg(id,'Event Photo','🖼')}</div>`).join('')
+      : driveImg('','No photos added yet','🖼');
+    return `<div class="event-card">
+      <div class="event-imgs">${imgsHTML}</div>
       <div class="event-body">
         <div class="event-num">Event ${r[0]||''}</div>
         <div class="event-title">${r[1]||''}</div>
@@ -615,7 +627,8 @@ function renderEventsFromSheet(rows, live) {
         </div>
         <div class="event-outcomes"><strong>Key Outcomes:</strong> ${r[6]||'—'}</div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 /* ── STORIES FROM SHEET ─────────────────── */
@@ -631,8 +644,8 @@ function renderStoriesFromSheet(rows, live) {
   grid.innerHTML = dataRows.map(r => `
     <div class="story-card">
       <div class="story-header">
-        <div class="story-logo">
-          <div class="img-ph" style="min-height:46px"><div class="ico" style="font-size:14px">🏢</div></div>
+        <div class="story-logo" style="overflow:hidden">
+          ${driveImg(r[9],'Logo','🏢')}
         </div>
         <div>
           <div class="story-name">${r[0]||''}</div>
@@ -641,8 +654,8 @@ function renderStoriesFromSheet(rows, live) {
       </div>
       <div class="story-body">
         <div class="story-imgs">
-          <div class="img-ph"><div class="ico">📦</div><div class="lbl">Product Image<br><small>Add GDrive link</small></div></div>
-          <div class="img-ph"><div class="ico">👥</div><div class="lbl">Team Image<br><small>Add GDrive link</small></div></div>
+          <div style="flex:1">${driveImg(r[10],'Product Image','📦')}</div>
+          <div style="flex:1">${driveImg(r[11],'Team Image','👥')}</div>
         </div>
         <div class="story-desc">${r[8]||''}</div>
         <div class="story-stats">
@@ -841,6 +854,44 @@ function renderFallbackAchievements() {
 
 /* ── BOOT ────────────────────────────────── */
 window.addEventListener('DOMContentLoaded', loadAllData);
+/* ── COPY PROTECTION ──────────────────── */
+const funnyMsgs = [
+  "🕵️ Nice try, agent! This data is classified.",
+  "👀 Caught you! The Director is watching.",
+  "🚀 Copy attempt detected — launching startup investigation!",
+  "🛑 Ctrl+C? More like Ctrl+Caught!",
+  "💡 Innovate, don't imitate!",
+  "🔐 KLE CTiE IP — hands off the keyboard!",
+  "😄 Inspecting the inspector? Bold move.",
+];
+const msg = () => funnyMsgs[Math.floor(Math.random() * funnyMsgs.length)];
+
+// Block right-click
+document.addEventListener('contextmenu', e => { e.preventDefault(); toast(msg()); });
+
+// Block Ctrl+C, Ctrl+U, Ctrl+S, Ctrl+A, F12
+document.addEventListener('keydown', e => {
+  const ctrl = e.ctrlKey || e.metaKey;
+  if (ctrl && ['c','u','s','a','p'].includes(e.key.toLowerCase())) {
+    e.preventDefault(); toast(msg());
+  }
+  if (e.key === 'F12') { e.preventDefault(); toast("😄 Inspecting the inspector? Bold move."); }
+  if (ctrl && e.shiftKey && ['i','j','c'].includes(e.key.toLowerCase())) {
+    e.preventDefault(); toast("🔐 DevTools? Not today!");
+  }
+});
+
+// Block text selection
+document.addEventListener('selectstart', e => { e.preventDefault(); });
+
+// DevTools open detection
+let devOpen = false;
+setInterval(() => {
+  const w = window.outerWidth - window.innerWidth > 100;
+  const h = window.outerHeight - window.innerHeight > 100;
+  if ((w || h) && !devOpen) { devOpen = true; toast("👀 DevTools detected — the Director is watching!"); }
+  if (!w && !h) devOpen = false;
+}, 1000);
 </script>
 </body>
 </html>
