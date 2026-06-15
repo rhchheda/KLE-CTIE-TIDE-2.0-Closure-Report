@@ -714,7 +714,7 @@ function renderCharts() {
 
   // Sector counts from live data
   const sectorMap = {};
-  allStartups.forEach(r => { const s=(r[4]||'Other').trim(); sectorMap[s]=(sectorMap[s]||0)+1; });
+  allStartups.forEach(r => { const s=(r[5]||'Other').trim(); sectorMap[s]=(sectorMap[s]||0)+1; });
   const topSectors = Object.entries(sectorMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
 
   Object.values(charts).forEach(c => c.destroy());
