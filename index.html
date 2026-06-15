@@ -450,7 +450,6 @@ function fmt(v) {
 }
 
 /* ── GOOGLE SHEETS FETCH ────────────────── */
-const PUB_ID = "2PACX-1vQmVtSrekZx_nQm_rZS6i-rESHA8nTMWRVeHBqa5AKzUj0zuaTNFQ_fEIOlH8xYXUQEk--0P9uVn9DZ";
 
 function fetchSheet(sheetName) {
   return new Promise((resolve, reject) => {
@@ -516,22 +515,23 @@ async function loadAllData() {
 
   try {
     // Load each sheet in parallel
-    const [summaryTable, startupTable, finTable, eventsTable, storiesTable, achTable] = await Promise.all([
+    const [summaryTable, startupTable, finTable] = await Promise.all([
       fetchSheet('Overall Summary').catch(() => null),
       fetchSheet('Startup Details').catch(() => null),
       fetchSheet('Financial Overview').catch(() => null),
-      fetchSheet('Events Snapshot').catch(() => null),
-      fetchSheet('Success Stories').catch(() => null),
-      fetchSheet('Achievements & Challenges').catch(() => null),
     ]);
+    // These sheets don't exist yet in the published spreadsheet — using fallbacks
+    const eventsTable = null, storiesTable = null, achTable = null;
 
     document.getElementById('loaderStatus').textContent = 'Rendering…';
 
-    const startupRows = tableToRows(startupTable);
-    const finRows     = tableToRows(finTable);
-    const eventRows   = tableToRows(eventsTable);
-    const storyRows   = tableToRows(storiesTable);
-    const achRows     = tableToRows(achTable);
+    // parseGviz already returns [{col:val},...] — convert to arrays for render fns
+    const toArrays = (rows) => rows ? rows.map(r => Object.values(r)) : [];
+    const startupRows = toArrays(startupTable);
+    const finRows     = toArrays(finTable);
+    const eventRows   = toArrays(eventsTable);
+    const storyRows   = toArrays(storiesTable);
+    const achRows     = toArrays(achTable);
 
     // Render each section
     renderStartupsFromSheet(startupRows, !!startupTable);
@@ -557,14 +557,13 @@ async function loadAllData() {
 /* ── STARTUPS FROM SHEET ────────────────── */
 function renderStartupsFromSheet(rows, live) {
   statusBadge(document.getElementById('startupStatus'), live);
-  if (!rows || rows.length < 3) { renderFallbackStartups(); return; }
+  if (!rows || rows.length < 2) { renderFallbackStartups(); return; }
 
-  // Row 0 = sheet title, Row 1 = headers, Row 2+ = data
-  const dataRows = rows.slice(2).filter(r => r[0] && r[0].trim() && !isNaN(parseInt(r[0])));
+  // rows[0] = sheet title merged row, rows[1] = column headers, rows[2+] = data
+  const dataRows = rows.slice(2).filter(r => r[0] && String(r[0]).trim() && !isNaN(parseInt(r[0])));
   allStartups = dataRows;
 
-  // Build sector options
-  const sectors = [...new Set(dataRows.map(r => r[4]).filter(Boolean).map(s => s.trim()))].sort();
+  const sectors = [...new Set(dataRows.map(r => r[5]).filter(Boolean).map(s => s.trim()))].sort();
   const sel = document.getElementById('sectorFilter');
   sel.innerHTML = '<option value="">All Sectors</option>' + sectors.map(s => `<option>${s}</option>`).join('');
 
@@ -575,18 +574,23 @@ function renderStartupRows(rows) {
   const tbody = document.getElementById('startupBody');
   if (!rows.length) { tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;padding:20px;color:var(--gray-500)">No results found</td></tr>'; return; }
 
+  // Columns: 0=S.No, 1=Name, 2=Fund(₹), 3=Component, 4=State, 5=Sector,
+  //          6=OneLiner, 7=Revenue, 8=PatentsFiled, 9=PatentsGranted,
+  //          10=PrivateFunding, 11=Products, 12=DateOnboarding, 13=DateGraduation,
+  //          14=Support, 15=WomenLed, 16=DPIIT, 17=Employment, 18=Highlights
   tbody.innerHTML = rows.map(s => {
     const comp = (s[3] || '').trim();
     const badge = comp === 'EiR' ? 'badge-eir' : comp === 'Grant' ? 'badge-grant' : 'badge-inv';
-    const fund = s[2] ? '₹' + (parseInt(s[2].replace(/[^0-9]/g,'')) || 0).toLocaleString('en-IN') : '—';
-    return `<tr data-name="${(s[1]||'').toLowerCase()}" data-sector="${(s[4]||'').toLowerCase()}" data-component="${comp.toLowerCase()}">
+    const fundRaw = s[2] ? String(s[2]).replace(/[^0-9.]/g,'') : '';
+    const fund = fundRaw ? '₹' + parseInt(fundRaw).toLocaleString('en-IN') : '—';
+    return `<tr data-name="${(s[1]||'').toLowerCase()}" data-sector="${(s[5]||'').toLowerCase()}" data-component="${comp.toLowerCase()}">
       <td>${s[0]||''}</td><td>${s[1]||''}</td>
       <td style="white-space:nowrap">${fund}</td>
       <td><span class="badge ${badge}">${comp||'—'}</span></td>
-      <td>${s[4]||'—'}</td><td style="max-width:240px;font-size:11px">${s[5]||'—'}</td>
-      <td>${fmt(s[6])}</td><td>${fmt(s[7])}</td><td>${fmt(s[8])}</td>
-      <td style="white-space:nowrap">${fmt(s[9])}</td>
-      <td>${fmt(s[10])}</td><td>${fmt(s[11])}</td><td>${fmt(s[12])}</td>
+      <td>${s[5]||'—'}</td><td style="max-width:240px;font-size:11px">${s[6]||'—'}</td>
+      <td>${fmt(s[7])}</td><td>${fmt(s[8])}</td><td>${fmt(s[11])}</td>
+      <td style="white-space:nowrap">${fmt(s[12])}</td>
+      <td>${fmt(s[15])}</td><td>${fmt(s[16])}</td><td>${fmt(s[17])}</td>
     </tr>`;
   }).join('');
   document.getElementById('resultsCount').textContent = `Showing ${rows.length} of ${allStartups.length}`;
@@ -599,7 +603,7 @@ function filterStartups() {
   const filtered = allStartups.filter(s => {
     const text = s.join(' ').toLowerCase();
     return (!q || text.includes(q)) &&
-           (!sec || (s[4]||'').toLowerCase().includes(sec)) &&
+           (!sec || (s[5]||'').toLowerCase().includes(sec)) &&
            (!cmp || (s[3]||'').toLowerCase().includes(cmp));
   });
   renderStartupRows(filtered);
@@ -724,8 +728,8 @@ function updateKPIsFromStartups(rows) {
   const eir   = rows.filter(r => (r[3]||'').trim() === 'EiR').length;
   const grant = rows.filter(r => (r[3]||'').trim() === 'Grant').length;
   const inv   = rows.filter(r => (r[3]||'').trim() === 'Investment').length;
-  const womenLed = rows.filter(r => (r[10]||'').trim().toLowerCase() === 'yes').length;
-  const dpiit = rows.filter(r => r[11] && r[11].trim() && r[11].trim() !== '—').length;
+  const womenLed = rows.filter(r => (r[15]||'').trim().toLowerCase() === 'yes').length;
+  const dpiit = rows.filter(r => r[16] && r[16].trim() && r[16].trim() !== '—').length;
 
   const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
   set('kv-startups', rows.length);
