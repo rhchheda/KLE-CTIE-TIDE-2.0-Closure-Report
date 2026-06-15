@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TIDE 2.0 — Closure Report | KLE CTiE</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+/* ── TOKENS ─────────────────────────────── */
+:root {
+  --navy:       #0C2D6B;
+  --navy-dark:  #071A3E;
+  --navy-mid:   #1A4A9A;
+  --gold:       #C8960C;
+  --gold-light: #F5D97A;
+  --gold-pale:  #FEF7E0;
+  --white:      #FFFFFF;
+  --off-white:  #F8F9FC;
+  --gray-100:   #F0F2F7;
+  --gray-300:   #CDD3E0;
+  --gray-500:   #7A8499;
+  --gray-700:   #3D4460;
+  --text:       #1A1E2E;
+  --radius:     6px;
+  --shadow:     0 2px 12px rgba(12,45,107,0.10);
+  --shadow-lg:  0 6px 32px rgba(12,45,107,0.16);
+  --font-body:  'Segoe UI', Arial, sans-serif;
+}
+
+/* ── RESET ──────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--font-body); background: var(--off-white); color: var(--text); font-size: 14px; line-height: 1.6; }
+
+/* ── HEADER ─────────────────────────────── */
+.report-header {
+  background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 60%, var(--navy-mid) 100%);
+  color: var(--white);
+  padding: 32px 40px 24px;
+  position: relative;
+  overflow: hidden;
+}
+.report-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
+}
+.header-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: flex-start; gap: 24px; }
+.header-logo {
+  width: 72px; height: 72px; border-radius: 8px;
+  background: rgba(255,255,255,0.12);
+  border: 2px solid rgba(200,150,12,0.5);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; overflow: hidden;
+}
+.header-logo img { width: 100%; height: 100%; object-fit: contain; }
+/* ── REPLACE src="" with your GDrive direct link ── */
+/* Format: https://drive.google.com/uc?export=view&id=1iAb5PH3CKSHESopoFGPCuW85Mkb7X26z */
+.header-logo-placeholder { font-size: 10px; color: rgba(255,255,255,0.5); text-align: center; padding: 8px; }
+.header-text h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; line-height: 1.2; }
+.header-text h1 span { color: var(--gold-light); }
+.header-meta { margin-top: 6px; font-size: 13px; color: rgba(255,255,255,0.75); display: flex; flex-wrap: wrap; gap: 16px; }
+.header-meta span::before { content: '▸ '; color: var(--gold-light); }
+.header-actions { margin-left: auto; display: flex; gap: 10px; flex-shrink: 0; }
+.btn { padding: 9px 18px; border-radius: var(--radius); font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all .2s; }
+.btn-print { background: var(--gold); color: var(--navy-dark); }
+.btn-print:hover { background: var(--gold-light); }
+
+/* ── NAV TABS ───────────────────────────── */
+.tab-bar {
+  background: var(--navy-dark);
+  border-bottom: 3px solid var(--gold);
+  position: sticky; top: 0; z-index: 100;
+}
+.tab-bar-inner { max-width: 1200px; margin: 0 auto; display: flex; overflow-x: auto; }
+.tab-btn {
+  padding: 13px 20px; background: none; border: none; color: rgba(255,255,255,0.65);
+  font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;
+  border-bottom: 3px solid transparent; margin-bottom: -3px;
+  transition: all .2s; letter-spacing: 0.3px;
+}
+.tab-btn:hover { color: var(--gold-light); }
+.tab-btn.active { color: var(--gold-light); border-bottom-color: var(--gold); }
+
+/* ── MAIN LAYOUT ────────────────────────── */
+.main { max-width: 1200px; margin: 0 auto; padding: 28px 20px 60px; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── SECTION HEADINGS ───────────────────── */
+.section-title {
+  font-size: 17px; font-weight: 700; color: var(--navy);
+  border-left: 4px solid var(--gold);
+  padding: 6px 0 6px 14px; margin-bottom: 20px;
+  letter-spacing: -0.2px;
+}
+.section-subtitle { font-size: 12px; font-weight: 400; color: var(--gray-500); margin-top: 2px; }
+
+/* ── KPI CARDS ──────────────────────────── */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; margin-bottom: 32px; }
+.kpi-card {
+  background: var(--white); border-radius: var(--radius);
+  border-top: 4px solid var(--gold);
+  box-shadow: var(--shadow); padding: 18px 16px 14px;
+  transition: transform .2s, box-shadow .2s;
+}
+.kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.kpi-card.navy { border-top-color: var(--navy); }
+.kpi-card.green { border-top-color: #1A7A3C; }
+.kpi-card.red { border-top-color: #9B1C1C; }
+.kpi-label { font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.6px; }
+.kpi-value { font-size: 28px; font-weight: 800; color: var(--navy); line-height: 1.1; margin: 6px 0 4px; }
+.kpi-sub { font-size: 11px; color: var(--gray-500); }
+
+/* ── CHARTS ROW ─────────────────────────── */
+.charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
+.chart-card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; }
+.chart-card h3 { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 14px; }
+.chart-wrap { position: relative; height: 220px; }
+
+/* ── TABLES ─────────────────────────────── */
+.table-wrap { overflow-x: auto; border-radius: var(--radius); box-shadow: var(--shadow); }
+table { width: 100%; border-collapse: collapse; background: var(--white); font-size: 13px; }
+thead th {
+  background: var(--navy); color: var(--white);
+  padding: 11px 12px; text-align: left; font-size: 12px;
+  font-weight: 600; letter-spacing: 0.3px; white-space: nowrap;
+  position: sticky; top: 0;
+}
+thead th:first-child { border-radius: var(--radius) 0 0 0; }
+thead th:last-child { border-radius: 0 var(--radius) 0 0; }
+tbody tr:nth-child(even) { background: var(--gray-100); }
+tbody tr:hover { background: var(--gold-pale); }
+tbody td { padding: 9px 12px; border-bottom: 1px solid var(--gray-300); vertical-align: top; }
+tbody td:first-child { font-weight: 600; color: var(--navy); }
+.badge {
+  display: inline-block; padding: 2px 8px; border-radius: 20px;
+  font-size: 11px; font-weight: 600; white-space: nowrap;
+}
+.badge-eir  { background: #E8F0FE; color: #1A4A9A; }
+.badge-grant { background: #E6F4EA; color: #1A7A3C; }
+.badge-inv  { background: #FEF3C7; color: #92400E; }
+
+/* ── SEARCH / FILTER BAR ────────────────── */
+.filter-bar { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.filter-bar input, .filter-bar select {
+  padding: 9px 14px; border: 1.5px solid var(--gray-300); border-radius: var(--radius);
+  font-size: 13px; background: var(--white); color: var(--text);
+  flex: 1; min-width: 160px; outline: none; transition: border-color .2s;
+}
+.filter-bar input:focus, .filter-bar select:focus { border-color: var(--navy); }
+.filter-bar input::placeholder { color: var(--gray-500); }
+.results-count { font-size: 12px; color: var(--gray-500); align-self: center; white-space: nowrap; }
+
+/* ── EVENTS ─────────────────────────────── */
+.event-grid { display: grid; gap: 16px; }
+.event-card {
+  background: var(--white); border-radius: var(--radius);
+  box-shadow: var(--shadow); overflow: hidden;
+  display: grid; grid-template-columns: 220px 1fr;
+}
+.event-img {
+  background: var(--gray-100); min-height: 160px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; padding: 16px; border-right: 1px solid var(--gray-300);
+}
+.event-img img { width: 100%; max-height: 130px; object-fit: cover; border-radius: 4px; display: block; }
+/* ── IMAGE PLACEHOLDER — replace src with GDrive direct link ──
+   Format: https://drive.google.com/uc?export=view&id=YOUR_FILE_ID  */
+.img-placeholder {
+  width: 100%; min-height: 120px;
+  background: linear-gradient(135deg, var(--gray-100), var(--gray-300));
+  border: 2px dashed var(--gray-300); border-radius: 4px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; padding: 12px; text-align: center;
+}
+.img-placeholder .img-icon { font-size: 24px; opacity: 0.4; }
+.img-placeholder .img-label { font-size: 10px; color: var(--gray-500); line-height: 1.4; }
+.event-body { padding: 18px 20px; }
+.event-num { font-size: 11px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
+.event-title { font-size: 15px; font-weight: 700; color: var(--navy); margin: 4px 0 8px; }
+.event-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+.event-tag {
+  font-size: 11px; padding: 3px 10px; border-radius: 20px;
+  background: var(--gray-100); color: var(--gray-700); font-weight: 600;
+}
+.event-outcomes { font-size: 13px; color: var(--gray-700); }
+.event-outcomes strong { color: var(--navy); }
+
+/* ── SUCCESS STORIES ────────────────────── */
+.story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.story-card {
+  background: var(--white); border-radius: var(--radius);
+  box-shadow: var(--shadow); overflow: hidden;
+}
+.story-header {
+  background: linear-gradient(135deg, var(--navy-dark), var(--navy));
+  padding: 16px 20px; display: flex; align-items: center; gap: 14px;
+}
+.story-logo {
+  width: 52px; height: 52px; border-radius: 6px;
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+  overflow: hidden; flex-shrink: 0;
+}
+.story-logo img { width: 100%; height: 100%; object-fit: contain; }
+/* ── IMAGE PLACEHOLDER — replace src="" with GDrive direct link ── */
+.story-name { color: var(--white); font-size: 14px; font-weight: 700; }
+.story-sector { color: var(--gold-light); font-size: 12px; }
+.story-body { padding: 16px 20px; }
+.story-desc { font-size: 13px; color: var(--gray-700); margin-bottom: 14px; line-height: 1.6; }
+.story-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.story-stat { background: var(--gray-100); border-radius: 4px; padding: 10px 12px; }
+.story-stat-label { font-size: 10px; font-weight: 700; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px; }
+.story-stat-val { font-size: 15px; font-weight: 800; color: var(--navy); }
+.story-img-row { padding: 0 20px 16px; display: flex; gap: 8px; }
+.story-img-row .img-placeholder { min-height: 80px; }
+
+/* ── ACHIEVEMENTS ───────────────────────── */
+.ach-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px; }
+.ach-card {
+  background: var(--white); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 16px 18px;
+  border-left: 4px solid var(--gold);
+  display: flex; gap: 14px; align-items: flex-start;
+}
+.ach-num { font-size: 20px; font-weight: 800; color: var(--gold); flex-shrink: 0; line-height: 1; }
+.ach-label { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.ach-text { font-size: 12px; color: var(--gray-700); line-height: 1.5; }
+.chal-card { border-left-color: var(--navy-mid); }
+.chal-card .ach-num { color: var(--navy-mid); }
+
+/* ── FINANCIAL TABLE ────────────────────── */
+.fin-note {
+  background: #FFF5F5; border-left: 4px solid #E53E3E;
+  border-radius: var(--radius); padding: 12px 16px; margin-bottom: 16px;
+  font-size: 12px; color: #742A2A;
+}
+.fin-total { background: var(--navy) !important; }
+.fin-total td { color: var(--white) !important; font-weight: 700 !important; }
+
+/* ── SIGNATURE BLOCK ────────────────────── */
+.sig-section {
+  margin-top: 40px; padding: 24px; background: var(--white);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  border-top: 4px solid var(--gold);
+}
+.sig-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 20px; }
+.sig-block { text-align: center; }
+.sig-img-wrap {
+  width: 200px; height: 80px; margin: 0 auto 12px;
+  border: 2px dashed var(--gray-300); border-radius: var(--radius);
+  display: flex; align-items: center; justify-content: center;
+  background: var(--gray-100); overflow: hidden;
+}
+.sig-img-wrap img { max-width: 100%; max-height: 100%; object-fit: contain; }
+/* ── SIGNATURE IMAGE: replace src="" with GDrive direct link ──
+   For each signer, upload scanned signature to GDrive, get shareable link,
+   convert to: https://drive.google.com/uc?export=view&id=FILE_ID
+   and paste into the src attribute below */
+.sig-img-placeholder { font-size: 10px; color: var(--gray-500); text-align: center; padding: 8px; line-height: 1.5; }
+.sig-line { border-top: 1.5px solid var(--navy); width: 200px; margin: 0 auto 8px; }
+.sig-name { font-size: 14px; font-weight: 700; color: var(--navy); }
+.sig-desig { font-size: 12px; color: var(--gray-500); }
+
+/* ── PRINT STYLES ───────────────────────── */
+@media print {
+  .tab-bar, .filter-bar, .btn-print, .header-actions { display: none !important; }
+  .tab-panel { display: block !important; page-break-before: always; }
+  .tab-panel:first-child { page-break-before: auto; }
+  body { background: white; font-size: 12px; }
+  .report-header { padding: 20px; }
+  .main { padding: 10px; max-width: 100%; }
+  .charts-row { grid-template-columns: 1fr 1fr; }
+  .story-grid { grid-template-columns: 1fr 1fr; }
+  .ach-grid { grid-template-columns: 1fr 1fr; }
+  table { font-size: 10px; }
+  thead th { font-size: 9px; }
+  .kpi-grid { grid-template-columns: repeat(4, 1fr); }
+  @page { margin: 15mm; size: A4; }
+}
+
+@media (max-width: 768px) {
+  .charts-row { grid-template-columns: 1fr; }
+  .story-grid { grid-template-columns: 1fr; }
+  .ach-grid { grid-template-columns: 1fr; }
+  .event-card { grid-template-columns: 1fr; }
+  .sig-grid { grid-template-columns: 1fr; }
+  .header-inner { flex-direction: column; }
+  .header-actions { margin-left: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════ HEADER -->
+<header class="report-header">
+  <div class="header-inner">
+    <div class="header-logo">
+      <!-- KLE CTiE Logo: replace src="" with GDrive direct link
+           https://drive.google.com/uc?export=view&id=YOUR_FILE_ID -->
+      <img src=https://drive.google.com/uc?export=view&id=1iAb5PH3CKSHESopoFGPCuW85Mkb7X26z alt="KLE CTiE Logo" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+      <div class="header-logo-placeholder" style="display:none">KLE<br>CTiE<br>Logo</div>
+    </div>
+    <div class="header-text">
+      <h1>TIDE 2.0 — <span>Closure Report</span></h1>
+      <div class="header-meta">
+        <span>KLE Centre for Technology Innovation &amp; Entrepreneurship (CTiE)</span>
+        <span>KLE Technological University, Hubballi, Karnataka</span>
+        <span>Centre Type: G2</span>
+        <span>MeitY Sanction: 18.12.2019</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-print" onclick="window.print()">⎙ Print / Save PDF</button>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════ TAB BAR -->
+<nav class="tab-bar">
+  <div class="tab-bar-inner">
+    <button class="tab-btn active" onclick="showTab('kpi',this)">📊 KPI Dashboard</button>
+    <button class="tab-btn" onclick="showTab('summary',this)">📋 Overall Summary</button>
+    <button class="tab-btn" onclick="showTab('startups',this)">🚀 Startups (52)</button>
+    <button class="tab-btn" onclick="showTab('financial',this)">💰 Financial Overview</button>
+    <button class="tab-btn" onclick="showTab('events',this)">📅 Events</button>
+    <button class="tab-btn" onclick="showTab('stories',this)">🏆 Success Stories</button>
+    <button class="tab-btn" onclick="showTab('achievements',this)">✅ Achievements</button>
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- ═══════════════════════════════════════ TAB 1: KPI DASHBOARD -->
+<section class="tab-panel active" id="tab-kpi">
+  <div class="section-title">KPI Dashboard
+    <div class="section-subtitle">Programme Period 2019–2026 | TIDE 2.0 G2 Centre | KLE CTiE</div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card"><div class="kpi-label">Total Startups</div><div class="kpi-value">52</div><div class="kpi-sub">Physical: 20 | Virtual: 32</div></div>
+    <div class="kpi-card navy"><div class="kpi-label">EiR Startups</div><div class="kpi-value">31</div><div class="kpi-sub">Entrepreneur in Residence</div></div>
+    <div class="kpi-card green"><div class="kpi-label">Grant Startups</div><div class="kpi-value">22</div><div class="kpi-sub">Technology Grant</div></div>
+    <div class="kpi-card"><div class="kpi-label">Scaleup Investment</div><div class="kpi-value">5</div><div class="kpi-sub">Investment Grant</div></div>
+    <div class="kpi-card navy"><div class="kpi-label">Funds Received</div><div class="kpi-value">₹4.40Cr</div><div class="kpi-sub">MeitY Sanctioned</div></div>
+    <div class="kpi-card green"><div class="kpi-label">Utilization Rate</div><div class="kpi-value">~100%</div><div class="kpi-sub">₹4,40,52,571 utilized</div></div>
+    <div class="kpi-card red"><div class="kpi-label">Employment</div><div class="kpi-value">120+</div><div class="kpi-sub">Via 15 startups</div></div>
+    <div class="kpi-card"><div class="kpi-label">Patents Filed</div><div class="kpi-value">8</div><div class="kpi-sub">Across 7 startups</div></div>
+    <div class="kpi-card navy"><div class="kpi-label">Revenue Generated</div><div class="kpi-value">₹6.82Cr</div><div class="kpi-sub">Across 7 startups</div></div>
+    <div class="kpi-card green"><div class="kpi-label">Products / MVPs</div><div class="kpi-value">57</div><div class="kpi-sub">Across 30 startups</div></div>
+    <div class="kpi-card"><div class="kpi-label">External Funding</div><div class="kpi-value">₹53L</div><div class="kpi-sub">2 startups</div></div>
+    <div class="kpi-card navy"><div class="kpi-label">Workshops</div><div class="kpi-value">13</div><div class="kpi-sub">Capacity building events</div></div>
+    <div class="kpi-card"><div class="kpi-label">Low Engagements</div><div class="kpi-value">10</div><div class="kpi-sub">Programs conducted</div></div>
+    <div class="kpi-card green"><div class="kpi-label">Sectors Covered</div><div class="kpi-value">10+</div><div class="kpi-sub">MedTech, IoT, AI, Agri…</div></div>
+    <div class="kpi-card red"><div class="kpi-label">Women-Led</div><div class="kpi-value">10+</div><div class="kpi-sub">Women cofounders</div></div>
+    <div class="kpi-card navy"><div class="kpi-label">DPIIT Registered</div><div class="kpi-value">20+</div><div class="kpi-sub">Startups with DIPP nos.</div></div>
+  </div>
+
+  <div class="charts-row">
+    <div class="chart-card">
+      <h3>Component-wise Startup Split</h3>
+      <div class="chart-wrap"><canvas id="chartComponent"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Sector Distribution</h3>
+      <div class="chart-wrap"><canvas id="chartSector"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Year-wise Fund Utilization (₹ Lakhs)</h3>
+      <div class="chart-wrap"><canvas id="chartFund"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Key Output Metrics</h3>
+      <div class="chart-wrap"><canvas id="chartOutput"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ TAB 2: OVERALL SUMMARY -->
+<section class="tab-panel" id="tab-summary">
+  <div class="section-title">Overall Summary
+    <div class="section-subtitle">Key Metrics as reported under TIDE 2.0 Closure</div>
+  </div>
+  <div class="table-wrap" style="margin-bottom:28px">
+    <table>
+      <thead><tr><th style="width:40%">Particulars</th><th>Details</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>No. of Startups</td><td>52</td><td>Physical: 20 | Virtual: 32</td></tr>
+        <tr><td>Component-wise Split</td><td>EiR: 31 | Grant: 22 | Scaleup Investment: 5</td><td>—</td></tr>
+        <tr><td>Funds Received [A]</td><td>₹4,40,50,000</td><td>MeitY Sanction</td></tr>
+        <tr><td>Funds Utilized [B]</td><td>₹4,40,52,571</td><td>⚠ Exceeds received by ₹2,571 — to reconcile</td></tr>
+        <tr><td>Employment Generated [C] / Startups [D]</td><td>120 / 15</td><td>—</td></tr>
+        <tr><td>Patents Filed [E] / Startups Filed [F]</td><td>8 / 7</td><td>—</td></tr>
+        <tr><td>Revenue Generated [G] / Startups [H]</td><td>₹6,82,11,210 / 7</td><td>—</td></tr>
+        <tr><td>Products / Prototypes / MVPs [I] / Startups [J]</td><td>57 / 30</td><td>—</td></tr>
+        <tr><td>External Funding Raised [K] / Startups [L]</td><td>₹53,00,000 / 2</td><td>—</td></tr>
+        <tr><td>Workshops [M] / Low Engagements [N]</td><td>13 / 10</td><td>—</td></tr>
+        <tr><td>Deep Engagements [O] / Challenge Grants [P] / Hackathons [Q]</td><td colspan="2">Data Awaited</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SIGNATURE BLOCK -->
+  <div class="sig-section">
+    <div class="section-title" style="margin-bottom:8px">Declaration &amp; Signatures</div>
+    <p style="font-size:12px;color:var(--gray-700);margin-bottom:16px">I hereby declare that the information furnished above is true and correct to the best of my knowledge and belief. I shall be held responsible for any discrepancy, error, or misrepresentation in the submitted information.</p>
+    <div class="sig-grid">
+      <div class="sig-block">
+        <div class="sig-img-wrap">
+          <!-- Signature 1: Upload scanned signature to GDrive, share publicly,
+               then replace src="" below with:
+               https://drive.google.com/uc?export=view&id=YOUR_FILE_ID -->
+          <img src="" alt="Signature - Sunaina Dhanave" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="sig-img-placeholder" style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%">
+            <div style="font-size:18px;opacity:0.3">✍</div>
+            <div>Paste scanned signature<br>(GDrive img link)</div>
+          </div>
+        </div>
+        <div class="sig-line"></div>
+        <div class="sig-name">Sunaina Dhanave</div>
+        <div class="sig-desig">Program Co-ordinator, KLE CTiE<br>KLE Technological University</div>
+      </div>
+      <div class="sig-block">
+        <div class="sig-img-wrap">
+          <!-- Signature 2: Upload scanned signature to GDrive, share publicly,
+               then replace src="" below with:
+               https://drive.google.com/uc?export=view&id=YOUR_FILE_ID -->
+          <img src="" alt="Signature - Dr. Vinayak Hosamani" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="sig-img-placeholder" style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%">
+            <div style="font-size:18px;opacity:0.3">✍</div>
+            <div>Paste scanned signature<br>(GDrive img link)</div>
+          </div>
+        </div>
+        <div class="sig-line"></div>
+        <div class="sig-name">Dr. Vinayak Hosamani</div>
+        <div class="sig-desig">Director, KLE CTiE<br>KLE Technological University, Hubballi – 580031</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ TAB 3: STARTUPS -->
+<section class="tab-panel" id="tab-startups">
+  <div class="section-title">Startup Details Table
+    <div class="section-subtitle">All 52 startups supported under TIDE 2.0</div>
+  </div>
+  <div class="filter-bar">
+    <input type="text" id="searchInput" placeholder="🔍  Search startup name, sector, one-liner…" oninput="filterStartups()">
+    <select id="sectorFilter" onchange="filterStartups()">
+      <option value="">All Sectors</option>
+      <option>Med Tech</option><option>Defence Tech</option><option>Semiconductor</option>
+      <option>Industrial IoT</option><option>Healthcare</option><option>IoT</option>
+      <option>Health Tech</option><option>Drone Tech</option><option>Agri Tech</option>
+      <option>HR Tech</option><option>EV</option><option>Edu Tech</option>
+      <option>BioTech</option><option>E-Commerce</option><option>Deep Tech</option>
+      <option>Green Energy</option><option>Supply Chain</option><option>Clean Tech</option>
+      <option>Recycling</option><option>AI</option><option>Construction Tech</option>
+      <option>3D Printing</option><option>SaaS</option><option>Drone Tech</option>
+      <option>Robotics</option><option>IT</option>
+    </select>
+    <select id="componentFilter" onchange="filterStartups()">
+      <option value="">All Components</option>
+      <option>EiR</option><option>Grant</option><option>Investment</option>
+    </select>
+    <span class="results-count" id="resultsCount">Showing 52 of 52</span>
+  </div>
+  <div class="table-wrap">
+    <table id="startupTable">
+      <thead>
+        <tr>
+          <th>#</th><th>Startup Name</th><th>Fund (₹)</th><th>Component</th>
+          <th>Sector</th><th>One Liner</th><th>Revenue (₹L)</th>
+          <th>Patents</th><th>Products</th><th>Onboarded</th>
+          <th>Women Led</th><th>DPIIT No.</th><th>Employment</th>
+        </tr>
+      </thead>
+      <tbody id="startupBody"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ TAB 4: FINANCIAL -->
+<section class="tab-panel" id="tab-financial">
+  <div class="section-title">Financial Overview
+    <div class="section-subtitle">Head-wise Fund Utilization | MeitY Sanction No: Meity/IPR/TIDE/16(9)/2019 | Dt: 18.12.2019</div>
+  </div>
+  <div class="fin-note">
+    ⚠ <strong>Discrepancy Note:</strong> Funds Received [A] = ₹4,40,50,000 | Funds Utilized [B] = ₹4,40,52,571 | Difference of <strong>₹2,571</strong> to be reconciled with MeitY audited records before final submission.
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th style="min-width:240px">Budget Head</th>
+          <th>2018-19</th><th>2019-20</th><th>2020-21</th><th>2021-22</th>
+          <th>2022-23</th><th>2023-24</th><th>2024-25</th><th>2025-26</th>
+          <th>Total Released (₹L)</th><th>Total Utilized (₹L)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>Allocation towards Startups at TIDE Centres EiR</td><td>27.00</td><td>13.00</td><td>60.00</td><td>12.10</td><td>8.50</td><td>9.00</td><td>24.40</td><td>—</td><td>640.00</td><td>640.00</td></tr>
+        <tr><td>2</td><td>Support to TIDE Centres for provisioning of EiRs</td><td>0.86</td><td>2.00</td><td>3.55</td><td>3.00</td><td>2.50</td><td>5.00</td><td>0</td><td>—</td><td>160.00</td><td>169.09</td></tr>
+        <tr><td>3</td><td>Allocation towards Startups at TIDE Centres Grants</td><td>20.27</td><td>23.32</td><td>20.34</td><td>10.90</td><td>11.50</td><td>5.00</td><td>20.60</td><td>—</td><td>1120.00</td><td>1120.00</td></tr>
+        <tr><td>4</td><td>Support to TIDE Centres for provisioning of Grants</td><td>1.00</td><td>6.06</td><td>3.55</td><td>0</td><td>2.50</td><td>5.00</td><td>0</td><td>—</td><td>160.00</td><td>181.16</td></tr>
+        <tr><td>5</td><td>Workshops @G1G2 &amp; G3C</td><td>0</td><td>0</td><td>2.00</td><td>2.00</td><td>4.00</td><td>4.00</td><td>4.00</td><td>—</td><td>160.00</td><td>160.00</td></tr>
+        <tr><td>6</td><td>Low Engagement Programs @G2 &amp; G3C</td><td>0</td><td>0</td><td>0</td><td>3.00</td><td>2.00</td><td>3.00</td><td>13.00</td><td>—</td><td>240.00</td><td>210.00</td></tr>
+        <tr><td>7</td><td>Deep Engagement Programs @G1C</td><td colspan="8" style="text-align:center;color:var(--gray-500)">NA — Not Applicable for G2 Centre</td><td>—</td><td>—</td></tr>
+        <tr><td>8</td><td>Hackathon @G1C</td><td colspan="8" style="text-align:center;color:var(--gray-500)">NA — Not Applicable for G2 Centre</td><td>—</td><td>—</td></tr>
+        <tr><td>9</td><td>Challenge Grant @G1C</td><td colspan="8" style="text-align:center;color:var(--gray-500)">NA — Not Applicable for G2 Centre</td><td>—</td><td>—</td></tr>
+        <tr><td>10</td><td>Allocation towards Startups at TIDE Centres Investment Grant</td><td>NA</td><td>NA</td><td>35.00</td><td>35.00</td><td>70.00</td><td>35.00</td><td>NA</td><td>—</td><td>1750.00</td><td>1750.00</td></tr>
+        <tr><td>11</td><td>Support to TIDE Centres for provisioning of Investment Grant</td><td>NA</td><td>NA</td><td>3.50</td><td>3.50</td><td>7.00</td><td>3.50</td><td>NA</td><td>—</td><td>175.00</td><td>175.00</td></tr>
+        <tr class="fin-total"><td colspan="2">TOTAL</td><td>24.83</td><td>32.77</td><td>73.94</td><td>69.50</td><td>108.00</td><td>69.50</td><td>62.00</td><td>—</td><td>4405.00</td><td>4405.26</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ TAB 5: EVENTS -->
+<section class="tab-panel" id="tab-events">
+  <div class="section-title">Major Events / Engagements / Programs
+    <div class="section-subtitle">13 Workshops + 10 Low Engagement Programs conducted across 2019–2025</div>
+  </div>
+  <div class="event-grid" id="eventsGrid"></div>
+</section>
+
+<!-- ═══════════════════════════════════════ TAB 6: SUCCESS STORIES -->
+<section class="tab-panel" id="tab-stories">
+  <div class="section-title">Success Stories
+    <div class="section-subtitle">Featured startups with notable traction, recognition &amp; milestones</div>
+  </div>
+  <div class="story-grid" id="storiesGrid"></div>
+</section>
+
+<!-- ═══════════════════════════════════════ TAB 7: ACHIEVEMENTS -->
+<section class="tab-panel" id="tab-achievements">
+  <div class="section-title">Major Achievements &amp; Key Highlights</div>
+  <div class="ach-grid" id="achGrid"></div>
+  <div class="section-title" style="margin-top:28px">Challenges / Learnings</div>
+  <div class="ach-grid" id="chalGrid"></div>
+</section>
+
+</main>
+
+<script>
+/* ── TAB NAVIGATION ─────────────────────────────── */
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ── DATA ───────────────────────────────────────── */
+const startups = [
+  [1,"Origami Automation Indian Pvt. Ltd",389000,"Grant","Med Tech","Resuscitator Automation System","—",1,"Prototype-5","01-01-2019","No","DIPP 83462",3],
+  [2,"Astr Tactical Pvt Ltd",370000,"Grant","Defence Tech","Indigenous electro-optic aiming systems & tactical products for small arms","—","—","Product-1","23-10-2020","—","DIPP 48111",3],
+  [3,"Semi-ksha Semiconductors Pvt. Ltd",350000,"Grant","Semiconductor","Low-power wireless smart metering solution","—","—","—","01-01-2019","—","DIPP 134062","—"],
+  [4,"Armtronix Iot Pvt Ltd",225000,"Grant","Industrial IoT","Machine Monitoring System","—","—","—","13-09-2021","—","DIPP 111397","—"],
+  [5,"Encephalon Solutions",150000,"EiR","Healthcare","Automatic CPR machine & Functional electrical stimulation system","—","—","Prototype-1","16-07-2021","—","—","—"],
+  [6,"Abhiyantrik Solution Pvt. Ltd",320000,"EiR","IoT","Smart switch & Smart MCB","—","—","—","23-05-2022","—","DIPP 97556",4],
+  [7,"Saralsiddhi",300000,"Grant","Health Tech","—","—","—","—","25-05-2022","—","—",2],
+  [8,"Aivolved Technologies Pvt. Ltd",300000,"Grant","Health Tech","Non-invasive blood glucose monitoring lifestyle device",2.25,1,"Prototype-2","11-10-2021","Yes","DIPP 48927",34],
+  [9,"Indrone Aerosystem",3500000,"Grant","Drone Tech","Actionable intelligence via UAVs, sensors & geospatial analytics",2.50,"—","—","09-06-2017","—","DIPP 10411","—"],
+  [10,"ANUCHARITH INNOVATIONS PVT LTD",300000,"Grant","IoT","R&D of renewable energy power storage & backup systems","—","—","Prototype-1","01-10-2022","—","DIPP 163341","—"],
+  [11,"Abhiyantrik Solutions Pvt Ltd",300000,"Grant","IoT","Smart switch & Smart MCB",16.18,"—","—","23-05-2022","—","DIPP 97556",4],
+  [12,"Pravartya Labs",300000,"Grant","3D Printing","Innovative Prototyping System for Multidisciplinary Product development","—","—","Prototype-1","16-03-2023","—","DIPP 129360",1],
+  [13,"eMileAge Initiative Pvt. Ltd",300000,"Grant","EV","Rural & Urban Economical Mobility Systems (RUEMS)",3.00,"—","Prototype-5","15-07-2023","—","—","—"],
+  [14,"IMMINTY PRIVATE LIMITED",120000,"EiR","Edu Tech","Tools & playful engagement for urban parents in child development","—","—","Prototype-1","03-04-2023","—","—","—"],
+  [15,"Harley Grow",120000,"EiR","Agri Tech","Growing crops without soil via hydroponics","—","—","POC-1/Prototype-1","11-04-2023","—","—",4],
+  [16,"Mars Meat",120000,"EiR","BioTech","Substitute/alternative meat with right nutrition, no slaughter","—","—","Product-1","01-06-2023","—","—","—"],
+  [17,"METAXP Pvt Ltd",300000,"Grant","HR Tech","Corporate Simulation Licensing Company",2.68,"—","Prototype-1","05-04-2023","Yes","DIPP 113081",2],
+  [18,"SmarTech Innovent",120000,"EiR","IoT","Smart devices for home automation","—","—","POC-1","01-04-2023","—","—","—"],
+  [19,"UK Farm Machinery",120000,"EiR","Agri Tech","Twin shaft rotavator attachment for tractor","—","—","Prototype-1","30-03-2023","—","—","—"],
+  [20,"Armtronix Iot Pvt Ltd",3500000,"Grant","Industrial IoT","Machine Monitoring System",1.22,"—","Product-1","13-09-2021","—","DIPP 111397",30],
+  [21,"Sachin, Karadgi",150000,"EiR","E-Commerce","Near-optimized picking path tools reducing picker travel time","—","—","—","03-2024","—","—","—"],
+  [22,"Divya, Kabadar",4000000,"EiR","Agri Tech","Rover-based soil nutrient detection & automated pesticide spraying","—","—","—","03-2024","—","—","—"],
+  [23,"SIN (Sustainable Innovation and Nature)",140000,"EiR","SaaS","Digi Tickets – Digital Ticketing System for Public Transport","NA",1,"Prototype-5","21-02-2024","No","—","—"],
+  [24,"TechXcelerate",130000,"EiR","Deep Tech","Foot Health Optimizer","—","—","POC-1","01-11-2025","Yes","DIPP 171703","—"],
+  [25,"eMileAge Initiative Pvt. Ltd",3500000,"Grant","EV","Rural & Urban Economical Mobility Systems (RUEMS)",3.00,"—","Product-5","15-07-2023","—","DIPP 171703",5],
+  [26,"Neuorigami Automation Indian Pvt. Ltd",3500000,"Grant","Med Tech","Resuscitator Automation System",1.20,1,"Product-5","01-01-2019","No","DIPP 83462",10],
+  [27,"Pro H2Vis Solutions LLP",200000,"EiR","Green Energy","Sustainable, affordable H2 production & storage systems","—","—","—","21-09-2024","—","—","—"],
+  [28,"Pravinya Infotech",200000,"EiR","Supply Chain","Spatio-Temporal Billboard Management & Tracking System","—","—","Prototype-1","23-09-2024","Yes","—",9],
+  [29,"Farmer Charmer",150000,"EiR","Agri Tech","Smart Farm Monitoring Platform","—","—","Prototype-1","23-09-2024","—","—",2],
+  [30,"Celestic",150000,"EiR","Edu Tech","Miniature Satellite kits for STEM education","—","—","Prototype-1","19-09-2024","—","—","—"],
+  [31,"Wegha Herbals Pvt Ltd",400000,"Grant","Health Tech","Non-invasive herbal formulation to treat early-stage breast cancer","—","—","Prototype-1","20-09-2024","Yes","DIPP 111902","—"],
+  [32,"Autoretro Tec Pvt Ltd",350000,"Grant","IoT","Smart devices for home automation","—","Filed 2024","Prototype-1","01-04-2023","Yes","DIPP 208892",1],
+  [33,"Tayiberu Technologies",200000,"Grant","Clean Tech","Economical Multipower Saver — Energy & Fuel Saving on Bicycle","—",1,"Prototype-1","20-09-2024","—","DIPP 186133",4],
+  [34,"Bytras eco solution pvt ltd",200000,"Grant","Clean Tech","Recycling plastic waste into sustainable products","—","—","—","12-01-2024","—","—","—"],
+  [35,"Bionerra",200000,"Grant","Health Tech","Working in Healthcare & Lifesciences","—","—","Prototype-1","25-03-2025","Yes","—","—"],
+  [36,"Anusharan Enterprise",200000,"Grant","Recycling","Recycling WindShield into Glass & PVB for commercial value","—","—","—","25-03-2025","—","—","—"],
+  [37,"NeuroAnalog Private Limited",100000,"EiR","AI","AI-powered analog circuit design automation platform","—","—","POC-1","25-03-2025","Yes","In Progress","—"],
+  [38,"Diabeath",100000,"EiR","Med Tech","HealthTech improving diabetes management through technology","—","—","POC-1","25-03-2025","—","—","—"],
+  [39,"Dr. Sharada K Shiragudik ar",100000,"EiR","Edu Tech","Free AI-based tutoring for students in rural areas","—","—","—","25-03-2025","Yes","—","—"],
+  [40,"RESONTI C AI PRIVATE LIMITED",100000,"EiR","Drone Tech","AI-enabled Global Single Point of Contact (GSPOC) platform","—","—","Prototype-2","25-03-2025","Yes","—","—"],
+  [41,"EnzyBiotech",100000,"EiR","BioTech","Sustainable enzyme-based solutions for biofilm removal","—","—","—","25-03-2025","Yes","—","—"],
+  [42,"NanoCem X Private Limited",100000,"EiR","Construction Tech","Cement-based nanocomposite for structural health monitoring","—","—","POC-1","25-03-2025","Yes","Yes","—"],
+  [43,"Flexicore Automations",300000,"EiR","IoT","Smart water monitoring systems using IoT & long-range comms","—","—","—","28-10-2025","—","—","—"],
+  [44,"Quantum Four",300000,"EiR","IoT","Smart Hydraulic Oil Level & Temperature Monitoring System","—","—","—","27-03-2025","—","—","—"],
+  [45,"ClassPulse AI",300000,"EiR","AI","AI Classroom Engagement Monitoring System","—","—","—","27-10-2025","—","—","—"],
+  [46,"Techxcelerate Innovation Pvt Ltd",300000,"Grant","Deep Tech","Foot Health Optimizer — POC to Clinical Testing in Karnataka","—","Filed 2026","Prototype-1","01-11-2025","Yes","DIPP 171703",3],
+  [47,"Juricloud Pvt Ltd",200000,"Grant","SaaS","Legal management platform for law firms & in-house teams","—","—","Prototype-1","28-10-2025","—","DIPP 226613","—"],
+  [48,"Suraksha",200000,"Grant","Med Tech","Building CPR Infrastructure","—","—","—","28-10-2025","Yes","—","—"],
+  [49,"Symgrow",3500000,"Grant","Agri Tech","Smart Irrigator","—","—","—","17-03-2025","Yes","—","—"],
+  [50,"Bionex Technologies Pvt Ltd",200000,"Grant","Med Tech","LivraScan — portable non-invasive bilirubin monitor for newborns","—","Filed 2026","Prototype-1","08-12-2025","Yes","DIPP 199983",2],
+  [51,"Calibrex Innovations LLP",100000,"Grant","Clean Tech","Smart auxiliary braking system","—","—","—","29-01-2026","—","—","—"],
+  [52,"Examify",110000,"EiR","Edu Tech","Awareness platform for competitive exams","—","—","—","31-01-2026","—","—","—"],
+];
+
+const events = [
+  {no:1, title:"Sales & Marketing Workshop", cat:"Entrepreneurship Development", date:"25–26 May 2019", mode:"Offline", venue:"OLD Senate Hall, KLE TU, Hubballi",
+   outcomes:"Start-ups developed sales plans for 2019–20. Value propositions refined. Individual business plans reviewed through expert mentoring.",
+   collab:"Mentorship support from Mr. Ramu Sankarrao.",
+   /* Replace img1 and img2 with GDrive direct links:
+      https://drive.google.com/uc?export=view&id=FILE_ID */
+   img1:"", img2:""},
+  {no:2, title:"Sales & Marketing Workshop (Repeat Batch)", cat:"Entrepreneurship Development", date:"7–8 Jun 2019", mode:"Offline", venue:"OLD Senate Hall, KLE TU, Hubballi",
+   outcomes:"Enhanced understanding of sales & marketing for late-joiners. Increased inter-incubator interaction between KLE CTIE and DF Start-ups.",
+   collab:"Collaboration between KLE CTIE and DF Start-ups.", img1:"", img2:""},
+  {no:3, title:"Entrepreneur's Life and Crossroads", cat:"Entrepreneurship Awareness / Motivational Talk", date:"25 Oct 2019", mode:"Offline", venue:"KLE TU, Hubballi",
+   outcomes:"Mr. Vivek Pawar shared his journey of building Sankalp Semiconductor Pvt. Ltd. and its acquisition by HCL Technologies. Insights into building and scaling a technology company.",
+   collab:"Industry interaction & mentorship support.", img1:"", img2:""},
+  {no:4, title:"Chai Pe Charcha with CTIE Start-ups", cat:"Networking & Ecosystem Engagement", date:"16 Nov 2019", mode:"Offline", venue:"RH Kulkarni Building, KLE TU",
+   outcomes:"Enhanced networking among incubated start-ups. Potential collaboration opportunities identified. Better awareness of ecosystem strengths.",
+   collab:"Potential inter-start-up collaborations explored.", img1:"", img2:""},
+  {no:5, title:"Valuation Method Workshop", cat:"Investment Readiness & Fundraising", date:"19 Nov 2019", mode:"Offline", venue:"OLD Senate Hall, KLE TU, Hubballi",
+   outcomes:"Start-ups learned 9 valuation approaches. Participants calculated venture valuations. Improved investor pitch readiness.",
+   collab:"Mentorship support from Mr. Anand Kadakol.", img1:"", img2:""},
+  {no:6, title:"Innovation & Entrepreneurship Week — Day 1 & 2", cat:"Innovation & Entrepreneurship Awareness", date:"21–22 Jul 2021", mode:"Online", venue:"WebEx Virtual Platform",
+   outcomes:"Expert speakers over 8 days to promote innovation and entrepreneurship among students. Strong student participation and interactive engagement.",
+   collab:"Engagement with industry experts and mentors.", img1:"", img2:""},
+  {no:7, title:"Prototype Validation – Converting Prototype into a Startup", cat:"Entrepreneurship Awareness", date:"23 Jul 2021", mode:"Online", venue:"WebEx Virtual Platform",
+   outcomes:"Insights into prototype validation methodologies. Understanding the journey from prototype to startup establishment. Interactive discussion on commercialization of innovations.",
+   collab:"Engagement with industry experts.", img1:"", img2:""},
+  {no:8, title:"Building an Innovation / Product Fit for Market", cat:"Entrepreneurship Development", date:"24 Jul 2021", mode:"Online", venue:"WebEx Virtual Platform",
+   outcomes:"Insights into innovation-driven product development. Enhanced understanding of product-market fit, customer needs, and validating ideas before market launch.",
+   collab:"Industry interaction and startup ecosystem engagement.", img1:"", img2:""},
+  {no:9, title:"How to Plan for Start-up and Legal & Ethical Steps", cat:"Startup Awareness", date:"27 Jul 2021", mode:"Online", venue:"WebEx Virtual Platform",
+   outcomes:"Understanding of legal requirements, IP considerations, ethical practices. Compliance, risk management and corporate governance awareness.",
+   collab:"Industry interaction and startup ecosystem engagement.", img1:"", img2:""},
+  {no:10, title:"Accelerators/Incubation — Opportunities for Students & Faculties", cat:"Entrepreneurship Awareness", date:"28 Jul 2021", mode:"Online", venue:"WebEx Virtual Platform",
+   outcomes:"Awareness on incubation and accelerator programs, ecosystem support, funding opportunities, and pathways to transform innovative ideas into successful ventures.",
+   collab:"Industry interaction and startup ecosystem engagement.", img1:"", img2:""},
+  {no:11, title:"Lean Start-up & Minimum Viable Product (MVP) Business", cat:"Startup Development", date:"29 Jul 2021", mode:"Online", venue:"WebEx Virtual Platform",
+   outcomes:"Understanding of Lean Start-up principles. Knowledge of developing and testing MVPs. Techniques for customer validation and rapid product iteration.",
+   collab:"Industry interaction and startup ecosystem engagement.", img1:"", img2:""},
+  {no:12, title:"Angel Investment / VC Funding", cat:"Investment Readiness & Entrepreneurship Awareness", date:"30 Jul 2021", mode:"Online", venue:"WebEx Virtual Platform",
+   outcomes:"Understanding of angel investment and VC ecosystems. Insights on startup fundraising strategies and investor expectations. Growth-stage funding opportunities.",
+   collab:"Industry interaction and startup ecosystem engagement.", img1:"", img2:""},
+  {no:13, title:"Ignite the Entrepreneur in You — Start-Up Tour 2022", cat:"Startup Networking & Entrepreneurship Promotion", date:"31 Jul 2022", mode:"Offline", venue:"KLE CTIE Tech Park Building, Hubballi",
+   outcomes:"110+ students, faculty members, start-ups and mentors attended. 9 students applied for internships. One startup generated revenue through its Instant Discount App. 110+ entrepreneurship enquiries received.",
+   collab:"Industry, mentor, and startup ecosystem connections established.", img1:"", img2:""},
+  {no:14, title:"G20 DIA Summit", cat:"Startup Networking & Incubator Network", date:"17–19 Aug 2023", mode:"Offline", venue:"Bangalore Palace",
+   outcomes:"3 startups and incubator KLE CTiE participated. Startups received market connection, technical mentors, peer collaborations, and customer engagement.",
+   collab:"Industry, mentor, and startup ecosystem connections established.", img1:"", img2:""},
+  {no:15, title:"Low Engagement Programs (Multiple Sessions)", cat:"Low Engagement Programs", date:"Various 2022–2025", mode:"Mixed", venue:"Various / Online",
+   outcomes:"10 low engagement programs conducted as per TIDE 2.0 mandate covering diverse startup capacity-building areas across sectors.",
+   collab:"Ecosystem partners and mentor network.", img1:"", img2:""},
+];
+
+const stories = [
+  {
+    name:"Armtronix IoT Private Limited", sector:"Industrial IoT", website:"armtronix.net",
+    desc:"Harnesses the power of IoT and AI/ML to create a seamless and intelligent world where devices, data and people collaborate to unlock unprecedented efficiency. Helping manufacturing industries leverage advanced technologies.",
+    /* Logo: replace src="" with GDrive direct link */
+    logo:"", logoAlt:"Armtronix IoT Logo",
+    /* Product image: replace src="" with GDrive direct link */
+    prodImg:"", prodAlt:"Armtronix IoT Product",
+    /* Team image: replace src="" with GDrive direct link */
+    teamImg:"", teamAlt:"Armtronix IoT Team",
+    stats:[["TIDE Investment","₹42 Lakhs"],["Component","Grant & ScaleUp"],["TRL","TRL8"],["Revenue","₹1.22 Cr"],["External Funding","NA"],["Valuation","NA"]],
+    highlight:"Incorporated 2021 | Core: IoT | Industry: Industrial IoT"
+  },
+  {
+    name:"Aivolved Technologies Pvt. Ltd", sector:"Health Tech / AI", website:"www.Aivolved.in",
+    desc:"Health tech startup working on development of non-invasive blood glucose monitoring device that can be used as life-style device. Non Invasive Glucose Monitoring Device using AI/ML and Electronics.",
+    logo:"", logoAlt:"Aivolved Technologies Logo",
+    prodImg:"", prodAlt:"Aivolved Product",
+    teamImg:"", teamAlt:"Aivolved Team",
+    stats:[["TIDE Investment","₹7 Lakhs"],["Component","Grant"],["TRL","TRL5"],["Revenue","NA"],["Patent","Filed – 202441000371"],["Valuation","₹15 Cr"]],
+    highlight:"Women Cofounder | Grants Raised: ₹30 Lakhs"
+  },
+  {
+    name:"Neuorigami Automation Indian Pvt. Ltd", sector:"MedTech", website:"neuorigamiautomation.com",
+    desc:"Premier Med-tech company designing and manufacturing the best healthcare devices at an affordable price. Core product: Resuscitator Automation System.",
+    logo:"", logoAlt:"Neuorigami Logo",
+    prodImg:"", prodAlt:"Neuorigami Product — Resuscitator",
+    teamImg:"", teamAlt:"Neuorigami Team",
+    stats:[["TIDE Investment","₹42 Lakhs"],["Component","Grant & ScaleUp"],["TRL","TRL8"],["Revenue","₹8.5 Lakhs"],["Patent","202441097373 (Filed)"],["Valuation","₹23 Cr"]],
+    highlight:"Emerging Fund-Ready Startup Award at TiECON 2025 | Elevate 2021 Winners"
+  },
+  {
+    name:"Abhiyantrik Solution Pvt. Ltd", sector:"Smart Switch & MCB", website:"—",
+    desc:"Developing innovative smart home platform Meta4Home, designed to transform the way people interact with their living spaces. Enables seamless control of home appliances through intelligent smart switches and an immersive 3D interface.",
+    logo:"", logoAlt:"Abhiyantrik Logo",
+    prodImg:"", prodAlt:"Abhiyantrik Smart MCB Product",
+    teamImg:"", teamAlt:"Abhiyantrik Team",
+    stats:[["TIDE Investment","₹12 Lakhs"],["Component","EiR & Grant"],["TRL","TRL8"],["External Funding","₹32L @ ₹5Cr Pre-money"],["IP","Patent Granted"],["Valuation","NA"]],
+    highlight:"Patent Granted | External funding raised | Incorporated 2022"
+  },
+];
+
+const achievements = [
+  {n:1, label:"Startup Support", text:"Successfully supported 52 startups across sectors including MedTech, AgriTech, IoT, AI, DeepTech, Green Energy, Semiconductor, EV, Biotechnology, and Healthcare."},
+  {n:2, label:"Fund Utilization", text:"Achieved 100% utilization of ₹4.40 Crore sanctioned under the TIDE 2.0 program towards EiR, Grant, and Investment Grant."},
+  {n:3, label:"Product Development", text:"Facilitated the development of 57 products/prototypes/MVPs by 30 startups under the programme."},
+  {n:4, label:"Employment Generation", text:"Generated employment opportunities for over 120 individuals through incubated startups."},
+  {n:5, label:"IPR & Revenue", text:"Supported startups in filing 8 patents across various technology domains. Enabled startups to generate cumulative revenues exceeding ₹6.82 Crore."},
+  {n:6, label:"Workshops & Events", text:"Conducted 13 workshops, entrepreneurship awareness programs, investment readiness sessions, and networking events to strengthen the startup ecosystem."},
+  {n:7, label:"National Recognition", text:"Emerging Fund-Ready Startup Award at TiECON 2025 | Elevate Karnataka Winners | NVIDIA Inception Program | Google for Startups Cloud Program | National-level innovation and startup awards."},
+  {n:8, label:"Ecosystem Building", text:"Strengthened industry-academia-startup collaborations through mentorship, market access, networking, investor connect, and technology validation support."},
+];
+
+const challenges = [
+  {n:1, label:"Early-Stage Support", text:"Early-stage start-ups required significant handholding in customer discovery, regulatory compliance, and commercialization."},
+  {n:2, label:"Funding Cycles", text:"Start-up funding cycles became more challenging due to changing market conditions, requiring stronger focus on investor readiness and sustainable business models."},
+  {n:3, label:"Mentor Networks", text:"Strong mentor networks, industry partnerships, and ecosystem collaborations proved critical for startup success and scaling."},
+  {n:4, label:"Capacity Building", text:"Continuous capacity-building programs significantly improved founders' understanding of sales, marketing, fundraising, legal compliance, and product-market fit."},
+];
+
+/* ── RENDER STARTUPS ─────────────────────────── */
+function renderStartups(data) {
+  const tbody = document.getElementById('startupBody');
+  tbody.innerHTML = data.map(s => {
+    const badge = s[3] === 'EiR' ? 'badge-eir' : s[3] === 'Grant' ? 'badge-grant' : 'badge-inv';
+    const fund = typeof s[2] === 'number' ? '₹' + s[2].toLocaleString('en-IN') : s[2];
+    return `<tr data-name="${s[1].toLowerCase()}" data-sector="${s[4].toLowerCase()}" data-component="${s[3].toLowerCase()}">
+      <td>${s[0]}</td>
+      <td>${s[1]}</td>
+      <td style="white-space:nowrap">${fund}</td>
+      <td><span class="badge ${badge}">${s[3]}</span></td>
+      <td>${s[4]}</td>
+      <td style="max-width:260px">${s[5]}</td>
+      <td>${s[6]}</td><td>${s[7]}</td><td>${s[8]}</td>
+      <td style="white-space:nowrap">${s[9]}</td>
+      <td>${s[10]}</td><td>${s[11]}</td><td>${s[12]}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('resultsCount').textContent = `Showing ${data.length} of ${startups.length}`;
+}
+renderStartups(startups);
+
+function filterStartups() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const sec = document.getElementById('sectorFilter').value.toLowerCase();
+  const comp = document.getElementById('componentFilter').value.toLowerCase();
+  const rows = document.querySelectorAll('#startupBody tr');
+  let count = 0;
+  rows.forEach(r => {
+    const name = r.dataset.name, sector = r.dataset.sector, component = r.dataset.component;
+    const text = r.textContent.toLowerCase();
+    const match = (!q || text.includes(q)) && (!sec || sector.includes(sec)) && (!comp || component.includes(comp));
+    r.style.display = match ? '' : 'none';
+    if (match) count++;
+  });
+  document.getElementById('resultsCount').textContent = `Showing ${count} of ${startups.length}`;
+}
+
+/* ── RENDER EVENTS ───────────────────────────── */
+function imgOrPlaceholder(src, alt, label) {
+  if (src) return `<img src="${src}" alt="${alt}" style="width:100%;max-height:130px;object-fit:cover;border-radius:4px">`;
+  return `<div class="img-placeholder">
+    <div class="img-icon">🖼</div>
+    <div class="img-label">${label}<br><small>Upload to GDrive &amp; paste link in src=""</small></div>
+  </div>`;
+}
+
+document.getElementById('eventsGrid').innerHTML = events.map(e => `
+  <div class="event-card">
+    <div class="event-img">
+      ${imgOrPlaceholder(e.img1, 'Event ' + e.no + ' Image 1', 'Event Photo 1')}
+      ${imgOrPlaceholder(e.img2, 'Event ' + e.no + ' Image 2', 'Event Photo 2')}
+    </div>
+    <div class="event-body">
+      <div class="event-num">Event ${e.no}</div>
+      <div class="event-title">${e.title}</div>
+      <div class="event-meta">
+        <span class="event-tag">📅 ${e.date}</span>
+        <span class="event-tag">${e.mode === 'Online' ? '💻' : '🏛'} ${e.mode}</span>
+        <span class="event-tag">📍 ${e.venue}</span>
+        <span class="event-tag">🏷 ${e.cat}</span>
+      </div>
+      <div class="event-outcomes"><strong>Key Outcomes:</strong> ${e.outcomes}</div>
+      <div class="event-outcomes" style="margin-top:6px"><strong>Collaborations:</strong> ${e.collab}</div>
+    </div>
+  </div>
+`).join('');
+
+/* ── RENDER SUCCESS STORIES ──────────────────── */
+document.getElementById('storiesGrid').innerHTML = stories.map(s => `
+  <div class="story-card">
+    <div class="story-header">
+      <div class="story-logo">
+        <!-- Logo: replace src="" with GDrive direct link -->
+        <img src="${s.logo}" alt="${s.logoAlt}" onerror="this.style.display='none'">
+      </div>
+      <div>
+        <div class="story-name">${s.name}</div>
+        <div class="story-sector">${s.sector} | ${s.website}</div>
+      </div>
+    </div>
+    <div class="story-img-row">
+      ${imgOrPlaceholder(s.prodImg, s.prodAlt, 'Product Image')}
+      ${imgOrPlaceholder(s.teamImg, s.teamAlt, 'Team Image')}
+    </div>
+    <div class="story-body">
+      <div class="story-desc">${s.desc}</div>
+      <div class="story-stats">
+        ${s.stats.map(([l,v]) => `<div class="story-stat"><div class="story-stat-label">${l}</div><div class="story-stat-val">${v}</div></div>`).join('')}
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:var(--gray-500)">${s.highlight}</div>
+    </div>
+  </div>
+`).join('');
+
+/* ── RENDER ACHIEVEMENTS ─────────────────────── */
+document.getElementById('achGrid').innerHTML = achievements.map(a => `
+  <div class="ach-card">
+    <div class="ach-num">${a.n}</div>
+    <div><div class="ach-label">${a.label}</div><div class="ach-text">${a.text}</div></div>
+  </div>`).join('');
+
+document.getElementById('chalGrid').innerHTML = challenges.map(c => `
+  <div class="ach-card chal-card">
+    <div class="ach-num">${c.n}</div>
+    <div><div class="ach-label">${c.label}</div><div class="ach-text">${c.text}</div></div>
+  </div>`).join('');
+
+/* ── CHARTS ──────────────────────────────────── */
+const NAVY='#0C2D6B', GOLD='#C8960C', TEAL='#1A7A6E', RUST='#9B4A1C';
+
+new Chart(document.getElementById('chartComponent'), {
+  type:'doughnut',
+  data:{labels:['EiR (31)','Grant (22)','Scaleup Investment (5)'],
+    datasets:[{data:[31,22,5],backgroundColor:[NAVY,GOLD,TEAL],borderWidth:2,borderColor:'#fff'}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11}}}}}
+});
+
+new Chart(document.getElementById('chartSector'), {
+  type:'bar',
+  data:{
+    labels:['IoT','Med Tech','Agri Tech','Health Tech','Edu Tech','AI','Clean Tech','EV','BioTech','Others'],
+    datasets:[{data:[9,6,5,4,4,3,3,2,2,14],backgroundColor:NAVY,borderRadius:4}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+    plugins:{legend:{display:false}},
+    scales:{x:{grid:{display:false}},y:{grid:{display:false},ticks:{font:{size:10}}}}}
+});
+
+new Chart(document.getElementById('chartFund'), {
+  type:'bar',
+  data:{
+    labels:['2018-19','2019-20','2020-21','2021-22','2022-23','2023-24','2024-25'],
+    datasets:[
+      {label:'Released',data:[24.83,32.77,73.94,69.50,108.00,69.50,62.00],backgroundColor:NAVY,borderRadius:4},
+      {label:'Utilized',data:[24.83,32.77,73.94,69.50,108.00,69.50,62.00],backgroundColor:GOLD,borderRadius:4},
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'bottom',labels:{font:{size:11}}}},
+    scales:{x:{grid:{display:false}},y:{grid:{color:'#eee'},ticks:{font:{size:10}}}}}
+});
+
+new Chart(document.getElementById('chartOutput'), {
+  type:'radar',
+  data:{
+    labels:['Startups (52)','Products/MVPs (57)','Employment (120)','Patents (8)','Revenue ₹Cr (6.82)','Workshops (13)'],
+    datasets:[{
+      label:'Programme Outputs',
+      data:[52,57,120,8,6.82,13],
+      backgroundColor:'rgba(12,45,107,0.15)',
+      borderColor:NAVY,pointBackgroundColor:GOLD,pointRadius:4,borderWidth:2
+    }]
+  },
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{r:{ticks:{font:{size:9}},pointLabels:{font:{size:10}}}}}
+});
+</script>
+<!-- ═══════════════════════════════════════ FOOTER -->
+<footer class="sticky-footer">
+  <span>Made with </span><span class="heart">❤</span><span> ~rhc &nbsp;<b>·</b>&nbsp; EE Lab, KLE-CTiE <b>·</b>TIDE 2.0 — Closure Report</span>
+</footer>
+
+<style>
+.sticky-footer {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+  background: rgba(7,26,62,0.96);
+  backdrop-filter: blur(6px);
+  text-align: center;
+  padding: 7px 16px;
+  font-size: 12px; font-family: var(--font-body);
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 0.4px;
+  border-top: 1px solid rgba(200,150,12,0.3);
+}
+.sticky-footer .heart {
+  display: inline-block;
+  color: #E53E3E;
+  animation: throb 1.1s ease-in-out infinite;
+  font-size: 13px;
+}
+@keyframes throb {
+  0%,100% { transform: scale(1);   }
+  30%      { transform: scale(1.35); }
+  60%      { transform: scale(0.95); }
+}
+/* push main content up so footer doesn't overlap last row */
+.main { padding-bottom: 80px; }
+@media print { .sticky-footer { display: none; } }
+</style>
+
+</body>
+</html>
