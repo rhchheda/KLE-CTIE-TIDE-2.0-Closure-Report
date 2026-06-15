@@ -450,14 +450,51 @@ function fmt(v) {
 }
 
 /* ── GOOGLE SHEETS FETCH ────────────────── */
-function fetchSheet(TIDE_2_0_Closure_Report) {
-  return new Promise((resolve) => {
-    const PUB_ID = "2PACX-1vQmVtSrekZx_nQm_rZS6i-rESHA8nTMWRVeHBqa5AKzUj0zuaTNFQ_fEIOlH8xYXUQEk--0P9uVn9DZ";
-    const cbName = "gsCallback_" + Date.now();
+const PUB_ID = "2PACX-1vQmVtSrekZx_nQm_rZS6i-rESHA8nTMWRVeHBqa5AKzUj0zuaTNFQ_fEIOlH8xYXUQEk--0P9uVn9DZ";
+
+function fetchSheet(sheetName) {
+  return new Promise((resolve, reject) => {
+    const cbName = "_gs_" + Date.now();
     const url = `https://docs.google.com/spreadsheets/d/e/${PUB_ID}/pub?output=gviz&tqx=out:json;responseHandler:${cbName}&sheet=${encodeURIComponent(sheetName)}`;
-    window[cbName] = (data) => { delete window[cbName]; resolve(data); };
-    const s = document.createElement("script");
-    s.src = url; document.head.appendChild(s);
+
+    const timeout = setTimeout(() => {
+      delete window[cbName];
+      script.remove();
+      reject(new Error(`Timeout fetching sheet: ${sheetName}`));
+    }, 10000);
+
+    window[cbName] = (data) => {
+      clearTimeout(timeout);
+      delete window[cbName];
+      script.remove();
+      if (data.status === "ok") {
+        resolve(parseGviz(data.table));
+      } else {
+        reject(new Error(`Sheet error: ${JSON.stringify(data.errors)}`));
+      }
+    };
+
+    const script = document.createElement("script");
+    script.src = url;
+    script.onerror = () => {
+      clearTimeout(timeout);
+      delete window[cbName];
+      reject(new Error(`Script load failed for sheet: ${sheetName}`));
+    };
+    document.head.appendChild(script);
+  });
+}
+
+function parseGviz(table) {
+  if (!table || !table.rows) return [];
+  const cols = table.cols.map(c => c.label);
+  return table.rows.map(row => {
+    const obj = {};
+    cols.forEach((col, i) => {
+      const cell = row.c[i];
+      obj[col] = cell ? (cell.f ?? cell.v ?? "—") : "—";
+    });
+    return obj;
   });
 }
 
