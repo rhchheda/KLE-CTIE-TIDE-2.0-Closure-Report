@@ -1,25 +1,1060 @@
-I can see several issues in the current file before building the PDF generator. Let me fix everything in one complete rebuild:
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TIDE 2.0 — Closure Report | KLE CTiE</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root{
+  --navy:#0C2D6B;--navy-dark:#071A3E;--navy-mid:#1A4A9A;
+  --gold:#C8960C;--gold-light:#F5D97A;--gold-pale:#FEF7E0;
+  --white:#FFF;--off-white:#F8F9FC;
+  --gray-100:#F0F2F7;--gray-300:#CDD3E0;--gray-500:#7A8499;--gray-700:#3D4460;
+  --text:#1A1E2E;--radius:6px;
+  --shadow:0 2px 12px rgba(12,45,107,.10);--shadow-lg:0 6px 32px rgba(12,45,107,.16);
+  --font:'Segoe UI',Arial,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--off-white);color:var(--text);font-size:14px;line-height:1.6}
 
-Complete rebuild done. Here's everything that changed:
+/* LOADER */
+#loader{position:fixed;inset:0;background:var(--navy-dark);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s}
+#loader.hidden{opacity:0;pointer-events:none}
+.loader-logo{width:80px;height:80px;border-radius:12px;overflow:hidden;margin-bottom:20px;background:rgba(255,255,255,.08);border:2px solid rgba(200,150,12,.4)}
+.loader-logo img{width:100%;height:100%;object-fit:contain}
+.loader-title{color:#fff;font-size:20px;font-weight:700;margin-bottom:6px}
+.loader-sub{color:rgba(255,255,255,.5);font-size:12px;margin-bottom:24px}
+.loader-bar{width:240px;height:4px;background:rgba(255,255,255,.12);border-radius:2px;overflow:hidden}
+.loader-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:2px;animation:load 2s ease-in-out infinite}
+@keyframes load{0%{width:0;margin-left:0}50%{width:70%;margin-left:0}100%{width:0;margin-left:100%}}
+.loader-status{color:rgba(255,255,255,.4);font-size:11px;margin-top:12px}
 
-**PDF Generator (the main addition)**
-- `⬇ Export PDF` button in header opens a section picker modal
-- User checks/unchecks which sections to include
-- Progress bar shows rendering status section by section
-- **Cover page** auto-generated — KLE navy with gold, startup count, fund, jobs KPIs
-- **Tables (Startups, Financial)** → Landscape A4
-- **Narrative sections (KPI, Summary, Events, Stories, Achievements)** → Portrait A4
-- Every page has: navy header stripe, gold line, section label, page number, footer, subtle KLE CTiE watermark
-- Downloads as `TIDE_2_0_Closure_Report_YYYY-MM-DD.pdf`
+/* HEADER */
+.report-header{background:linear-gradient(135deg,var(--navy-dark) 0%,var(--navy) 60%,var(--navy-mid) 100%);color:#fff;padding:28px 40px 22px;position:relative;overflow:hidden}
+.report-header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--gold),var(--gold-light),var(--gold))}
+.header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:20px}
+.header-logo{width:68px;height:68px;border-radius:8px;overflow:hidden;border:2px solid rgba(200,150,12,.5);flex-shrink:0;background:rgba(255,255,255,.08)}
+.header-logo img{width:100%;height:100%;object-fit:contain}
+.header-text h1{font-size:24px;font-weight:700;letter-spacing:-.3px;line-height:1.2}
+.header-text h1 span{color:var(--gold-light)}
+.header-meta{margin-top:5px;font-size:12px;color:rgba(255,255,255,.7);display:flex;flex-wrap:wrap;gap:14px}
+.header-meta span::before{content:'▸ ';color:var(--gold-light)}
+.header-updated{font-size:10px;color:var(--gold-light);margin-top:4px;font-style:italic}
+.header-actions{margin-left:auto;display:flex;gap:10px;flex-shrink:0}
+.btn{padding:9px 18px;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+.btn-pdf{background:var(--gold);color:var(--navy-dark)}
+.btn-pdf:hover{background:var(--gold-light)}
+.btn-refresh{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.2)}
+.btn-refresh:hover{background:rgba(255,255,255,.2)}
 
-**Other fixes in this build**
-- **`driveImg()` logic corrected** — the broken fallback-showing-a-Drive-URL bug is fixed
-- **Events carousel** — multiple photos now scroll with ‹ › buttons and dot indicators; single photo shows inline
-- **Story logos** — `object-fit:contain` with auto-sizing so any aspect ratio fits cleanly
-- **Fund display** — `fmtCrLakh()` now shows Crore/Lakh/₹ correctly everywhere
-- **Revenue column** — also formatted via `fmtCrLakh()`
-- **Live Totals Strip** — navy band below KPI heading showing Total Startups, Fund Disbursed, Women-Led, DPIIT, Employment, Revenue — all live-calculated from sheet
-- **Last Updated** — auto-stamped in header after each data load
-- **Startup tab count** — updates to actual count from sheet (e.g. `🚀 Startups (58)`)
-- **Sector count KPI** — live unique sector count
-- **`toast()`** — centralised, now used by copy protection and PDF completion
+/* TAB BAR */
+.tab-bar{background:var(--navy-dark);border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:100}
+.tab-bar-inner{max-width:1200px;margin:0 auto;display:flex;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+.tab-bar-inner::-webkit-scrollbar{display:none}
+.tab-btn{padding:12px 18px;background:none;border:none;color:rgba(255,255,255,.6);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-3px;transition:all .2s}
+.tab-btn:hover{color:var(--gold-light)}
+.tab-btn.active{color:var(--gold-light);border-bottom-color:var(--gold)}
+
+/* MAIN */
+.main{max-width:1200px;margin:0 auto;padding:28px 20px 80px}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* SECTION TITLE */
+.section-title{font-size:16px;font-weight:700;color:var(--navy);border-left:4px solid var(--gold);padding:5px 0 5px 14px;margin-bottom:18px}
+.section-subtitle{font-size:11px;font-weight:400;color:var(--gray-500);margin-top:2px}
+
+/* KPI CARDS */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:12px;margin-bottom:28px}
+.kpi-card{background:#fff;border-radius:var(--radius);border-top:4px solid var(--gold);box-shadow:var(--shadow);padding:16px 14px 12px;transition:transform .2s,box-shadow .2s}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.kpi-card.navy{border-top-color:var(--navy)}
+.kpi-card.green{border-top-color:#1A7A3C}
+.kpi-card.red{border-top-color:#9B1C1C}
+.kpi-label{font-size:10px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.6px}
+.kpi-value{font-size:26px;font-weight:800;color:var(--navy);line-height:1.1;margin:5px 0 3px}
+.kpi-sub{font-size:11px;color:var(--gray-500)}
+
+/* TOTALS STRIP */
+.totals-strip{background:var(--navy);border-radius:var(--radius);padding:14px 20px;margin-bottom:24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.total-item{text-align:center}
+.total-label{font-size:9px;font-weight:700;color:var(--gold-light);text-transform:uppercase;letter-spacing:.6px}
+.total-value{font-size:18px;font-weight:800;color:#fff}
+.total-sub{font-size:10px;color:rgba(255,255,255,.5)}
+
+/* CHARTS */
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px}
+.chart-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+.chart-card h3{font-size:12px;font-weight:700;color:var(--navy);margin-bottom:12px}
+.chart-wrap{position:relative;height:200px}
+
+/* TABLES */
+.table-wrap{overflow-x:auto;border-radius:var(--radius);box-shadow:var(--shadow)}
+table{width:100%;border-collapse:collapse;background:#fff;font-size:12px}
+thead th{background:var(--navy);color:#fff;padding:10px 11px;text-align:left;font-size:11px;font-weight:600;letter-spacing:.3px;white-space:nowrap;position:sticky;top:0}
+tbody tr:nth-child(even){background:var(--gray-100)}
+tbody tr:hover{background:var(--gold-pale)}
+tbody td{padding:8px 11px;border-bottom:1px solid var(--gray-300);vertical-align:top}
+tbody td:first-child{font-weight:600;color:var(--navy)}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap}
+.badge-eir{background:#E8F0FE;color:#1A4A9A}
+.badge-grant{background:#E6F4EA;color:#1A7A3C}
+.badge-inv{background:#FEF3C7;color:#92400E}
+
+/* FILTER BAR */
+.filter-bar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.filter-bar input,.filter-bar select{padding:8px 12px;border:1.5px solid var(--gray-300);border-radius:var(--radius);font-size:12px;background:#fff;color:var(--text);flex:1;min-width:150px;outline:none;transition:border-color .2s}
+.filter-bar input:focus,.filter-bar select:focus{border-color:var(--navy)}
+.results-count{font-size:11px;color:var(--gray-500);white-space:nowrap}
+
+/* EVENTS */
+.event-grid{display:grid;gap:14px}
+.event-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;display:grid;grid-template-columns:220px 1fr}
+.event-imgs{background:var(--gray-100);padding:10px;display:flex;flex-direction:column;gap:6px;border-right:1px solid var(--gray-300);cursor:pointer}
+.event-imgs img{width:100%;object-fit:cover;border-radius:4px;cursor:zoom-in;transition:opacity .15s}
+.event-imgs img:hover{opacity:.85}
+.img-ph{width:100%;min-height:80px;background:linear-gradient(135deg,var(--gray-100),var(--gray-300));border:2px dashed var(--gray-300);border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px;text-align:center}
+.img-ph .ico{font-size:20px;opacity:.35}
+.img-ph .lbl{font-size:9px;color:var(--gray-500);line-height:1.4}
+.event-body{padding:16px 18px}
+.event-num{font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px}
+.event-title{font-size:14px;font-weight:700;color:var(--navy);margin:3px 0 7px}
+.event-meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.event-tag{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--gray-100);color:var(--gray-700);font-weight:600}
+.event-outcomes{font-size:12px;color:var(--gray-700)}
+.event-outcomes strong{color:var(--navy)}
+
+/* CAROUSEL */
+.carousel{position:relative;overflow:hidden}
+.carousel-inner{display:flex;transition:transform .35s ease}
+.carousel-inner img{min-width:100%;object-fit:cover;border-radius:4px;max-height:120px;cursor:zoom-in}
+.carousel-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(12,45,107,.7);color:#fff;border:none;border-radius:50%;width:24px;height:24px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2;transition:background .15s}
+.carousel-btn:hover{background:var(--navy)}
+.carousel-btn.prev{left:4px}
+.carousel-btn.next{right:4px}
+.carousel-dots{display:flex;justify-content:center;gap:4px;margin-top:4px}
+.carousel-dot{width:6px;height:6px;border-radius:50%;background:var(--gray-300);cursor:pointer;transition:background .15s}
+.carousel-dot.active{background:var(--navy)}
+
+/* SUCCESS STORIES */
+.story-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.story-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.story-header{background:linear-gradient(135deg,var(--navy-dark),var(--navy));padding:14px 18px;display:flex;align-items:center;gap:12px}
+.story-logo{width:66px;height:66px;border-radius:5px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.story-logo img{max-width:100%;max-height:100%;object-fit:contain;cursor:zoom-in}
+.story-meta{flex:1;min-width:0}
+.story-name{color:#fff;font-size:13px;font-weight:700}
+.story-sector{color:var(--gold-light);font-size:11px}
+.story-body{padding:14px 18px}
+.story-imgs{display:flex;gap:8px;margin-bottom:12px}
+.story-imgs>div{flex:1;overflow:hidden;border-radius:4px}
+.story-imgs img{width:100%;height:80px;object-fit:cover;border-radius:4px;cursor:zoom-in;transition:opacity .15s}
+.story-imgs img:hover{opacity:.85}
+.story-desc{font-size:12px;color:var(--gray-700);margin-bottom:12px;line-height:1.6}
+.story-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat-box{background:var(--gray-100);border-radius:4px;padding:8px 10px}
+.stat-lbl{font-size:9px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.5px}
+.stat-val{font-size:13px;font-weight:800;color:var(--navy)}
+
+/* ACHIEVEMENTS */
+.ach-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
+.ach-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:14px 16px;border-left:4px solid var(--gold);display:flex;gap:12px;align-items:flex-start}
+.ach-num{font-size:18px;font-weight:800;color:var(--gold);flex-shrink:0;line-height:1}
+.ach-label{font-size:12px;font-weight:700;color:var(--navy);margin-bottom:3px}
+.ach-text{font-size:11px;color:var(--gray-700);line-height:1.5}
+.chal-card{border-left-color:var(--navy-mid)}
+.chal-card .ach-num{color:var(--navy-mid)}
+
+/* FINANCIAL */
+.fin-note{background:#FFF5F5;border-left:4px solid #E53E3E;border-radius:var(--radius);padding:10px 14px;margin-bottom:14px;font-size:11px;color:#742A2A}
+.fin-total{background:var(--navy)!important}
+.fin-total td{color:#fff!important;font-weight:700!important}
+
+/* SIGNATURE */
+.sig-section{margin-top:36px;padding:22px;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);border-top:4px solid var(--gold)}
+.sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:36px;margin-top:18px}
+.sig-block{text-align:center}
+.sig-img-wrap{width:190px;height:75px;margin:0 auto 10px;border:2px dashed var(--gray-300);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;background:var(--gray-100);overflow:hidden}
+.sig-img-wrap img{max-width:100%;max-height:100%;object-fit:contain}
+.sig-ph{font-size:9px;color:var(--gray-500);text-align:center;padding:6px;line-height:1.5}
+.sig-line{border-top:1.5px solid var(--navy);width:190px;margin:0 auto 7px}
+.sig-name{font-size:13px;font-weight:700;color:var(--navy)}
+.sig-desig{font-size:11px;color:var(--gray-500)}
+
+/* DATA STATUS */
+.data-status{font-size:11px;padding:6px 12px;border-radius:20px;display:inline-flex;align-items:center;gap:6px;margin-bottom:16px}
+.data-status.live{background:#E6F4EA;color:#1A7A3C}
+.data-status.cached{background:#FEF3C7;color:#92400E}
+.dot{width:7px;height:7px;border-radius:50%;background:currentColor;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* TOAST */
+.toast-box{position:fixed;bottom:60px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy-dark);color:#fff;padding:10px 22px;border-radius:30px;font-size:13px;font-weight:500;z-index:8000;opacity:0;transition:all .3s;pointer-events:none;border:1px solid var(--gold);white-space:nowrap}
+.toast-box.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* LIGHTBOX */
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9000;display:none;align-items:center;justify-content:center;cursor:zoom-out}
+.lightbox.open{display:flex}
+.lightbox img{max-width:90vw;max-height:90vh;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.6);object-fit:contain;cursor:default}
+.lightbox-close{position:fixed;top:18px;right:24px;color:#fff;font-size:34px;cursor:pointer;line-height:1;opacity:.8;transition:opacity .15s}
+.lightbox-close:hover{opacity:1}
+
+/* PDF MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(7,26,62,.7);z-index:8500;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:10px;padding:28px;width:460px;max-width:95vw;box-shadow:0 12px 48px rgba(0,0,0,.25)}
+.modal h3{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.modal p{font-size:12px;color:var(--gray-500);margin-bottom:18px}
+.section-checks{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.check-item{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1.5px solid var(--gray-300);border-radius:6px;cursor:pointer;transition:all .15s;user-select:none}
+.check-item:hover{border-color:var(--navy);background:var(--off-white)}
+.check-item.checked{border-color:var(--gold);background:var(--gold-pale)}
+.check-item input{accent-color:var(--navy);width:15px;height:15px}
+.check-item label{font-size:12px;font-weight:600;color:var(--navy);cursor:pointer}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end}
+.btn-modal-cancel{background:var(--gray-100);color:var(--gray-700);padding:9px 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:none}
+.btn-modal-go{background:var(--navy);color:#fff;padding:9px 22px;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;border:none}
+.btn-modal-go:hover{background:var(--navy-mid)}
+.pdf-progress{margin-top:14px;display:none}
+.pdf-progress-bar{height:5px;background:var(--gray-100);border-radius:3px;overflow:hidden}
+.pdf-progress-fill{height:100%;background:linear-gradient(90deg,var(--navy),var(--gold));border-radius:3px;transition:width .3s}
+.pdf-progress-label{font-size:11px;color:var(--gray-500);margin-top:6px;text-align:center}
+
+/* FOOTER */
+.sticky-footer{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(7,26,62,.96);backdrop-filter:blur(6px);text-align:center;padding:7px 16px;font-size:12px;color:rgba(255,255,255,.7);letter-spacing:.4px;border-top:1px solid rgba(200,150,12,.3)}
+.heart{display:inline-block;color:#E53E3E;animation:throb 1.1s ease-in-out infinite;font-size:13px}
+@keyframes throb{0%,100%{transform:scale(1)}30%{transform:scale(1.35)}60%{transform:scale(.95)}}
+
+@media(max-width:768px){
+  .charts-row,.story-grid,.ach-grid{grid-template-columns:1fr}
+  .event-card{grid-template-columns:1fr}
+  .sig-grid{grid-template-columns:1fr}
+  .header-inner{flex-direction:column}
+  .header-actions{margin-left:0}
+  .section-checks{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-logo"><img src="https://drive.google.com/thumbnail?id=1iAb5PH3CKSHESopoFGPCuW85Mkb7X26z&sz=w200" alt="KLE CTiE"></div>
+  <div class="loader-title">TIDE 2.0 — Closure Report</div>
+  <div class="loader-sub">KLE CTiE, KLE Technological University, Hubballi</div>
+  <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+  <div class="loader-status" id="loaderStatus">Connecting to KLE-CTIE-Office…</div>
+</div>
+
+<!-- HEADER -->
+<header class="report-header">
+  <div class="header-inner">
+    <div class="header-logo"><img src="https://drive.google.com/thumbnail?id=1iAb5PH3CKSHESopoFGPCuW85Mkb7X26z&sz=w200" alt="KLE CTiE Logo"></div>
+    <div class="header-text">
+      <h1>TIDE 2.0 — <span>Closure Report</span></h1>
+      <div class="header-meta">
+        <span>KLE Centre for Technology Innovation &amp; Entrepreneurship (CTiE)</span>
+        <span>KLE Technological University, Hubballi, Karnataka</span>
+        <span>Centre Type: G2</span>
+        <span>MeitY Sanction: 18.12.2019</span>
+      </div>
+      <div class="header-updated" id="headerUpdated"></div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-refresh" onclick="loadAllData()">↻ Refresh</button>
+      <button class="btn btn-pdf" onclick="openPdfModal()">⬇ Export PDF</button>
+    </div>
+  </div>
+</header>
+
+<!-- TAB BAR -->
+<nav class="tab-bar">
+  <div class="tab-bar-inner">
+    <button class="tab-btn active" onclick="showTab('kpi',this)">📊 KPI Dashboard</button>
+    <button class="tab-btn" onclick="showTab('summary',this)">📋 Summary</button>
+    <button class="tab-btn" onclick="showTab('startups',this)" id="tabStartups">🚀 Startups</button>
+    <button class="tab-btn" onclick="showTab('financial',this)">💰 Financial</button>
+    <button class="tab-btn" onclick="showTab('events',this)">📅 Events</button>
+    <button class="tab-btn" onclick="showTab('stories',this)">🏆 Success Stories</button>
+    <button class="tab-btn" onclick="showTab('achievements',this)">✅ Achievements</button>
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- KPI DASHBOARD -->
+<section class="tab-panel active" id="tab-kpi">
+  <div class="section-title">KPI Dashboard<div class="section-subtitle">Programme Period 2019–2026 | TIDE 2.0 G2 Centre | KLE CTiE</div></div>
+  <div id="kpiStatus"></div>
+
+  <!-- Live calculated totals strip -->
+  <div class="totals-strip" id="totalsStrip">
+    <div class="total-item"><div class="total-label">Total Startups</div><div class="total-value" id="tv-total">—</div><div class="total-sub">Unique entities</div></div>
+    <div class="total-item"><div class="total-label">Total Fund Disbursed</div><div class="total-value" id="tv-fund">—</div><div class="total-sub">From Startup Details</div></div>
+    <div class="total-item"><div class="total-label">Women-Led</div><div class="total-value" id="tv-women">—</div><div class="total-sub">Startups</div></div>
+    <div class="total-item"><div class="total-label">DPIIT Registered</div><div class="total-value" id="tv-dpiit">—</div><div class="total-sub">Startups</div></div>
+    <div class="total-item"><div class="total-label">Total Employment</div><div class="total-value" id="tv-emp">—</div><div class="total-sub">Jobs created</div></div>
+    <div class="total-item"><div class="total-label">Total Revenue</div><div class="total-value" id="tv-rev">—</div><div class="total-sub">Generated (₹)</div></div>
+  </div>
+
+  <div class="kpi-grid" id="kpiGrid">
+    <div class="kpi-card"><div class="kpi-label">Total Startups</div><div class="kpi-value" id="kv-startups">52</div><div class="kpi-sub">Physical: 20 | Virtual: 32</div></div>
+    <div class="kpi-card navy"><div class="kpi-label">EiR Startups</div><div class="kpi-value" id="kv-eir">31</div><div class="kpi-sub">Entrepreneur in Residence</div></div>
+    <div class="kpi-card green"><div class="kpi-label">Grant Startups</div><div class="kpi-value" id="kv-grant">22</div><div class="kpi-sub">Technology Grant</div></div>
+    <div class="kpi-card"><div class="kpi-label">Scaleup Investment</div><div class="kpi-value" id="kv-scaleup">5</div><div class="kpi-sub">Investment Grant</div></div>
+    <div class="kpi-card navy"><div class="kpi-label">Funds Received</div><div class="kpi-value">₹4.40Cr</div><div class="kpi-sub">MeitY Sanctioned</div></div>
+    <div class="kpi-card green"><div class="kpi-label">Utilization Rate</div><div class="kpi-value">~100%</div><div class="kpi-sub">₹4,40,52,571 utilized</div></div>
+    <div class="kpi-card red"><div class="kpi-label">Employment</div><div class="kpi-value" id="kv-emp">120+</div><div class="kpi-sub">Via 15 startups</div></div>
+    <div class="kpi-card"><div class="kpi-label">Patents Filed</div><div class="kpi-value" id="kv-patents">8</div><div class="kpi-sub">Across 7 startups</div></div>
+    <div class="kpi-card navy"><div class="kpi-label">Revenue Generated</div><div class="kpi-value" id="kv-revenue">₹6.82Cr</div><div class="kpi-sub">Across 7 startups</div></div>
+    <div class="kpi-card green"><div class="kpi-label">Products / MVPs</div><div class="kpi-value" id="kv-products">57</div><div class="kpi-sub">Across 30 startups</div></div>
+    <div class="kpi-card"><div class="kpi-label">External Funding</div><div class="kpi-value">₹53L</div><div class="kpi-sub">2 startups</div></div>
+    <div class="kpi-card navy"><div class="kpi-label">Workshops</div><div class="kpi-value">13</div><div class="kpi-sub">Capacity building events</div></div>
+    <div class="kpi-card"><div class="kpi-label">Low Engagements</div><div class="kpi-value">10</div><div class="kpi-sub">Programs conducted</div></div>
+    <div class="kpi-card green"><div class="kpi-label">Sectors Covered</div><div class="kpi-value" id="kv-sectors">—</div><div class="kpi-sub">MedTech, IoT, AI, Agri…</div></div>
+    <div class="kpi-card red"><div class="kpi-label">Women-Led</div><div class="kpi-value" id="kv-women">—</div><div class="kpi-sub">Women cofounders</div></div>
+    <div class="kpi-card navy"><div class="kpi-label">DPIIT Registered</div><div class="kpi-value" id="kv-dpiit">—</div><div class="kpi-sub">With DIPP numbers</div></div>
+  </div>
+
+  <div class="charts-row">
+    <div class="chart-card"><h3>Component-wise Startup Split</h3><div class="chart-wrap"><canvas id="chartComponent"></canvas></div></div>
+    <div class="chart-card"><h3>Sector Distribution</h3><div class="chart-wrap"><canvas id="chartSector"></canvas></div></div>
+    <div class="chart-card"><h3>Year-wise Fund Utilization (₹ Lakhs)</h3><div class="chart-wrap"><canvas id="chartFund"></canvas></div></div>
+    <div class="chart-card"><h3>Key Output Metrics</h3><div class="chart-wrap"><canvas id="chartOutput"></canvas></div></div>
+  </div>
+</section>
+
+<!-- SUMMARY -->
+<section class="tab-panel" id="tab-summary">
+  <div class="section-title">Overall Summary<div class="section-subtitle">Key Metrics as reported under TIDE 2.0 Closure</div></div>
+  <div id="summaryStatus"></div>
+  <div class="table-wrap" style="margin-bottom:24px">
+    <table>
+      <thead><tr><th style="width:40%">Particulars</th><th>Details</th><th>Notes</th></tr></thead>
+      <tbody id="summaryBody">
+        <tr><td>No. of Startups</td><td>52</td><td>Physical: 20 | Virtual: 32</td></tr>
+        <tr><td>Component-wise Split</td><td>EiR: 31 | Grant: 22 | Scaleup Investment: 5</td><td>—</td></tr>
+        <tr><td>Funds Received [A]</td><td>₹4,40,50,000</td><td>MeitY Sanction</td></tr>
+        <tr><td>Funds Utilized [B]</td><td>₹4,40,52,571</td><td>⚠ Exceeds received by ₹2,571 — to reconcile</td></tr>
+        <tr><td>Employment Generated [C] / Startups [D]</td><td>120 / 15</td><td>—</td></tr>
+        <tr><td>Patents Filed [E] / Startups [F]</td><td>8 / 7</td><td>—</td></tr>
+        <tr><td>Revenue Generated [G] / Startups [H]</td><td>₹6,82,11,210 / 7</td><td>—</td></tr>
+        <tr><td>Products / Prototypes / MVPs [I] / Startups [J]</td><td>57 / 30</td><td>—</td></tr>
+        <tr><td>External Funding Raised [K] / Startups [L]</td><td>₹53,00,000 / 2</td><td>—</td></tr>
+        <tr><td>Workshops [M] / Low Engagements [N]</td><td>13 / 10</td><td>—</td></tr>
+        <tr><td>Deep Engagements [O] / Challenge Grants [P] / Hackathons [Q]</td><td colspan="2">Data Awaited</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="sig-section">
+    <div class="section-title" style="margin-bottom:8px">Declaration &amp; Signatures</div>
+    <p style="font-size:12px;color:var(--gray-700);margin-bottom:14px">I hereby declare that the information furnished above is true and correct to the best of my knowledge and belief.</p>
+    <div class="sig-grid">
+      <div class="sig-block">
+        <div class="sig-img-wrap">
+          <img src="" alt="Sig" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="sig-ph" style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%"><div style="font-size:20px;opacity:.25">✍</div><div>Scanned signature — add Drive thumbnail ID</div></div>
+        </div>
+        <div class="sig-line"></div>
+        <div class="sig-name">Sunaina Dhanave</div>
+        <div class="sig-desig">Program Co-ordinator, KLE CTiE<br>KLE Technological University</div>
+      </div>
+      <div class="sig-block">
+        <div class="sig-img-wrap">
+          <img src="" alt="Sig" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="sig-ph" style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%"><div style="font-size:20px;opacity:.25">✍</div><div>Scanned signature — add Drive thumbnail ID</div></div>
+        </div>
+        <div class="sig-line"></div>
+        <div class="sig-name">Dr. Vinayak Hosamani</div>
+        <div class="sig-desig">Director, KLE CTiE<br>KLE Technological University, Hubballi – 580031</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STARTUPS -->
+<section class="tab-panel" id="tab-startups">
+  <div class="section-title">Startup Details Table<div class="section-subtitle" id="startupSubtitle">All startups supported under TIDE 2.0 — live from KLE-CTIE-Office</div></div>
+  <div id="startupStatus"></div>
+  <div class="filter-bar">
+    <input type="text" id="searchInput" placeholder="🔍  Search name, sector, one-liner…" oninput="filterStartups()">
+    <select id="sectorFilter" onchange="filterStartups()"><option value="">All Sectors</option></select>
+    <select id="componentFilter" onchange="filterStartups()">
+      <option value="">All Components</option><option>EiR</option><option>Grant</option><option>Investment</option>
+    </select>
+    <span class="results-count" id="resultsCount">Loading…</span>
+  </div>
+  <div class="table-wrap">
+    <table id="startupTable">
+      <thead><tr>
+        <th>#</th><th>Startup Name</th><th>Fund</th><th>Component</th>
+        <th>Sector</th><th>One Liner</th><th>Revenue</th>
+        <th>Patents</th><th>Products</th><th>Onboarded</th>
+        <th>Women Led</th><th>DPIIT No.</th><th>Employment</th>
+      </tr></thead>
+      <tbody id="startupBody"><tr><td colspan="13" style="text-align:center;padding:30px;color:var(--gray-500)">Loading…</td></tr></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- FINANCIAL -->
+<section class="tab-panel" id="tab-financial">
+  <div class="section-title">Financial Overview<div class="section-subtitle">Head-wise Fund Utilization | MeitY Sanction No: Meity/IPR/TIDE/16(9)/2019 | Dt: 18.12.2019</div></div>
+  <div id="financialStatus"></div>
+  <div class="fin-note">⚠ <strong>Discrepancy Note:</strong> Funds Received [A] = ₹4,40,50,000 | Funds Utilized [B] = ₹4,40,52,571 | Difference of <strong>₹2,571</strong> to be reconciled with MeitY audited records.</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>#</th><th style="min-width:220px">Budget Head</th>
+        <th>2018-19</th><th>2019-20</th><th>2020-21</th><th>2021-22</th>
+        <th>2022-23</th><th>2023-24</th><th>2024-25</th><th>2025-26</th>
+        <th>Total Released (₹L)</th><th>Total Utilized (₹L)</th>
+      </tr></thead>
+      <tbody id="financialBody"><tr><td colspan="12" style="text-align:center;padding:30px;color:var(--gray-500)">Loading…</td></tr></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- EVENTS -->
+<section class="tab-panel" id="tab-events">
+  <div class="section-title">Major Events / Engagements / Programs<div class="section-subtitle">13 Workshops + 10 Low Engagement Programs | 2019–2025</div></div>
+  <div id="eventsStatus"></div>
+  <div class="event-grid" id="eventsGrid"><div style="text-align:center;padding:40px;color:var(--gray-500)">Loading…</div></div>
+</section>
+
+<!-- SUCCESS STORIES -->
+<section class="tab-panel" id="tab-stories">
+  <div class="section-title">Success Stories<div class="section-subtitle">Featured startups with notable traction, recognition &amp; milestones</div></div>
+  <div id="storiesStatus"></div>
+  <div class="story-grid" id="storiesGrid"><div style="text-align:center;padding:40px;color:var(--gray-500)">Loading…</div></div>
+</section>
+
+<!-- ACHIEVEMENTS -->
+<section class="tab-panel" id="tab-achievements">
+  <div class="section-title">Major Achievements &amp; Key Highlights</div>
+  <div class="ach-grid" id="achGrid"></div>
+  <div class="section-title" style="margin-top:24px">Challenges / Learnings</div>
+  <div class="ach-grid" id="chalGrid"></div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="sticky-footer">
+  <span>Made with </span><span class="heart">❤</span><span> ~rhc &nbsp;·&nbsp; EE Lab, KLE-CTiE</span>
+</footer>
+
+<!-- TOAST -->
+<div class="toast-box" id="toastBox"></div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <span class="lightbox-close" onclick="closeLightbox()">✕</span>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<!-- PDF MODAL -->
+<div class="modal-overlay" id="pdfModal">
+  <div class="modal">
+    <h3>⬇ Export PDF Report</h3>
+    <p>Select sections to include. Tables export Landscape, narrative sections Portrait.</p>
+    <div class="section-checks">
+      <div class="check-item checked" onclick="toggleCheck(this,'sec-kpi')"><input type="checkbox" id="sec-kpi" checked><label for="sec-kpi">📊 KPI Dashboard</label></div>
+      <div class="check-item checked" onclick="toggleCheck(this,'sec-summary')"><input type="checkbox" id="sec-summary" checked><label for="sec-summary">📋 Summary</label></div>
+      <div class="check-item checked" onclick="toggleCheck(this,'sec-startups')"><input type="checkbox" id="sec-startups" checked><label for="sec-startups">🚀 Startup Details</label></div>
+      <div class="check-item checked" onclick="toggleCheck(this,'sec-financial')"><input type="checkbox" id="sec-financial" checked><label for="sec-financial">💰 Financial Overview</label></div>
+      <div class="check-item checked" onclick="toggleCheck(this,'sec-events')"><input type="checkbox" id="sec-events" checked><label for="sec-events">📅 Events</label></div>
+      <div class="check-item checked" onclick="toggleCheck(this,'sec-stories')"><input type="checkbox" id="sec-stories" checked><label for="sec-stories">🏆 Success Stories</label></div>
+      <div class="check-item checked" onclick="toggleCheck(this,'sec-ach')"><input type="checkbox" id="sec-ach" checked><label for="sec-ach">✅ Achievements</label></div>
+    </div>
+    <div class="pdf-progress" id="pdfProgress">
+      <div class="pdf-progress-bar"><div class="pdf-progress-fill" id="pdfProgressFill" style="width:0%"></div></div>
+      <div class="pdf-progress-label" id="pdfProgressLabel">Preparing…</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closePdfModal()">Cancel</button>
+      <button class="btn-modal-go" id="pdfGoBtn" onclick="generatePDF()">Generate PDF</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwd54rFxBv2iT8SSybw_aZ8I9vBcmbrpJWLoGo9-y_b8zzMti-E0OSW9dSfQn_APqh_/exec';
+const NAVY='#0C2D6B', GOLD='#C8960C', TEAL='#1A7A6E';
+let charts={}, allStartups=[];
+
+/* ── UTILS ── */
+function showTab(id,btn){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function statusBadge(el,live){
+  if(!el)return;
+  el.innerHTML=`<div class="data-status ${live?'live':'cached'}"><span class="dot"></span>${live?'Live data from KLE-CTIE-Office':'Using cached / fallback data'}</div>`;
+}
+
+function fmt(v){ return(!v||v==='—'||v==='NA'||String(v).trim()==='')? '—':String(v); }
+
+function fmtCrLakh(n){
+  if(!n||isNaN(n))return '—';
+  if(n>=10000000) return '₹'+(n/10000000).toFixed(2)+'Cr';
+  if(n>=100000) return '₹'+(n/100000).toFixed(2)+'L';
+  return '₹'+parseInt(n).toLocaleString('en-IN');
+}
+
+function toast(msg){
+  const el=document.getElementById('toastBox');
+  el.textContent=msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+/* ── DRIVE IMAGES ── */
+function driveImg(id,alt='',icon='🖼',extraStyle=''){
+  if(!id||String(id).trim()===''||String(id).trim()==='—'){
+    return `<div class="img-ph"><div class="ico">${icon}</div><div class="lbl">${alt}</div></div>`;
+  }
+  const src=`https://drive.google.com/thumbnail?id=${String(id).trim()}&sz=w400`;
+  return `<img src="${src}" alt="${alt}" style="width:100%;border-radius:4px;object-fit:cover;cursor:zoom-in${extraStyle?';'+extraStyle:''}"
+    onclick="openLightbox(this.src)"
+    onerror="this.outerHTML='<div class=\\'img-ph\\'><div class=\\'ico\\'>${icon}</div><div class=\\'lbl\\'>${alt}</div></div>'">`;
+}
+
+function carousel(ids, altPrefix){
+  if(!ids||!ids.length) return driveImg('',altPrefix,'🖼');
+  if(ids.length===1) return driveImg(ids[0],altPrefix+'1','🖼','max-height:120px');
+  const uid='c'+Date.now()+Math.random().toString(36).slice(2,6);
+  const slides=ids.map((id,i)=>`<img src="https://drive.google.com/thumbnail?id=${id}&sz=w400" alt="${altPrefix} ${i+1}"
+    onclick="openLightbox(this.src)"
+    onerror="this.outerHTML='<div class=\\'img-ph\\'><div class=\\'ico\\'>🖼</div></div>'">`).join('');
+  const dots=ids.map((_,i)=>`<span class="carousel-dot${i===0?' active':''}" onclick="gotoSlide('${uid}',${i})"></span>`).join('');
+  return `<div class="carousel" id="${uid}" data-idx="0" data-total="${ids.length}">
+    <div class="carousel-inner">${slides}</div>
+    <button class="carousel-btn prev" onclick="moveCarousel('${uid}',-1)">‹</button>
+    <button class="carousel-btn next" onclick="moveCarousel('${uid}',1)">›</button>
+    <div class="carousel-dots">${dots}</div>
+  </div>`;
+}
+
+function moveCarousel(uid,dir){
+  const el=document.getElementById(uid);
+  if(!el)return;
+  const total=parseInt(el.dataset.total);
+  let idx=(parseInt(el.dataset.idx)+dir+total)%total;
+  gotoSlide(uid,idx);
+}
+
+function gotoSlide(uid,idx){
+  const el=document.getElementById(uid);
+  if(!el)return;
+  el.dataset.idx=idx;
+  el.querySelector('.carousel-inner').style.transform=`translateX(-${idx*100}%)`;
+  el.querySelectorAll('.carousel-dot').forEach((d,i)=>d.classList.toggle('active',i===idx));
+}
+
+/* ── LIGHTBOX ── */
+function openLightbox(src){
+  const lb=document.getElementById('lightbox');
+  document.getElementById('lightboxImg').src=src.replace('&sz=w400','&sz=w1600');
+  lb.classList.add('open'); document.body.style.overflow='hidden';
+}
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape')closeLightbox(); });
+window.addEventListener('popstate',closeLightbox);
+
+/* ── GAS FETCH ── */
+function fetchSheet(sheetName){
+  return fetch(`${GAS_URL}?sheet=${encodeURIComponent(sheetName)}`)
+    .then(r=>{if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.json();})
+    .then(j=>{if(j.error)throw new Error(j.error);return j.data;});
+}
+
+/* ── LOAD ALL ── */
+async function loadAllData(){
+  document.getElementById('loader').classList.remove('hidden');
+  document.getElementById('loaderStatus').textContent='Fetching from KLE-CTIE-Office…';
+  try{
+    const[summaryTable,startupTable,finTable,eventsTable,storiesTable,achTable]=await Promise.all([
+      fetchSheet('Overall Summary').catch(()=>null),
+      fetchSheet('Startup Details').catch(()=>null),
+      fetchSheet('Financial Overview').catch(()=>null),
+      fetchSheet('Events Snapshot').catch(()=>null),
+      fetchSheet('Success Stories').catch(()=>null),
+      fetchSheet('Achievements & Challenges').catch(()=>null),
+    ]);
+    document.getElementById('loaderStatus').textContent='Rendering…';
+    renderStartupsFromSheet(startupTable||[], !!startupTable);
+    renderFinancialFromSheet(finTable||[], !!finTable);
+    renderEventsFromSheet(eventsTable||[], !!eventsTable);
+    renderStoriesFromSheet(storiesTable||[], !!storiesTable);
+    renderAchievementsFromSheet(achTable||[], !!achTable);
+    updateKPIsFromStartups(allStartups);
+    renderCharts();
+    statusBadge(document.getElementById('kpiStatus'),true);
+    statusBadge(document.getElementById('summaryStatus'),true);
+    const now=new Date();
+    document.getElementById('headerUpdated').textContent=`Last updated: ${now.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})} at ${now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}`;
+  }catch(e){
+    console.warn('Fetch failed:',e);
+    renderFallback();
+  }
+  setTimeout(()=>document.getElementById('loader').classList.add('hidden'),600);
+}
+
+/* ── STARTUPS ── */
+// Cols: 0=SNo,1=Name,2=Fund,3=Component,4=State,5=Sector,6=OneLiner,
+//       7=Revenue,8=PatentsFiled,9=PatentsGranted,10=PrivateFunding,
+//       11=Products,12=DateOnboarding,13=DateGrad,14=Support,
+//       15=WomenLed,16=DPIIT,17=Employment,18=Highlights
+function renderStartupsFromSheet(rows,live){
+  statusBadge(document.getElementById('startupStatus'),live);
+  if(!rows||rows.length<3){renderFallbackStartups();return;}
+  const data=rows.slice(2).filter(r=>r[0]&&!isNaN(parseInt(String(r[0]).trim())));
+  if(!data.length){renderFallbackStartups();return;}
+  allStartups=data;
+  const uniqueSectors=[...new Set(data.map(r=>(r[5]||'').trim()).filter(Boolean))].sort();
+  const sel=document.getElementById('sectorFilter');
+  sel.innerHTML='<option value="">All Sectors</option>'+uniqueSectors.map(s=>`<option>${s}</option>`).join('');
+  document.getElementById('tabStartups').textContent=`🚀 Startups (${data.length})`;
+  document.getElementById('startupSubtitle').textContent=`${data.length} startups supported under TIDE 2.0 — live from KLE-CTIE-Office`;
+  renderStartupRows(data);
+}
+
+function renderStartupRows(rows){
+  const tbody=document.getElementById('startupBody');
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="13" style="text-align:center;padding:20px;color:var(--gray-500)">No results found</td></tr>';return;}
+  tbody.innerHTML=rows.map(s=>{
+    const comp=(s[3]||'').trim();
+    const badge=comp==='EiR'?'badge-eir':comp==='Grant'?'badge-grant':'badge-inv';
+    const fundRaw=String(s[2]||'').replace(/[^0-9]/g,'');
+    const fund=fundRaw?fmtCrLakh(parseInt(fundRaw)):'—';
+    const revRaw=String(s[7]||'').replace(/[^0-9.]/g,'');
+    const rev=revRaw?fmtCrLakh(parseFloat(revRaw)*100000):'—';
+    return `<tr>
+      <td>${s[0]||''}</td><td>${s[1]||''}</td>
+      <td style="white-space:nowrap">${fund}</td>
+      <td><span class="badge ${badge}">${comp||'—'}</span></td>
+      <td>${s[5]||'—'}</td>
+      <td style="max-width:220px;font-size:11px">${s[6]||'—'}</td>
+      <td>${rev}</td><td>${fmt(s[8])}</td><td>${fmt(s[11])}</td>
+      <td style="white-space:nowrap">${fmt(s[12])}</td>
+      <td>${fmt(s[15])}</td><td style="font-size:10px">${fmt(s[16])}</td><td>${fmt(s[17])}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('resultsCount').textContent=`Showing ${rows.length} of ${allStartups.length}`;
+}
+
+function filterStartups(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const sec=document.getElementById('sectorFilter').value.toLowerCase();
+  const cmp=document.getElementById('componentFilter').value.toLowerCase();
+  const filtered=allStartups.filter(s=>{
+    const text=s.join(' ').toLowerCase();
+    return(!q||text.includes(q))&&
+           (!sec||(s[5]||'').toLowerCase().includes(sec))&&
+           (!cmp||(s[3]||'').toLowerCase().includes(cmp));
+  });
+  renderStartupRows(filtered);
+}
+
+/* ── FINANCIAL ── */
+function renderFinancialFromSheet(rows,live){
+  statusBadge(document.getElementById('financialStatus'),live);
+  if(!rows||rows.length<4){renderFallbackFinancial();return;}
+  const data=rows.slice(3).filter(r=>r[0]&&String(r[0]).trim());
+  const tbody=document.getElementById('financialBody');
+  const fL=v=>{
+    if(!v||String(v).trim()===''||String(v).trim()==='NA')return 'NA';
+    const n=parseFloat(String(v).replace(/[^0-9.-]/g,''));
+    if(isNaN(n))return String(v)||'—';
+    return (n>=100000?(n/100000).toFixed(2):n).toString();
+  };
+  tbody.innerHTML=data.map(r=>{
+    const isTotal=String(r[0]||'').toUpperCase().includes('TOTAL')||String(r[1]||'').toUpperCase().includes('TOTAL');
+    return `<tr${isTotal?' class="fin-total"':''}>
+      <td>${fmt(r[0])}</td><td>${fmt(r[1])}</td>
+      <td>${fL(r[2])}</td><td>${fL(r[3])}</td><td>${fL(r[4])}</td>
+      <td>${fL(r[5])}</td><td>${fL(r[6])}</td><td>${fL(r[7])}</td>
+      <td>${fL(r[8])}</td><td>${fL(r[9])}</td>
+      <td>${fL(r[10])}</td><td>${fL(r[11])}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ── EVENTS ── */
+// Cols: 0=EventNo,1=Title,2=Category,3=Date,4=Mode,5=Venue,6=KeyOutcomes,7=Img1,8=Img2,9=Img3
+function renderEventsFromSheet(rows,live){
+  statusBadge(document.getElementById('eventsStatus'),live);
+  if(!rows||rows.length<3){renderFallbackEvents();return;}
+  const data=rows.slice(2).filter(r=>r[0]&&!isNaN(parseInt(String(r[0]).trim())));
+  if(!data.length){renderFallbackEvents();return;}
+  const grid=document.getElementById('eventsGrid');
+  grid.innerHTML=data.map(r=>{
+    const imgIds=[r[7],r[8],r[9]].map(i=>String(i||'').trim()).filter(i=>i&&i!=='—');
+    return `<div class="event-card">
+      <div class="event-imgs">${carousel(imgIds,'Event '+r[0])}</div>
+      <div class="event-body">
+        <div class="event-num">Event ${r[0]||''}</div>
+        <div class="event-title">${r[1]||''}</div>
+        <div class="event-meta">
+          <span class="event-tag">📅 ${r[3]||''}</span>
+          <span class="event-tag">${(r[4]||'')==='Online'?'💻':'🏛'} ${r[4]||''}</span>
+          <span class="event-tag">📍 ${r[5]||''}</span>
+          <span class="event-tag">🏷 ${r[2]||''}</span>
+        </div>
+        <div class="event-outcomes"><strong>Key Outcomes:</strong> ${r[6]||'—'}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── STORIES ── */
+// Cols: 0=Company,1=Sector,2=CoreTech,3=TIDEInvestment,4=Component,
+//       5=TRL,6=ExternalFunding,7=Revenue,8=KeyHighlights,9=Logo,10=ProductImg,11=TeamImg
+function renderStoriesFromSheet(rows,live){
+  statusBadge(document.getElementById('storiesStatus'),live);
+  if(!rows||rows.length<3){renderFallbackStories();return;}
+  const data=rows.slice(2).filter(r=>r[0]&&String(r[0]).trim());
+  if(!data.length){renderFallbackStories();return;}
+  const grid=document.getElementById('storiesGrid');
+  grid.innerHTML=data.map(r=>`
+    <div class="story-card">
+      <div class="story-header">
+        <div class="story-logo">${driveImg(r[9],'Logo','🏢','max-height:66px;max-width:66px;object-fit:contain')}</div>
+        <div class="story-meta">
+          <div class="story-name">${r[0]||''}</div>
+          <div class="story-sector">${r[1]||''}</div>
+        </div>
+      </div>
+      <div class="story-body">
+        <div class="story-imgs">
+          <div>${driveImg(r[10],'Product Image','📦','height:80px;object-fit:cover')}</div>
+          <div>${driveImg(r[11],'Team Image','👥','height:80px;object-fit:cover')}</div>
+        </div>
+        <div class="story-desc">${r[8]||''}</div>
+        <div class="story-stats">
+          <div class="stat-box"><div class="stat-lbl">TIDE Investment</div><div class="stat-val">${fmt(r[3])}</div></div>
+          <div class="stat-box"><div class="stat-lbl">Component</div><div class="stat-val">${fmt(r[4])}</div></div>
+          <div class="stat-box"><div class="stat-lbl">TRL</div><div class="stat-val">${fmt(r[5])}</div></div>
+          <div class="stat-box"><div class="stat-lbl">Revenue</div><div class="stat-val">${fmt(r[7])}</div></div>
+          <div class="stat-box"><div class="stat-lbl">External Funding</div><div class="stat-val">${fmt(r[6])}</div></div>
+          <div class="stat-box"><div class="stat-lbl">Core Tech</div><div class="stat-val">${fmt(r[2])}</div></div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+/* ── ACHIEVEMENTS ── */
+function renderAchievementsFromSheet(rows,live){
+  if(!rows||rows.length<4){renderFallbackAchievements();return;}
+  const chalIdx=rows.findIndex(r=>String(r[0]||r[1]||'').toUpperCase().includes('CHALLENGE'));
+  const achRows=rows.slice(3,chalIdx>0?chalIdx:rows.length).filter(r=>r[0]&&!isNaN(parseInt(String(r[0]).trim())));
+  const chalRows=chalIdx>0?rows.slice(chalIdx+2).filter(r=>r[0]&&!isNaN(parseInt(String(r[0]).trim()))):[];
+  const card=(r,extra='')=>`<div class="ach-card${extra}"><div class="ach-num">${r[0]}</div><div><div class="ach-label">${r[1]||''}</div><div class="ach-text">${r[2]||''}</div></div></div>`;
+  document.getElementById('achGrid').innerHTML=achRows.length?achRows.map(r=>card(r)).join(''):fallbackAch().ach;
+  document.getElementById('chalGrid').innerHTML=chalRows.length?chalRows.map(r=>card(r,' chal-card')).join(''):fallbackAch().chal;
+}
+
+/* ── KPIs FROM STARTUPS (live calculated) ── */
+function updateKPIsFromStartups(rows){
+  if(!rows||!rows.length)return;
+  const eir=rows.filter(r=>String(r[3]||'').trim()==='EiR').length;
+  const grant=rows.filter(r=>String(r[3]||'').trim()==='Grant').length;
+  const inv=rows.filter(r=>String(r[3]||'').trim()==='Investment').length;
+  const women=rows.filter(r=>String(r[15]||'').trim().toLowerCase()==='yes').length;
+  const dpiit=rows.filter(r=>r[16]&&String(r[16]).trim()&&String(r[16]).trim()!=='—').length;
+  const totalFund=rows.reduce((s,r)=>{const n=parseInt(String(r[2]||'').replace(/[^0-9]/g,''));return s+(isNaN(n)?0:n);},0);
+  const totalEmp=rows.reduce((s,r)=>{const n=parseInt(String(r[17]||'').replace(/[^0-9]/g,''));return s+(isNaN(n)?0:n);},0);
+  const totalRev=rows.reduce((s,r)=>{const n=parseFloat(String(r[7]||'').replace(/[^0-9.]/g,''));return s+(isNaN(n)?0:n);},0);
+  const uniqueSectors=new Set(rows.map(r=>(r[5]||'').trim()).filter(Boolean));
+
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  set('kv-startups',rows.length);
+  set('kv-eir',eir);
+  set('kv-grant',grant);
+  set('kv-scaleup',inv||5);
+  set('kv-sectors',uniqueSectors.size);
+  set('kv-women',women);
+  set('kv-dpiit',dpiit);
+
+  // Totals strip
+  set('tv-total',rows.length);
+  set('tv-fund',fmtCrLakh(totalFund));
+  set('tv-women',women);
+  set('tv-dpiit',dpiit);
+  set('tv-emp',totalEmp||'120+');
+  set('tv-rev',totalRev?fmtCrLakh(totalRev*100000):'₹6.82Cr');
+}
+
+/* ── CHARTS ── */
+function renderCharts(){
+  const eir=allStartups.filter(r=>(r[3]||'').trim()==='EiR').length||31;
+  const grant=allStartups.filter(r=>(r[3]||'').trim()==='Grant').length||22;
+  const inv=allStartups.filter(r=>(r[3]||'').trim()==='Investment').length||5;
+  const sectorMap={};
+  allStartups.forEach(r=>{const s=(r[5]||'Other').trim();sectorMap[s]=(sectorMap[s]||0)+1;});
+  const topSectors=Object.entries(sectorMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  Object.values(charts).forEach(c=>c.destroy());
+  charts.component=new Chart(document.getElementById('chartComponent'),{
+    type:'doughnut',
+    data:{labels:[`EiR (${eir})`,`Grant (${grant})`,`Scaleup (${inv})`],
+      datasets:[{data:[eir,grant,inv],backgroundColor:[NAVY,GOLD,TEAL],borderWidth:2,borderColor:'#fff'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11}}}}}
+  });
+  charts.sector=new Chart(document.getElementById('chartSector'),{
+    type:'bar',
+    data:{labels:topSectors.map(([s])=>s),datasets:[{data:topSectors.map(([,n])=>n),backgroundColor:NAVY,borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+      plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false}},y:{grid:{display:false},ticks:{font:{size:9}}}}}
+  });
+  charts.fund=new Chart(document.getElementById('chartFund'),{
+    type:'bar',
+    data:{labels:['2018-19','2019-20','2020-21','2021-22','2022-23','2023-24','2024-25'],
+      datasets:[
+        {label:'Released',data:[24.83,32.77,73.94,69.50,108.00,69.50,62.00],backgroundColor:NAVY,borderRadius:4},
+        {label:'Utilized',data:[24.83,32.77,73.94,69.50,108.00,69.50,62.00],backgroundColor:GOLD,borderRadius:4}
+      ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom',labels:{font:{size:10}}}},
+      scales:{x:{grid:{display:false}},y:{ticks:{font:{size:9}}}}}
+  });
+  charts.output=new Chart(document.getElementById('chartOutput'),{
+    type:'radar',
+    data:{labels:['Startups','Products/MVPs','Employment','Patents','Revenue ₹Cr','Workshops'],
+      datasets:[{label:'Outputs',data:[allStartups.length||52,57,120,8,6.82,13],
+        backgroundColor:'rgba(12,45,107,.15)',borderColor:NAVY,pointBackgroundColor:GOLD,pointRadius:4,borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{r:{ticks:{font:{size:8}},pointLabels:{font:{size:9}}}}}
+  });
+}
+
+/* ── PDF MODAL ── */
+function openPdfModal(){document.getElementById('pdfModal').classList.add('open');}
+function closePdfModal(){document.getElementById('pdfModal').classList.remove('open');}
+function toggleCheck(el,id){
+  el.classList.toggle('checked');
+  document.getElementById(id).checked=el.classList.contains('checked');
+}
+
+async function generatePDF(){
+  const {jsPDF}=window.jspdf;
+  const sections=[
+    {id:'sec-kpi',   panelId:'tab-kpi',          label:'KPI Dashboard',    landscape:false},
+    {id:'sec-summary',panelId:'tab-summary',      label:'Summary',          landscape:false},
+    {id:'sec-startups',panelId:'tab-startups',    label:'Startup Details',  landscape:true},
+    {id:'sec-financial',panelId:'tab-financial',  label:'Financial Overview',landscape:true},
+    {id:'sec-events', panelId:'tab-events',       label:'Events',           landscape:false},
+    {id:'sec-stories',panelId:'tab-stories',      label:'Success Stories',  landscape:false},
+    {id:'sec-ach',    panelId:'tab-achievements', label:'Achievements',     landscape:false},
+  ].filter(s=>document.getElementById(s.id).checked);
+
+  if(!sections.length){toast('Select at least one section');return;}
+
+  const goBtn=document.getElementById('pdfGoBtn');
+  const prog=document.getElementById('pdfProgress');
+  const fill=document.getElementById('pdfProgressFill');
+  const lbl=document.getElementById('pdfProgressLabel');
+  goBtn.disabled=true; goBtn.textContent='Generating…';
+  prog.style.display='block';
+
+  const today=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+  let pdf=null;
+
+  // Cover page (Portrait A4)
+  const coverEl=document.createElement('div');
+  coverEl.style.cssText='width:794px;height:1123px;background:#0C2D6B;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Segoe UI,Arial,sans-serif;position:fixed;left:-9999px;top:0';
+  coverEl.innerHTML=`
+    <div style="width:100px;height:100px;background:rgba(255,255,255,.1);border:3px solid #C8960C;border-radius:12px;margin-bottom:32px;display:flex;align-items:center;justify-content:center;font-size:40px">🏛</div>
+    <div style="color:#C8960C;font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px">Government of India · MeitY</div>
+    <div style="color:#fff;font-size:36px;font-weight:800;text-align:center;line-height:1.2;margin-bottom:8px">TIDE 2.0</div>
+    <div style="color:#F5D97A;font-size:22px;font-weight:600;margin-bottom:32px">Closure Report</div>
+    <div style="width:80px;height:3px;background:#C8960C;margin-bottom:32px"></div>
+    <div style="color:#fff;font-size:16px;font-weight:700;margin-bottom:6px">KLE Centre for Technology Innovation &amp; Entrepreneurship</div>
+    <div style="color:rgba(255,255,255,.7);font-size:13px;margin-bottom:4px">KLE Technological University, Hubballi – 580031, Karnataka</div>
+    <div style="color:rgba(255,255,255,.7);font-size:12px;margin-bottom:48px">Centre Type: G2 | MeitY Sanction: 18.12.2019</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:48px;width:600px;text-align:center">
+      <div style="background:rgba(255,255,255,.08);border:1px solid rgba(200,150,12,.3);border-radius:8px;padding:16px">
+        <div style="color:#C8960C;font-size:28px;font-weight:800">${allStartups.length||52}</div>
+        <div style="color:rgba(255,255,255,.7);font-size:11px">Startups Supported</div>
+      </div>
+      <div style="background:rgba(255,255,255,.08);border:1px solid rgba(200,150,12,.3);border-radius:8px;padding:16px">
+        <div style="color:#C8960C;font-size:28px;font-weight:800">₹4.40Cr</div>
+        <div style="color:rgba(255,255,255,.7);font-size:11px">Fund Utilized</div>
+      </div>
+      <div style="background:rgba(255,255,255,.08);border:1px solid rgba(200,150,12,.3);border-radius:8px;padding:16px">
+        <div style="color:#C8960C;font-size:28px;font-weight:800">120+</div>
+        <div style="color:rgba(255,255,255,.7);font-size:11px">Jobs Created</div>
+      </div>
+    </div>
+    <div style="color:rgba(255,255,255,.4);font-size:11px">Generated: ${today}</div>`;
+  document.body.appendChild(coverEl);
+
+  lbl.textContent='Rendering cover page…'; fill.style.width='5%';
+  const coverCanvas=await html2canvas(coverEl,{scale:1.5,useCORS:true,allowTaint:true,backgroundColor:'#0C2D6B'});
+  document.body.removeChild(coverEl);
+
+  pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  pdf.addImage(coverCanvas.toDataURL('image/jpeg',0.92),0,0,210,297);
+
+  // Each section
+  for(let i=0;i<sections.length;i++){
+    const sec=sections[i];
+    const pct=5+Math.round((i/sections.length)*85);
+    fill.style.width=pct+'%';
+    lbl.textContent=`Rendering ${sec.label}… (${i+1}/${sections.length})`;
+
+    // Show the panel temporarily
+    const panel=document.getElementById(sec.panelId);
+    const wasActive=panel.classList.contains('active');
+    panel.style.cssText='display:block!important;position:fixed;left:-9999px;top:0;width:'+(sec.landscape?1122:794)+'px;background:#fff;padding:24px';
+
+    await new Promise(r=>setTimeout(r,300));
+
+    const canvas=await html2canvas(panel,{
+      scale:1.5,useCORS:true,allowTaint:true,backgroundColor:'#fff',
+      width:sec.landscape?1122:794,
+    });
+
+    panel.style.cssText='';
+    if(!wasActive)panel.classList.remove('active');
+
+    const orient=sec.landscape?'landscape':'portrait';
+    const pw=sec.landscape?297:210, ph=sec.landscape?210:297;
+    pdf.addPage([pw,ph],orient);
+
+    // Header stripe
+    pdf.setFillColor(12,45,107);
+    pdf.rect(0,0,pw,14,'F');
+    pdf.setTextColor(200,150,12);
+    pdf.setFontSize(7);
+    pdf.setFont('helvetica','bold');
+    pdf.text('TIDE 2.0 — CLOSURE REPORT  |  KLE CTiE, KLE Technological University',8,9);
+    pdf.setTextColor(255,255,255);
+    pdf.text(sec.label.toUpperCase(),pw-8,9,'right');
+
+    // Gold line
+    pdf.setFillColor(200,150,12);
+    pdf.rect(0,14,pw,1,'F');
+
+    // Watermark
+    pdf.saveGraphicsState();
+    pdf.setGState(new pdf.GState({opacity:0.04}));
+    pdf.setTextColor(12,45,107);
+    pdf.setFontSize(72);
+    pdf.setFont('helvetica','bold');
+    pdf.text('KLE CTiE',pw/2,ph/2,'center');
+    pdf.restoreGraphicsState();
+
+    // Content
+    const imgW=pw-16, imgH=ph-26;
+    const natW=canvas.width/1.5, natH=canvas.height/1.5;
+    const scale=Math.min(imgW/natW,imgH/natH);
+    const drawW=natW*scale, drawH=natH*scale;
+    pdf.addImage(canvas.toDataURL('image/jpeg',0.92),(pw-drawW)/2,16,drawW,drawH);
+
+    // Footer
+    pdf.setFillColor(12,45,107);
+    pdf.rect(0,ph-8,pw,8,'F');
+    pdf.setTextColor(255,255,255);
+    pdf.setFontSize(6);
+    pdf.setFont('helvetica','normal');
+    pdf.text(`Generated: ${today}  |  Made with ❤ ~rhc · EE Lab, KLE-CTiE`,8,ph-3);
+    pdf.text(`Page ${i+2}`,pw-8,ph-3,'right');
+  }
+
+  fill.style.width='100%';
+  lbl.textContent='Saving PDF…';
+  await new Promise(r=>setTimeout(r,200));
+
+  pdf.save(`TIDE_2_0_Closure_Report_${new Date().toISOString().slice(0,10)}.pdf`);
+  goBtn.disabled=false; goBtn.textContent='Generate PDF';
+  prog.style.display='none'; fill.style.width='0%';
+  closePdfModal();
+  toast('✅ PDF downloaded successfully!');
+}
+
+/* ── FALLBACKS ── */
+function renderFallback(){renderFallbackStartups();renderFallbackFinancial();renderFallbackEvents();renderFallbackStories();renderFallbackAchievements();renderCharts();}
+
+function renderFallbackStartups(){
+  statusBadge(document.getElementById('startupStatus'),false);
+  document.getElementById('startupBody').innerHTML='<tr><td colspan="13" style="text-align:center;padding:20px;color:#9B4A1C">⚠ Could not load. Check GAS deployment and click ↻ Refresh.</td></tr>';
+  document.getElementById('resultsCount').textContent='— of —';
+}
+
+function renderFallbackFinancial(){
+  statusBadge(document.getElementById('financialStatus'),false);
+  document.getElementById('financialBody').innerHTML=`
+    <tr><td>1</td><td>Allocation towards Startups — EiR</td><td>27.00</td><td>13.00</td><td>60.00</td><td>12.10</td><td>8.50</td><td>9.00</td><td>24.40</td><td>—</td><td>640.00</td><td>640.00</td></tr>
+    <tr><td>2</td><td>Support to TIDE Centres — EiR Provisioning</td><td>0.86</td><td>2.00</td><td>3.55</td><td>3.00</td><td>2.50</td><td>5.00</td><td>0</td><td>—</td><td>160.00</td><td>169.09</td></tr>
+    <tr><td>3</td><td>Allocation towards Startups — Grants</td><td>20.27</td><td>23.32</td><td>20.34</td><td>10.90</td><td>11.50</td><td>5.00</td><td>20.60</td><td>—</td><td>1120.00</td><td>1120.00</td></tr>
+    <tr><td>4</td><td>Support to TIDE Centres — Grant Provisioning</td><td>1.00</td><td>6.06</td><td>3.55</td><td>0</td><td>2.50</td><td>5.00</td><td>0</td><td>—</td><td>160.00</td><td>181.16</td></tr>
+    <tr><td>5</td><td>Workshops @G1G2 &amp; G3C</td><td>0</td><td>0</td><td>2.00</td><td>2.00</td><td>4.00</td><td>4.00</td><td>4.00</td><td>—</td><td>160.00</td><td>160.00</td></tr>
+    <tr><td>6</td><td>Low Engagement Programs @G2 &amp; G3C</td><td>0</td><td>0</td><td>0</td><td>3.00</td><td>2.00</td><td>3.00</td><td>13.00</td><td>—</td><td>240.00</td><td>210.00</td></tr>
+    <tr><td>7-9</td><td>Deep Engagement / Hackathon / Challenge Grant @G1C</td><td colspan="8" style="text-align:center;color:var(--gray-500)">NA — Not Applicable for G2 Centre</td><td>—</td><td>—</td></tr>
+    <tr><td>10</td><td>Allocation towards Startups — Investment Grant</td><td>NA</td><td>NA</td><td>35.00</td><td>35.00</td><td>70.00</td><td>35.00</td><td>NA</td><td>—</td><td>1750.00</td><td>1750.00</td></tr>
+    <tr><td>11</td><td>Support to TIDE Centres — Investment Grant Provisioning</td><td>NA</td><td>NA</td><td>3.50</td><td>3.50</td><td>7.00</td><td>3.50</td><td>NA</td><td>—</td><td>175.00</td><td>175.00</td></tr>
+    <tr class="fin-total"><td colspan="2">TOTAL</td><td>24.83</td><td>32.77</td><td>73.94</td><td>69.50</td><td>108.00</td><td>69.50</td><td>62.00</td><td>—</td><td>4405.00</td><td>4405.26</td></tr>`;
+}
+
+function renderFallbackEvents(){
+  statusBadge(document.getElementById('eventsStatus'),false);
+  document.getElementById('eventsGrid').innerHTML='<div style="text-align:center;padding:30px;color:#9B4A1C">⚠ Could not load events. Check GAS and click ↻ Refresh.</div>';
+}
+function renderFallbackStories(){
+  statusBadge(document.getElementById('storiesStatus'),false);
+  document.getElementById('storiesGrid').innerHTML='<div style="text-align:center;padding:30px;color:#9B4A1C;grid-column:1/-1">⚠ Could not load success stories. Check GAS and click ↻ Refresh.</div>';
+}
+
+function fallbackAch(){
+  const a=[[1,'Startup Support','Successfully supported 52 startups across MedTech, AgriTech, IoT, AI, DeepTech, Green Energy, Semiconductor, EV, Biotechnology, and Healthcare.'],
+    [2,'Fund Utilization','Achieved 100% utilization of ₹4.40 Crore sanctioned under TIDE 2.0 towards EiR, Grant, and Investment Grant.'],
+    [3,'Product Development','Facilitated development of 57 products/prototypes/MVPs by 30 startups.'],
+    [4,'Employment Generation','Generated employment for over 120 individuals through incubated startups.'],
+    [5,'IPR & Revenue','Supported filing of 8 patents. Enabled cumulative revenues exceeding ₹6.82 Crore.'],
+    [6,'Workshops & Events','Conducted 13 workshops, awareness programs, investment readiness sessions, and networking events.'],
+    [7,'National Recognition','Emerging Fund-Ready Startup Award at TiECON 2025 | Elevate Karnataka | NVIDIA Inception | Google for Startups Cloud Program.'],
+    [8,'Ecosystem Building','Strengthened industry-academia-startup collaborations through mentorship, market access, networking, and technology validation.']];
+  const c=[[1,'Early-Stage Support','Early-stage startups required significant handholding in customer discovery, regulatory compliance, and commercialization.'],
+    [2,'Funding Cycles','Funding cycles became more challenging due to changing market conditions, requiring stronger investor readiness.'],
+    [3,'Mentor Networks','Strong mentor networks, industry partnerships, and ecosystem collaborations proved critical for startup success and scaling.'],
+    [4,'Capacity Building','Continuous capacity-building programs significantly improved founders understanding of sales, marketing, fundraising, and legal compliance.']];
+  const card=(r,cls='')=>`<div class="ach-card${cls}"><div class="ach-num">${r[0]}</div><div><div class="ach-label">${r[1]}</div><div class="ach-text">${r[2]}</div></div></div>`;
+  return{ach:a.map(r=>card(r)).join(''),chal:c.map(r=>card(r,' chal-card')).join('')};
+}
+function renderFallbackAchievements(){const fb=fallbackAch();document.getElementById('achGrid').innerHTML=fb.ach;document.getElementById('chalGrid').innerHTML=fb.chal;}
+
+/* ── COPY PROTECTION ── */
+const funnyMsgs=['🕵️ Nice try, agent! This data is classified.','👀 Caught you! The Director is watching.','🚀 Copy attempt detected!','🛑 Ctrl+C? More like Ctrl+Caught!','💡 Innovate, don\'t imitate!','🔐 KLE CTiE IP — hands off!','😄 Inspecting the inspector? Bold move.'];
+const rndMsg=()=>funnyMsgs[Math.floor(Math.random()*funnyMsgs.length)];
+document.addEventListener('contextmenu',e=>{e.preventDefault();toast(rndMsg());});
+document.addEventListener('keydown',e=>{
+  const ctrl=e.ctrlKey||e.metaKey;
+  if(ctrl&&['c','u','s','a','p'].includes(e.key.toLowerCase())){e.preventDefault();toast(rndMsg());}
+  if(e.key==='F12'){e.preventDefault();toast('😄 Inspecting the inspector? Bold move.');}
+  if(ctrl&&e.shiftKey&&['i','j','c'].includes(e.key.toLowerCase())){e.preventDefault();toast('🔐 DevTools? Not today!');}
+  if(e.key==='Escape')closeLightbox();
+});
+document.addEventListener('selectstart',e=>{e.preventDefault();});
+let devOpen=false;
+setInterval(()=>{
+  const w=window.outerWidth-window.innerWidth>100,h=window.outerHeight-window.innerHeight>100;
+  if((w||h)&&!devOpen){devOpen=true;toast('👀 DevTools detected — the Director is watching!');}
+  if(!w&&!h)devOpen=false;
+},1000);
+
+window.addEventListener('DOMContentLoaded',loadAllData);
+</script>
+</body>
+</html>
