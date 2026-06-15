@@ -356,7 +356,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
           <th>Women Led</th><th>DPIIT No.</th><th>Employment</th>
         </tr>
       </thead>
-      <tbody id="startupBody"><tr><td colspan="13" style="text-align:center;padding:30px;color:var(--gray-500)">Loading from KLE-CTIE-Office…</td></tr></tbody>
+      <tbody id="startupBody"><tr><td colspan="13" style="text-align:center;padding:30px;color:var(--gray-500)">Loading from Google Sheets…</td></tr></tbody>
     </table>
   </div>
 </section>
@@ -379,7 +379,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
         </tr>
       </thead>
       <tbody id="financialBody">
-        <tr><td colspan="12" style="text-align:center;padding:30px;color:var(--gray-500)">Loading from KLE-CTIE-Office…</td></tr>
+        <tr><td colspan="12" style="text-align:center;padding:30px;color:var(--gray-500)">Loading from Google Sheets…</td></tr>
       </tbody>
     </table>
   </div>
@@ -392,7 +392,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
   </div>
   <div id="eventsStatus"></div>
   <div class="event-grid" id="eventsGrid">
-    <div style="text-align:center;padding:40px;color:var(--gray-500)">Loading from KLE-CTIE-Office…</div>
+    <div style="text-align:center;padding:40px;color:var(--gray-500)">Loading from Google Sheets…</div>
   </div>
 </section>
 
@@ -403,7 +403,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
   </div>
   <div id="storiesStatus"></div>
   <div class="story-grid" id="storiesGrid">
-    <div style="text-align:center;padding:40px;color:var(--gray-500)">Loading from KLE-CTIE-Office…</div>
+    <div style="text-align:center;padding:40px;color:var(--gray-500)">Loading from Google Sheets…</div>
   </div>
 </section>
 
@@ -423,7 +423,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
 </footer>
 
 <script>
-const PUB_ID = '2PACX-1vQmVtSrekZx_nQm_rZS6i-rESHA8nTMWRVeHBqa5AKzUj0zuaTNFQ_fEIOlH8xYXUQEk--0P9uVn9DZ';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwd54rFxBv2iT8SSybw_aZ8I9vBcmbrpJWLoGo9-y_b8zzMti-E0OSW9dSfQn_APqh_/exec'; // paste /exec URL here after deploying
 const NAVY='#0C2D6B', GOLD='#C8960C', TEAL='#1A7A6E';
 let charts = {};
 let allStartups = [];
@@ -440,7 +440,7 @@ function statusBadge(el, live) {
   if (!el) return;
   el.innerHTML = `<div class="data-status ${live ? 'live' : 'cached'}">
     <span class="dot"></span>
-    ${live ? 'Live data from KLE-CTIE-Office: 'Using cached / fallback data'}
+    ${live ? 'Live data from Google Sheets' : 'Using cached / fallback data'}
   </div>`;
 }
 
@@ -449,43 +449,18 @@ function fmt(v) {
   return v;
 }
 
-/* ── GOOGLE SHEETS CSV FETCH ────────────── */
+/* ── GAS FETCH ──────────────────────────── */
 
 function fetchSheet(sheetName) {
-  const url = `https://docs.google.com/spreadsheets/d/e/${PUB_ID}/pub?output=csv&sheet=${encodeURIComponent(sheetName)}`;
-  return fetch(url)
-    .then(r => {
-      if (!r.ok) throw new Error(`HTTP ${r.status} for sheet: ${sheetName}`);
-      return r.text();
-    })
-    .then(csv => parseCSV(csv));
-}
-
-function parseCSV(csv) {
-  const lines = csv.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n');
-  return lines
-    .filter(l => l.trim())
-    .map(line => {
-      const cols = [];
-      let cur = '', inQ = false;
-      for (let i = 0; i < line.length; i++) {
-        const ch = line[i];
-        if (ch === '"' && !inQ) { inQ = true; }
-        else if (ch === '"' && inQ) {
-          if (line[i+1] === '"') { cur += '"'; i++; }
-          else inQ = false;
-        } else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
-        else cur += ch;
-      }
-      cols.push(cur.trim());
-      return cols;
-    });
+  return fetch(`${GAS_URL}?sheet=${encodeURIComponent(sheetName)}`)
+    .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+    .then(j => { if (j.error) throw new Error(j.error); return j.data; });
 }
 
 /* ── LOAD ALL DATA ──────────────────────── */
 async function loadAllData() {
   document.getElementById('loader').classList.remove('hidden');
-  document.getElementById('loaderStatus').textContent = 'Fetching data from KLE-CTIE-Office (all 7 tabs)…';
+  document.getElementById('loaderStatus').textContent = 'Fetching data from Google Sheets (all 7 tabs)…';
 
   try {
     // Load each sheet in parallel
@@ -804,7 +779,7 @@ function renderFallback() {
 function renderFallbackStartups() {
   statusBadge(document.getElementById('startupStatus'), false);
   document.getElementById('startupBody').innerHTML =
-    '<tr><td colspan="13" style="text-align:center;padding:20px;color:#9B4A1C">⚠ Could not load from KLE-CTIE-Office. Please publish the Sheet (File → Share → Publish to web) then click ↻ Refresh Data.</td></tr>';
+    '<tr><td colspan="13" style="text-align:center;padding:20px;color:#9B4A1C">⚠ Could not load from Google Sheets. Please publish the Sheet (File → Share → Publish to web) then click ↻ Refresh Data.</td></tr>';
   document.getElementById('resultsCount').textContent = '— of —';
 }
 
