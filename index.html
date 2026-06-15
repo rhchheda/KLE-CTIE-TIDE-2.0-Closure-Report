@@ -356,7 +356,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
           <th>Women Led</th><th>DPIIT No.</th><th>Employment</th>
         </tr>
       </thead>
-      <tbody id="startupBody"><tr><td colspan="13" style="text-align:center;padding:30px;color:var(--gray-500)">Loading from Google Sheets…</td></tr></tbody>
+      <tbody id="startupBody"><tr><td colspan="13" style="text-align:center;padding:30px;color:var(--gray-500)">Loading from KLE-CTIE-Office…</td></tr></tbody>
     </table>
   </div>
 </section>
@@ -379,7 +379,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
         </tr>
       </thead>
       <tbody id="financialBody">
-        <tr><td colspan="12" style="text-align:center;padding:30px;color:var(--gray-500)">Loading from Google Sheets…</td></tr>
+        <tr><td colspan="12" style="text-align:center;padding:30px;color:var(--gray-500)">Loading from KLE-CTIE-Office…</td></tr>
       </tbody>
     </table>
   </div>
@@ -392,7 +392,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
   </div>
   <div id="eventsStatus"></div>
   <div class="event-grid" id="eventsGrid">
-    <div style="text-align:center;padding:40px;color:var(--gray-500)">Loading from Google Sheets…</div>
+    <div style="text-align:center;padding:40px;color:var(--gray-500)">Loading from KLE-CTIE-Office…</div>
   </div>
 </section>
 
@@ -403,7 +403,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
   </div>
   <div id="storiesStatus"></div>
   <div class="story-grid" id="storiesGrid">
-    <div style="text-align:center;padding:40px;color:var(--gray-500)">Loading from Google Sheets…</div>
+    <div style="text-align:center;padding:40px;color:var(--gray-500)">Loading from KLE-CTIE-Office…</div>
   </div>
 </section>
 
@@ -440,7 +440,7 @@ function statusBadge(el, live) {
   if (!el) return;
   el.innerHTML = `<div class="data-status ${live ? 'live' : 'cached'}">
     <span class="dot"></span>
-    ${live ? 'Live data from Google Sheets' : 'Using cached / fallback data'}
+    ${live ? 'Live data from KLE-CTIE-Office: 'Using cached / fallback data'}
   </div>`;
 }
 
@@ -485,7 +485,7 @@ function parseCSV(csv) {
 /* ── LOAD ALL DATA ──────────────────────── */
 async function loadAllData() {
   document.getElementById('loader').classList.remove('hidden');
-  document.getElementById('loaderStatus').textContent = 'Fetching data from Google Sheets (all 7 tabs)…';
+  document.getElementById('loaderStatus').textContent = 'Fetching data from KLE-CTIE-Office (all 7 tabs)…';
 
   try {
     // Load each sheet in parallel
@@ -529,42 +529,45 @@ async function loadAllData() {
 }
 
 /* ── STARTUPS FROM SHEET ────────────────── */
+// Sheet structure: row0=title, row1=headers, row2+=data
+// Cols: 0=SNo,1=Name,2=Fund,3=Component,4=State,5=Sector,6=OneLiner,
+//       7=Revenue,8=PatentsFiled,9=PatentsGranted,10=PrivateFunding,
+//       11=Products,12=DateOnboarding,13=DateGraduation,14=Support,
+//       15=WomenLed,16=DPIIT,17=Employment,18=Highlights
 function renderStartupsFromSheet(rows, live) {
   statusBadge(document.getElementById('startupStatus'), live);
-  if (!rows || rows.length < 2) { renderFallbackStartups(); return; }
-
-  // rows[0] = sheet title merged row, rows[1] = column headers, rows[2+] = data
-  const dataRows = rows.slice(2).filter(r => r[0] && String(r[0]).trim() && !isNaN(parseInt(r[0])));
+  if (!rows || rows.length < 3) { renderFallbackStartups(); return; }
+  const dataRows = rows.slice(2).filter(r => r[0] && String(r[0]).trim() && !isNaN(parseInt(String(r[0]).trim())));
+  if (!dataRows.length) { renderFallbackStartups(); return; }
   allStartups = dataRows;
-
-  const sectors = [...new Set(dataRows.map(r => r[5]).filter(Boolean).map(s => s.trim()))].sort();
+  const sectors = [...new Set(dataRows.map(r => (r[5]||'').trim()).filter(Boolean))].sort();
   const sel = document.getElementById('sectorFilter');
   sel.innerHTML = '<option value="">All Sectors</option>' + sectors.map(s => `<option>${s}</option>`).join('');
-
   renderStartupRows(dataRows);
 }
 
 function renderStartupRows(rows) {
   const tbody = document.getElementById('startupBody');
   if (!rows.length) { tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;padding:20px;color:var(--gray-500)">No results found</td></tr>'; return; }
-
-  // Columns: 0=S.No, 1=Name, 2=Fund(₹), 3=Component, 4=State, 5=Sector,
-  //          6=OneLiner, 7=Revenue, 8=PatentsFiled, 9=PatentsGranted,
-  //          10=PrivateFunding, 11=Products, 12=DateOnboarding, 13=DateGraduation,
-  //          14=Support, 15=WomenLed, 16=DPIIT, 17=Employment, 18=Highlights
   tbody.innerHTML = rows.map(s => {
-    const comp = (s[3] || '').trim();
-    const badge = comp === 'EiR' ? 'badge-eir' : comp === 'Grant' ? 'badge-grant' : 'badge-inv';
-    const fundRaw = s[2] ? String(s[2]).replace(/[^0-9.]/g,'') : '';
-    const fund = fundRaw ? '₹' + parseInt(fundRaw).toLocaleString('en-IN') : '—';
+    const comp = (s[3]||'').trim();
+    const badge = comp==='EiR'?'badge-eir':comp==='Grant'?'badge-grant':'badge-inv';
+    const fundRaw = String(s[2]||'').replace(/[^0-9]/g,'');
+    const fund = fundRaw ? '₹'+parseInt(fundRaw).toLocaleString('en-IN') : '—';
     return `<tr data-name="${(s[1]||'').toLowerCase()}" data-sector="${(s[5]||'').toLowerCase()}" data-component="${comp.toLowerCase()}">
-      <td>${s[0]||''}</td><td>${s[1]||''}</td>
+      <td>${s[0]||''}</td>
+      <td>${s[1]||''}</td>
       <td style="white-space:nowrap">${fund}</td>
       <td><span class="badge ${badge}">${comp||'—'}</span></td>
-      <td>${s[5]||'—'}</td><td style="max-width:240px;font-size:11px">${s[6]||'—'}</td>
-      <td>${fmt(s[7])}</td><td>${fmt(s[8])}</td><td>${fmt(s[11])}</td>
+      <td>${s[5]||'—'}</td>
+      <td style="max-width:220px;font-size:11px">${s[6]||'—'}</td>
+      <td>${fmt(s[7])}</td>
+      <td>${fmt(s[8])}</td>
+      <td>${fmt(s[11])}</td>
       <td style="white-space:nowrap">${fmt(s[12])}</td>
-      <td>${fmt(s[15])}</td><td>${fmt(s[16])}</td><td>${fmt(s[17])}</td>
+      <td>${fmt(s[15])}</td>
+      <td>${fmt(s[16])}</td>
+      <td>${fmt(s[17])}</td>
     </tr>`;
   }).join('');
   document.getElementById('resultsCount').textContent = `Showing ${rows.length} of ${allStartups.length}`;
@@ -577,72 +580,79 @@ function filterStartups() {
   const filtered = allStartups.filter(s => {
     const text = s.join(' ').toLowerCase();
     return (!q || text.includes(q)) &&
-           (!sec || (s[5]||'').toLowerCase().includes(sec)) &&
+           (!sec || (s[5]||'').toLowerCase() === sec || (s[5]||'').toLowerCase().includes(sec)) &&
            (!cmp || (s[3]||'').toLowerCase().includes(cmp));
   });
   renderStartupRows(filtered);
 }
 
 /* ── FINANCIAL FROM SHEET ───────────────── */
+// Sheet structure: row0=title, row1=sanction note, row2=headers, row3+=data
+// Cols: 0=SNo, 1=BudgetHead, 2=2018-19...9=2025-26, 10=TotalReleased, 11=TotalUtilized
 function renderFinancialFromSheet(rows, live) {
   statusBadge(document.getElementById('financialStatus'), live);
   if (!rows || rows.length < 4) { renderFallbackFinancial(); return; }
-
-  // Skip title row (0), header row (2), use data rows
-  const dataRows = rows.slice(3).filter(r => r[0] && r[0].trim());
+  const dataRows = rows.slice(3).filter(r => r[0] && String(r[0]).trim());
   const tbody = document.getElementById('financialBody');
-
-  tbody.innerHTML = dataRows.map((r, i) => {
-    const isTotal = (r[0]||'').toUpperCase().includes('TOTAL') || (r[1]||'').toUpperCase().includes('TOTAL');
+  const fmtL = v => {
+    if (!v || v === 'NaN' || String(v).trim() === '') return '—';
+    const n = parseFloat(String(v).replace(/[^0-9.-]/g,''));
+    if (isNaN(n)) return String(v);
+    // values stored in rupees, display in lakhs
+    return (n/100000).toFixed(2);
+  };
+  tbody.innerHTML = dataRows.map(r => {
+    const isTotal = String(r[0]||'').toUpperCase().includes('TOTAL') || String(r[1]||'').toUpperCase().includes('TOTAL');
     const cls = isTotal ? ' class="fin-total"' : '';
-    const cols = r.slice(0, 12).map((v,ci) => `<td>${fmt(v)}</td>`).join('');
-    return `<tr${cls}>${cols}</tr>`;
+    return `<tr${cls}>
+      <td>${fmt(r[0])}</td>
+      <td>${fmt(r[1])}</td>
+      <td>${fmtL(r[2])}</td><td>${fmtL(r[3])}</td><td>${fmtL(r[4])}</td>
+      <td>${fmtL(r[5])}</td><td>${fmtL(r[6])}</td><td>${fmtL(r[7])}</td>
+      <td>${fmtL(r[8])}</td><td>${fmtL(r[9])}</td>
+      <td>${fmtL(r[10])}</td><td>${fmtL(r[11])}</td>
+    </tr>`;
   }).join('');
 }
 
 /* ── EVENTS FROM SHEET ──────────────────── */
+// Sheet structure: row0=title, row1=headers, row2+=data
+// Cols: 0=EventNo, 1=Title, 2=Category, 3=Date, 4=Mode, 5=Venue, 6=KeyOutcomes
 function renderEventsFromSheet(rows, live) {
   statusBadge(document.getElementById('eventsStatus'), live);
   if (!rows || rows.length < 3) { renderFallbackEvents(); return; }
-
-  const dataRows = rows.slice(2).filter(r => r[0] && !isNaN(parseInt(r[0])));
+  const dataRows = rows.slice(2).filter(r => r[0] && !isNaN(parseInt(String(r[0]).trim())));
+  if (!dataRows.length) { renderFallbackEvents(); return; }
   const grid = document.getElementById('eventsGrid');
-
   grid.innerHTML = dataRows.map(r => `
     <div class="event-card">
       <div class="event-imgs">
-        <div class="img-ph">
-          <div class="ico">🖼</div>
-          <div class="lbl">Event Photo 1<br><small>GDrive thumbnail link in src</small></div>
-        </div>
-        <div class="img-ph">
-          <div class="ico">🖼</div>
-          <div class="lbl">Event Photo 2<br><small>GDrive thumbnail link in src</small></div>
-        </div>
+        <div class="img-ph"><div class="ico">🖼</div><div class="lbl">Event Photo<br><small>Add GDrive link</small></div></div>
       </div>
       <div class="event-body">
-        <div class="event-num">Event ${r[0]}</div>
+        <div class="event-num">Event ${r[0]||''}</div>
         <div class="event-title">${r[1]||''}</div>
         <div class="event-meta">
           <span class="event-tag">📅 ${r[3]||''}</span>
-          <span class="event-tag">${r[4]==='Online'?'💻':'🏛'} ${r[4]||''}</span>
+          <span class="event-tag">${(r[4]||'')==='Online'?'💻':'🏛'} ${r[4]||''}</span>
           <span class="event-tag">📍 ${r[5]||''}</span>
           <span class="event-tag">🏷 ${r[2]||''}</span>
         </div>
         <div class="event-outcomes"><strong>Key Outcomes:</strong> ${r[6]||'—'}</div>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 /* ── STORIES FROM SHEET ─────────────────── */
+// Sheet structure: row0=title, row1=headers, row2+=data
+// Cols: 0=Company, 1=Sector, 2=CoreTech, 3=TIDEInvestment, 4=Component,
+//       5=TRL, 6=ExternalFunding, 7=Revenue, 8=KeyHighlights
 function renderStoriesFromSheet(rows, live) {
   statusBadge(document.getElementById('storiesStatus'), live);
   if (!rows || rows.length < 3) { renderFallbackStories(); return; }
-
-  const dataRows = rows.slice(2).filter(r => r[0] && r[0].trim());
+  const dataRows = rows.slice(2).filter(r => r[0] && String(r[0]).trim());
+  if (!dataRows.length) { renderFallbackStories(); return; }
   const grid = document.getElementById('storiesGrid');
-
   grid.innerHTML = dataRows.map(r => `
     <div class="story-card">
       <div class="story-header">
@@ -656,8 +666,8 @@ function renderStoriesFromSheet(rows, live) {
       </div>
       <div class="story-body">
         <div class="story-imgs">
-          <div class="img-ph"><div class="ico">📦</div><div class="lbl">Product Image<br><small>GDrive link</small></div></div>
-          <div class="img-ph"><div class="ico">👥</div><div class="lbl">Team Image<br><small>GDrive link</small></div></div>
+          <div class="img-ph"><div class="ico">📦</div><div class="lbl">Product Image<br><small>Add GDrive link</small></div></div>
+          <div class="img-ph"><div class="ico">👥</div><div class="lbl">Team Image<br><small>Add GDrive link</small></div></div>
         </div>
         <div class="story-desc">${r[8]||''}</div>
         <div class="story-stats">
@@ -669,41 +679,50 @@ function renderStoriesFromSheet(rows, live) {
           <div class="stat-box"><div class="stat-lbl">Core Tech</div><div class="stat-val">${fmt(r[2])}</div></div>
         </div>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 /* ── ACHIEVEMENTS FROM SHEET ────────────── */
+// Sheet structure: row0=title, row1=section heading (MAJOR ACHIEVEMENTS),
+// row2=col headers, row3-10=achievement data, row11-12=blank,
+// row13=CHALLENGES heading, row14=col headers, row15+=challenge data
+// Cols: 0=SNo, 1=Area, 2=Details
 function renderAchievementsFromSheet(rows, live) {
-  if (!rows || rows.length < 3) { renderFallbackAchievements(); return; }
+  if (!rows || rows.length < 4) { renderFallbackAchievements(); return; }
 
-  const achRows  = rows.slice(3).filter(r => r[0] && !isNaN(parseInt(r[0])) && r[2] && r[2].length > 5).slice(0, 8);
-  const chalRows = rows.filter(r => {
-    // Challenge rows come after a "CHALLENGES" header row
-    return r[0] && !isNaN(parseInt(r[0])) && rows.indexOf(r) > (rows.findIndex(x => (x[1]||'').toUpperCase().includes('CHALLENGE')));
-  }).slice(0, 4);
+  // Find challenge section divider
+  const chalIdx = rows.findIndex(r => String(r[0]||r[1]||'').toUpperCase().includes('CHALLENGE'));
 
-  document.getElementById('achGrid').innerHTML = achRows.map(r => `
-    <div class="ach-card">
+  const achRows = rows.slice(3, chalIdx > 0 ? chalIdx : rows.length)
+    .filter(r => r[0] && !isNaN(parseInt(String(r[0]).trim())));
+  const chalRows = chalIdx > 0
+    ? rows.slice(chalIdx + 2).filter(r => r[0] && !isNaN(parseInt(String(r[0]).trim())))
+    : [];
+
+  const makeCard = (r, extra='') => `
+    <div class="ach-card${extra}">
       <div class="ach-num">${r[0]}</div>
       <div><div class="ach-label">${r[1]||''}</div><div class="ach-text">${r[2]||''}</div></div>
-    </div>`).join('') || fallbackAch().ach;
+    </div>`;
 
-  document.getElementById('chalGrid').innerHTML = chalRows.map(r => `
-    <div class="ach-card chal-card">
-      <div class="ach-num">${r[0]}</div>
-      <div><div class="ach-label">${r[1]||''}</div><div class="ach-text">${r[2]||''}</div></div>
-    </div>`).join('') || fallbackAch().chal;
+  document.getElementById('achGrid').innerHTML = achRows.length
+    ? achRows.map(r => makeCard(r)).join('')
+    : fallbackAch().ach;
+
+  document.getElementById('chalGrid').innerHTML = chalRows.length
+    ? chalRows.map(r => makeCard(r,' chal-card')).join('')
+    : fallbackAch().chal;
 }
 
 /* ── UPDATE KPIs FROM STARTUP DATA ─────── */
 function updateKPIsFromStartups(rows) {
   if (!rows || !rows.length) return;
-  const eir   = rows.filter(r => (r[3]||'').trim() === 'EiR').length;
-  const grant = rows.filter(r => (r[3]||'').trim() === 'Grant').length;
-  const inv   = rows.filter(r => (r[3]||'').trim() === 'Investment').length;
-  const womenLed = rows.filter(r => (r[15]||'').trim().toLowerCase() === 'yes').length;
-  const dpiit = rows.filter(r => r[16] && r[16].trim() && r[16].trim() !== '—').length;
+  // col3=Component, col15=WomenLed, col16=DPIIT
+  const eir    = rows.filter(r => String(r[3]||'').trim() === 'EiR').length;
+  const grant  = rows.filter(r => String(r[3]||'').trim() === 'Grant').length;
+  const inv    = rows.filter(r => String(r[3]||'').trim() === 'Investment').length;
+  const womenLed = rows.filter(r => String(r[15]||'').trim().toLowerCase() === 'yes').length;
+  const dpiit  = rows.filter(r => r[16] && String(r[16]).trim() && String(r[16]).trim() !== '—').length;
 
   const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
   set('kv-startups', rows.length);
@@ -785,7 +804,7 @@ function renderFallback() {
 function renderFallbackStartups() {
   statusBadge(document.getElementById('startupStatus'), false);
   document.getElementById('startupBody').innerHTML =
-    '<tr><td colspan="13" style="text-align:center;padding:20px;color:#9B4A1C">⚠ Could not load from Google Sheets. Please publish the Sheet (File → Share → Publish to web) then click ↻ Refresh Data.</td></tr>';
+    '<tr><td colspan="13" style="text-align:center;padding:20px;color:#9B4A1C">⚠ Could not load from KLE-CTIE-Office. Please publish the Sheet (File → Share → Publish to web) then click ↻ Refresh Data.</td></tr>';
   document.getElementById('resultsCount').textContent = '— of —';
 }
 
