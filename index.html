@@ -185,6 +185,12 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
   .header-inner{flex-direction:column}
   .header-actions{margin-left:0}
 }
+/* ── LIGHTBOX ── */
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9000;display:none;align-items:center;justify-content:center;cursor:zoom-out}
+.lightbox.open{display:flex}
+.lightbox img{max-width:90vw;max-height:90vh;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.6);object-fit:contain}
+.lightbox-close{position:fixed;top:18px;right:24px;color:#fff;font-size:32px;cursor:pointer;line-height:1;opacity:.8;transition:opacity .15s}
+.lightbox-close:hover{opacity:1}
 </style>
 </head>
 <body>
@@ -451,7 +457,11 @@ function fmt(v) {
 
 function driveImg(id, alt='', icon='🖼') {
   if (!id || String(id).trim() === '' || String(id).trim() === '—') {
-    return `<div class="img-ph"><div class="ico">${icon}</div><div class="lbl">${alt}</div></div>`;
+    // Change this line in driveImg():
+return `<img src="https://drive.google.com/thumbnail?id=${String(id).trim()}&sz=w400"
+  alt="${alt}" style="width:100%;border-radius:4px;object-fit:cover;max-height:110px;cursor:zoom-in"
+  onclick="openLightbox(this.src)"
+  onerror="...">`;
   }
   return `<img src="https://drive.google.com/thumbnail?id=${String(id).trim()}&sz=w400"
     alt="${alt}" style="width:100%;border-radius:4px;object-fit:cover;max-height:110px"
@@ -892,6 +902,26 @@ setInterval(() => {
   if ((w || h) && !devOpen) { devOpen = true; toast("👀 DevTools detected — the Director is watching!"); }
   if (!w && !h) devOpen = false;
 }, 1000);
+/* ── LIGHTBOX ── */
+function openLightbox(src) {
+  const lb = document.getElementById('lightbox');
+  const img = document.getElementById('lightboxImg');
+  // Use full-size URL instead of thumbnail
+  img.src = src.replace('&sz=w400', '&sz=w1600');
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+// Close on Escape or browser back
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+window.addEventListener('popstate', closeLightbox);
 </script>
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <span class="lightbox-close" onclick="closeLightbox()">✕</span>
+  <img id="lightboxImg" src="" alt="">
+</div>
 </body>
 </html>
