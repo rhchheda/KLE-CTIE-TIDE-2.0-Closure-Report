@@ -197,7 +197,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
   <div class="loader-title">TIDE 2.0 — Closure Report</div>
   <div class="loader-sub">KLE CTiE, KLE Technological University, Hubballi</div>
   <div class="loader-bar"><div class="loader-bar-fill"></div></div>
-  <div class="loader-status" id="loaderStatus">Connecting to Google Sheets…</div>
+  <div class="loader-status" id="loaderStatus">Connecting to KLE-CTIE-Office…</div>
 </div>
 
 <!-- HEADER -->
@@ -512,7 +512,7 @@ function tableToRows(table) {
 /* ── LOAD ALL DATA ──────────────────────── */
 async function loadAllData() {
   document.getElementById('loader').classList.remove('hidden');
-  document.getElementById('loaderStatus').textContent = 'Fetching data from Google Sheets…';
+  document.getElementById('loaderStatus').textContent = 'Fetching data from KLE-CTIE-Office…';
 
   try {
     // Load each sheet in parallel
