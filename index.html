@@ -216,7 +216,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
       </div>
     </div>
     <div class="header-actions">
-      <button class="btn btn-refresh" onclick="loadAllData()">↻ Refresh Data</button>
+<button class="btn btn-refresh" onclick="loadAllData()">↻ Refresh Data</button>
       <button class="btn btn-print" onclick="window.print()">⎙ Print / PDF</button>
     </div>
   </div>
@@ -511,17 +511,18 @@ function tableToRows(table) {
 /* ── LOAD ALL DATA ──────────────────────── */
 async function loadAllData() {
   document.getElementById('loader').classList.remove('hidden');
-  document.getElementById('loaderStatus').textContent = 'Fetching data from KLE-CTIE-Office…';
+  document.getElementById('loaderStatus').textContent = 'Fetching data from Google Sheets (all 7 tabs)…';
 
   try {
     // Load each sheet in parallel
-    const [summaryTable, startupTable, finTable] = await Promise.all([
+    const [summaryTable, startupTable, finTable, eventsTable, storiesTable, achTable] = await Promise.all([
       fetchSheet('Overall Summary').catch(() => null),
       fetchSheet('Startup Details').catch(() => null),
       fetchSheet('Financial Overview').catch(() => null),
+      fetchSheet('Events Snapshot').catch(() => null),
+      fetchSheet('Success Stories').catch(() => null),
+      fetchSheet('Achievements & Challenges').catch(() => null),
     ]);
-    // These sheets don't exist yet in the published spreadsheet — using fallbacks
-    const eventsTable = null, storiesTable = null, achTable = null;
 
     document.getElementById('loaderStatus').textContent = 'Rendering…';
 
