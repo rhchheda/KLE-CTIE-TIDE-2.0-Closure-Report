@@ -356,7 +356,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
           <th>Women Led</th><th>DPIIT No.</th><th>Employment</th>
         </tr>
       </thead>
-      <tbody id="startupBody"><tr><td colspan="13" style="text-align:center;padding:30px;color:var(--gray-500)">Loading from Google Sheets…</td></tr></tbody>
+      <tbody id="startupBody"><tr><td colspan="13" style="text-align:center;padding:30px;color:var(--gray-500)">Loading from KLE-CTIE-Office…</td></tr></tbody>
     </table>
   </div>
 </section>
@@ -379,7 +379,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
         </tr>
       </thead>
       <tbody id="financialBody">
-        <tr><td colspan="12" style="text-align:center;padding:30px;color:var(--gray-500)">Loading from Google Sheets…</td></tr>
+        <tr><td colspan="12" style="text-align:center;padding:30px;color:var(--gray-500)">Loading from KLE-CTIE-Office…</td></tr>
       </tbody>
     </table>
   </div>
@@ -392,7 +392,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
   </div>
   <div id="eventsStatus"></div>
   <div class="event-grid" id="eventsGrid">
-    <div style="text-align:center;padding:40px;color:var(--gray-500)">Loading from Google Sheets…</div>
+    <div style="text-align:center;padding:40px;color:var(--gray-500)">Loading from KLE-CTIE-Office…</div>
   </div>
 </section>
 
@@ -403,7 +403,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
   </div>
   <div id="storiesStatus"></div>
   <div class="story-grid" id="storiesGrid">
-    <div style="text-align:center;padding:40px;color:var(--gray-500)">Loading from Google Sheets…</div>
+    <div style="text-align:center;padding:40px;color:var(--gray-500)">Loading from KLE-CTIE-Office…</div>
   </div>
 </section>
 
@@ -440,7 +440,7 @@ function statusBadge(el, live) {
   if (!el) return;
   el.innerHTML = `<div class="data-status ${live ? 'live' : 'cached'}">
     <span class="dot"></span>
-    ${live ? 'Live data from Google Sheets' : 'Using cached / fallback data'}
+    ${live ? 'Live data from KLE-CTIE-Office' : 'Using cached / fallback data'}
   </div>`;
 }
 
@@ -460,7 +460,7 @@ function fetchSheet(sheetName) {
 /* ── LOAD ALL DATA ──────────────────────── */
 async function loadAllData() {
   document.getElementById('loader').classList.remove('hidden');
-  document.getElementById('loaderStatus').textContent = 'Fetching data from Google Sheets (all 7 tabs)…';
+  document.getElementById('loaderStatus').textContent = 'Fetching data from KLE-CTIE-Office (all 7 tabs)…';
 
   try {
     // Load each sheet in parallel
@@ -779,7 +779,7 @@ function renderFallback() {
 function renderFallbackStartups() {
   statusBadge(document.getElementById('startupStatus'), false);
   document.getElementById('startupBody').innerHTML =
-    '<tr><td colspan="13" style="text-align:center;padding:20px;color:#9B4A1C">⚠ Could not load from Google Sheets. Please publish the Sheet (File → Share → Publish to web) then click ↻ Refresh Data.</td></tr>';
+    '<tr><td colspan="13" style="text-align:center;padding:20px;color:#9B4A1C">⚠ Could not load from KLE-CTIE-Office. Please publish the Sheet (File → Share → Publish to web) then click ↻ Refresh Data.</td></tr>';
   document.getElementById('resultsCount').textContent = '— of —';
 }
 
