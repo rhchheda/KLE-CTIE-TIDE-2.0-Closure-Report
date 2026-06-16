@@ -25,9 +25,10 @@ body{font-family:var(--font);background:var(--off-white);color:var(--text);font-
 #loader{position:fixed;inset:0;background:var(--navy-dark);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s}
 #loader.hidden{opacity:0;pointer-events:none}
 .loader-logos{display:flex;align-items:center;gap:16px;margin-bottom:20px}
-.loader-logo{width:64px;height:64px;border-radius:10px;overflow:hidden;background:rgba(255,255,255,.08);border:2px solid rgba(200,150,12,.4);display:flex;align-items:center;justify-content:center}
-.loader-logo img{width:100%;height:100%;object-fit:contain}
-.loader-logo.meity{width:84px;height:54px}
+.loader-logo{width:64px;height:64px;border-radius:10px;overflow:hidden;background:rgba(255,255,255,.08);border:2px solid rgba(200,150,12,.4);display:flex;align-items:center;justify-content:center;padding:2px}
+.loader-logo img{width:100%;height:100%;object-fit:contain;transform:scale(1.35)}
+.loader-logo.meity{width:84px;height:54px;padding:1px}
+.loader-logo.meity img{transform:scale(1.5)}
 .loader-title{color:#fff;font-size:20px;font-weight:700;margin-bottom:6px}
 .loader-sub{color:rgba(255,255,255,.5);font-size:12px;margin-bottom:24px}
 .loader-bar{width:240px;height:4px;background:rgba(255,255,255,.12);border-radius:2px;overflow:hidden}
@@ -53,8 +54,10 @@ body{font-family:var(--font);background:var(--off-white);color:var(--text);font-
 .report-header{background:linear-gradient(135deg,var(--navy-dark) 0%,var(--navy) 60%,var(--navy-mid) 100%);color:#fff;padding:18px 28px 14px;position:relative;overflow:hidden}
 .report-header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--gold),var(--gold-light),var(--gold))}
 .header-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:16px}
-.header-logo-box{width:56px;height:56px;border-radius:8px;overflow:hidden;border:2px solid rgba(200,150,12,.5);background:rgba(255,255,255,.08);flex-shrink:0;display:flex;align-items:center;justify-content:center}
-.header-logo-box img{width:100%;height:100%;object-fit:contain}
+.header-logo-box{width:56px;height:56px;border-radius:8px;overflow:hidden;border:2px solid rgba(200,150,12,.5);background:rgba(255,255,255,.08);flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:1px}
+.header-logo-box img{width:100%;height:100%;object-fit:contain;transform:scale(1.35)}
+.header-meity-logo{width:78px;height:48px;border-radius:6px;overflow:hidden;border:1px solid rgba(200,150,12,.4);background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;padding:1px}
+.header-meity-logo img{max-width:100%;max-height:100%;object-fit:contain;transform:scale(1.4)}
 .header-text h1{font-size:21px;font-weight:700;letter-spacing:-.3px;line-height:1.2;text-align:center}
 .header-text h1 span{color:var(--gold-light)}
 .header-meta{margin-top:4px;font-size:10.5px;color:rgba(255,255,255,.7);display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
