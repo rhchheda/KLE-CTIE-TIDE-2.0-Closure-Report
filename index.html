@@ -24,8 +24,10 @@ body{font-family:var(--font);background:var(--off-white);color:var(--text);font-
 /* LOADER */
 #loader{position:fixed;inset:0;background:var(--navy-dark);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s}
 #loader.hidden{opacity:0;pointer-events:none}
-.loader-logo{width:80px;height:80px;border-radius:12px;overflow:hidden;margin-bottom:20px;background:rgba(255,255,255,.08);border:2px solid rgba(200,150,12,.4)}
+.loader-logos{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+.loader-logo{width:64px;height:64px;border-radius:10px;overflow:hidden;background:rgba(255,255,255,.08);border:2px solid rgba(200,150,12,.4);display:flex;align-items:center;justify-content:center}
 .loader-logo img{width:100%;height:100%;object-fit:contain}
+.loader-logo.meity{width:84px;height:54px}
 .loader-title{color:#fff;font-size:20px;font-weight:700;margin-bottom:6px}
 .loader-sub{color:rgba(255,255,255,.5);font-size:12px;margin-bottom:24px}
 .loader-bar{width:240px;height:4px;background:rgba(255,255,255,.12);border-radius:2px;overflow:hidden}
@@ -43,28 +45,26 @@ body{font-family:var(--font);background:var(--off-white);color:var(--text);font-
 .pwd-input:focus{border-color:var(--navy)}
 .pwd-btn{width:100%;padding:11px;background:var(--navy);color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer}
 .pwd-btn:hover{background:var(--navy-mid)}
+.pwd-btn:disabled{opacity:.6;cursor:not-allowed}
 .pwd-error{font-size:12px;color:#E53E3E;margin-top:8px;min-height:18px}
 .pwd-lock{font-size:36px;margin-bottom:12px}
 
 /* HEADER */
-.report-header{background:linear-gradient(135deg,var(--navy-dark) 0%,var(--navy) 60%,var(--navy-mid) 100%);color:#fff;padding:20px 32px 16px;position:relative;overflow:hidden}
+.report-header{background:linear-gradient(135deg,var(--navy-dark) 0%,var(--navy) 60%,var(--navy-mid) 100%);color:#fff;padding:18px 28px 14px;position:relative;overflow:hidden}
 .report-header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--gold),var(--gold-light),var(--gold))}
 .header-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:16px}
-.header-logos{display:flex;align-items:center;gap:10px}
-.header-logo-box{width:60px;height:60px;border-radius:8px;overflow:hidden;border:2px solid rgba(200,150,12,.5);background:rgba(255,255,255,.08);flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.header-logo-box{width:56px;height:56px;border-radius:8px;overflow:hidden;border:2px solid rgba(200,150,12,.5);background:rgba(255,255,255,.08);flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .header-logo-box img{width:100%;height:100%;object-fit:contain}
-.header-logo-divider{width:1px;height:48px;background:rgba(255,255,255,.2)}
-.header-text h1{font-size:22px;font-weight:700;letter-spacing:-.3px;line-height:1.2}
+.header-text h1{font-size:21px;font-weight:700;letter-spacing:-.3px;line-height:1.2;text-align:center}
 .header-text h1 span{color:var(--gold-light)}
-.header-meta{margin-top:4px;font-size:11px;color:rgba(255,255,255,.7);display:flex;flex-wrap:wrap;gap:12px}
+.header-meta{margin-top:4px;font-size:10.5px;color:rgba(255,255,255,.7);display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
 .header-meta span::before{content:'▸ ';color:var(--gold-light)}
-.header-updated{font-size:10px;color:var(--gold-light);margin-top:3px;font-style:italic}
-.header-right{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
-.header-meity{display:flex;align-items:center;gap:8px}
-.header-meity-logo{width:80px;height:50px;border-radius:6px;overflow:hidden;border:1px solid rgba(200,150,12,.4);background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center}
+.header-updated{font-size:9.5px;color:var(--gold-light);margin-top:3px;font-style:italic;text-align:center}
+.header-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.header-meity-logo{width:78px;height:48px;border-radius:6px;overflow:hidden;border:1px solid rgba(200,150,12,.4);background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center}
 .header-meity-logo img{max-width:100%;max-height:100%;object-fit:contain}
 .header-actions{display:flex;gap:8px}
-.btn{padding:8px 16px;border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+.btn{padding:8px 15px;border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
 .btn-pdf{background:var(--gold);color:var(--navy-dark)}
 .btn-pdf:hover{background:var(--gold-light)}
 .btn-refresh{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.2)}
@@ -83,14 +83,12 @@ body{font-family:var(--font);background:var(--off-white);color:var(--text);font-
 .tab-panel{display:none}
 .tab-panel.active{display:block}
 
-/* SECTION TITLE */
 .section-title{font-size:15px;font-weight:700;color:var(--navy);border-left:4px solid var(--gold);padding:5px 0 5px 12px;margin-bottom:16px}
 .section-subtitle{font-size:11px;font-weight:400;color:var(--gray-500);margin-top:2px}
 
 /* KPI CARDS */
 .kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:11px;margin-bottom:24px}
-.kpi-card{background:#fff;border-radius:var(--radius);border-top:4px solid var(--gold);box-shadow:var(--shadow);padding:14px 12px 10px;transition:transform .2s,box-shadow .2s}
-.kpi-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.kpi-card{background:#fff;border-radius:var(--radius);border-top:4px solid var(--gold);box-shadow:var(--shadow);padding:14px 12px 10px}
 .kpi-card.navy{border-top-color:var(--navy)}
 .kpi-card.green{border-top-color:#1A7A3C}
 .kpi-card.red{border-top-color:#9B1C1C}
@@ -98,20 +96,17 @@ body{font-family:var(--font);background:var(--off-white);color:var(--text);font-
 .kpi-value{font-size:24px;font-weight:800;color:var(--navy);line-height:1.1;margin:4px 0 2px}
 .kpi-sub{font-size:11px;color:var(--gray-500)}
 
-/* TOTALS STRIP */
 .totals-strip{background:var(--navy);border-radius:var(--radius);padding:14px 20px;margin-bottom:22px;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
 .total-item{text-align:center}
 .total-label{font-size:9px;font-weight:700;color:var(--gold-light);text-transform:uppercase;letter-spacing:.6px}
 .total-value{font-size:18px;font-weight:800;color:#fff}
 .total-sub{font-size:10px;color:rgba(255,255,255,.5)}
 
-/* CHARTS */
 .charts-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px}
 .chart-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
 .chart-card h3{font-size:12px;font-weight:700;color:var(--navy);margin-bottom:10px}
 .chart-wrap{position:relative;height:190px}
 
-/* TABLES */
 .table-wrap{overflow-x:auto;border-radius:var(--radius);box-shadow:var(--shadow)}
 table{width:100%;border-collapse:collapse;background:#fff;font-size:12px}
 thead th{background:var(--navy);color:#fff;padding:9px 10px;text-align:left;font-size:11px;font-weight:600;letter-spacing:.3px;white-space:nowrap;position:sticky;top:0}
@@ -124,9 +119,8 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
 .badge-grant{background:#E6F4EA;color:#1A7A3C}
 .badge-inv{background:#FEF3C7;color:#92400E}
 
-/* FILTER BAR */
 .filter-bar{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
-.filter-bar input,.filter-bar select{padding:7px 11px;border:1.5px solid var(--gray-300);border-radius:var(--radius);font-size:12px;background:#fff;color:var(--text);flex:1;min-width:140px;outline:none;transition:border-color .2s}
+.filter-bar input,.filter-bar select{padding:7px 11px;border:1.5px solid var(--gray-300);border-radius:var(--radius);font-size:12px;background:#fff;color:var(--text);flex:1;min-width:140px;outline:none}
 .filter-bar input:focus,.filter-bar select:focus{border-color:var(--navy)}
 .results-count{font-size:11px;color:var(--gray-500);white-space:nowrap}
 
@@ -145,14 +139,13 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
 .event-outcomes{font-size:12px;color:var(--gray-700)}
 .event-outcomes strong{color:var(--navy)}
 
-/* CAROUSEL */
 .carousel{position:relative;overflow:hidden;border-radius:4px}
 .carousel-inner{display:flex;transition:transform .35s ease}
 .carousel-inner img{min-width:100%;height:120px;object-fit:cover;cursor:zoom-in}
 .carousel-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(12,45,107,.75);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2}
 .carousel-btn.prev{left:3px}.carousel-btn.next{right:3px}
 .carousel-dots{display:flex;justify-content:center;gap:4px;margin-top:5px}
-.carousel-dot{width:6px;height:6px;border-radius:50%;background:var(--gray-300);cursor:pointer;transition:background .15s}
+.carousel-dot{width:6px;height:6px;border-radius:50%;background:var(--gray-300);cursor:pointer}
 .carousel-dot.active{background:var(--navy)}
 
 /* SUCCESS STORIES */
@@ -194,37 +187,32 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
 .sig-block{text-align:center}
 .sig-img-wrap{width:180px;height:70px;margin:0 auto 10px;border:2px dashed var(--gray-300);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;background:var(--gray-100);overflow:hidden}
 .sig-img-wrap img{max-width:100%;max-height:100%;object-fit:contain}
-.sig-ph{font-size:9px;color:var(--gray-500);text-align:center;padding:6px;line-height:1.5;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%}
 .sig-line{border-top:1.5px solid var(--navy);width:180px;margin:0 auto 6px}
 .sig-name{font-size:13px;font-weight:700;color:var(--navy)}
 .sig-desig{font-size:11px;color:var(--gray-500)}
 
-/* DATA STATUS */
 .data-status{font-size:11px;padding:5px 11px;border-radius:20px;display:inline-flex;align-items:center;gap:6px;margin-bottom:14px}
 .data-status.live{background:#E6F4EA;color:#1A7A3C}
 .data-status.cached{background:#FEF3C7;color:#92400E}
 .dot{width:7px;height:7px;border-radius:50%;background:currentColor;animation:pulse 1.5s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-/* TOAST */
-.toast-box{position:fixed;bottom:60px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy-dark);color:#fff;padding:10px 22px;border-radius:30px;font-size:13px;font-weight:500;z-index:9500;opacity:0;transition:all .3s;pointer-events:none;border:1px solid var(--gold);white-space:nowrap}
+.toast-box{position:fixed;bottom:60px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy-dark);color:#fff;padding:10px 22px;border-radius:30px;font-size:13px;font-weight:500;z-index:9500;opacity:0;transition:all .3s;pointer-events:none;border:1px solid var(--gold);white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis}
 .toast-box.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* LIGHTBOX */
 .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9000;display:none;align-items:center;justify-content:center;cursor:zoom-out}
 .lightbox.open{display:flex}
 .lightbox img{max-width:90vw;max-height:90vh;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.6);object-fit:contain;cursor:default}
 .lightbox-close{position:fixed;top:18px;right:24px;color:#fff;font-size:34px;cursor:pointer;line-height:1;opacity:.8}
 .lightbox-close:hover{opacity:1}
 
-/* PDF MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(7,26,62,.7);z-index:8500;display:none;align-items:center;justify-content:center}
 .modal-overlay.open{display:flex}
 .modal{background:#fff;border-radius:10px;padding:26px;width:460px;max-width:95vw;box-shadow:0 12px 48px rgba(0,0,0,.25)}
 .modal h3{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:5px}
 .modal p{font-size:12px;color:var(--gray-500);margin-bottom:16px}
 .section-checks{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:18px}
-.check-item{display:flex;align-items:center;gap:8px;padding:9px 11px;border:1.5px solid var(--gray-300);border-radius:6px;cursor:pointer;transition:all .15s;user-select:none}
+.check-item{display:flex;align-items:center;gap:8px;padding:9px 11px;border:1.5px solid var(--gray-300);border-radius:6px;cursor:pointer;user-select:none}
 .check-item:hover{border-color:var(--navy);background:var(--off-white)}
 .check-item.checked{border-color:var(--gold);background:var(--gold-pale)}
 .check-item input{accent-color:var(--navy);width:14px;height:14px}
@@ -233,12 +221,12 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
 .btn-modal-cancel{background:var(--gray-100);color:var(--gray-700);padding:9px 16px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:none}
 .btn-modal-go{background:var(--navy);color:#fff;padding:9px 20px;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;border:none}
 .btn-modal-go:hover{background:var(--navy-mid)}
+.btn-modal-go:disabled{opacity:.6;cursor:not-allowed}
 .pdf-progress{margin-top:12px;display:none}
 .pdf-progress-bar{height:5px;background:var(--gray-100);border-radius:3px;overflow:hidden}
 .pdf-progress-fill{height:100%;background:linear-gradient(90deg,var(--navy),var(--gold));border-radius:3px;transition:width .3s}
 .pdf-progress-label{font-size:11px;color:var(--gray-500);margin-top:5px;text-align:center}
 
-/* FOOTER */
 .sticky-footer{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(7,26,62,.96);backdrop-filter:blur(6px);text-align:center;padding:7px 16px;font-size:12px;color:rgba(255,255,255,.7);letter-spacing:.4px;border-top:1px solid rgba(200,150,12,.3)}
 .heart{display:inline-block;color:#E53E3E;animation:throb 1.1s ease-in-out infinite;font-size:13px;vertical-align:middle}
 @keyframes throb{0%,100%{transform:scale(1)}30%{transform:scale(1.35)}60%{transform:scale(.95)}}
@@ -257,21 +245,25 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
 
 <!-- LOADER -->
 <div id="loader">
-  <div class="loader-logo"><img src="https://drive.google.com/thumbnail?id=1iAb5PH3CKSHESopoFGPCuW85Mkb7X26z&sz=w200" alt="KLE CTiE"></div>
+  <div class="loader-logos">
+    <div class="loader-logo"><img src="https://drive.google.com/thumbnail?id=1NKm28T5GmzpGWxaNeihr1wkX-B98xPOy&sz=w200" alt="KLE TU"></div>
+    <div class="loader-logo"><img src="https://drive.google.com/thumbnail?id=1iAb5PH3CKSHESopoFGPCuW85Mkb7X26z&sz=w200" alt="KLE CTiE"></div>
+    <div class="loader-logo meity"><img src="https://drive.google.com/thumbnail?id=MEITY_LOGO_ID&sz=w200" alt="MeitY" onerror="this.parentElement.innerHTML='<div style=\'color:#F5D97A;font-size:9px;text-align:center;font-weight:700\'>MeitY<br>TIDE 2.0</div>'"></div>
+  </div>
   <div class="loader-title">TIDE 2.0 — Closure Report</div>
   <div class="loader-sub">KLE CTiE, KLE Technological University, Hubballi</div>
   <div class="loader-bar"><div class="loader-bar-fill"></div></div>
   <div class="loader-status" id="loaderStatus">Connecting…</div>
 </div>
 
-<!-- PASSWORD MODAL (PDF) -->
+<!-- PASSWORD MODAL -->
 <div class="pwd-modal" id="pwdModal">
   <div class="pwd-box">
     <div class="pwd-lock">🔐</div>
     <h3>PDF Export — Password Required</h3>
     <p>Enter the authorised password to generate and download the PDF report.</p>
     <input type="password" class="pwd-input" id="pwdInput" placeholder="Enter password" onkeydown="if(event.key==='Enter')verifyPwd()">
-    <button class="pwd-btn" onclick="verifyPwd()">Unlock &amp; Generate PDF</button>
+    <button class="pwd-btn" id="pwdBtn" onclick="verifyPwd()">Unlock &amp; Generate PDF</button>
     <div class="pwd-error" id="pwdError"></div>
   </div>
 </div>
@@ -279,17 +271,9 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
 <!-- HEADER -->
 <header class="report-header">
   <div class="header-inner">
-    <!-- LEFT: KLE CTiE + KLE TU logos -->
-    <div class="header-logos">
-      <div class="header-logo-box">
-        <img src="https://drive.google.com/thumbnail?id=1iAb5PH3CKSHESopoFGPCuW85Mkb7X26z&sz=w200" alt="KLE CTiE">
-      </div>
-      <div class="header-logo-divider"></div>
-      <div class="header-logo-box">
-        <img src="https://drive.google.com/thumbnail?id=1NKm28T5GmzpGWxaNeihr1wkX-B98xPOy&sz=w200" alt="KLE TU">
-      </div>
-    </div>
-    <!-- CENTRE: Title & meta -->
+    <!-- LHS: KLE TU logo -->
+    <div class="header-logo-box"><img src="https://drive.google.com/thumbnail?id=1NKm28T5GmzpGWxaNeihr1wkX-B98xPOy&sz=w200" alt="KLE TU"></div>
+    <!-- CENTRE -->
     <div class="header-text">
       <h1>TIDE 2.0 — <span>Closure Report</span></h1>
       <div class="header-meta">
@@ -300,13 +284,13 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
       </div>
       <div class="header-updated" id="headerUpdated"></div>
     </div>
-    <!-- RIGHT: MeitY logo + buttons -->
+    <!-- RHS: CTiE logo (top) + MeitY + buttons -->
     <div class="header-right">
-      <div class="header-meity">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="header-logo-box"><img src="https://drive.google.com/thumbnail?id=1iAb5PH3CKSHESopoFGPCuW85Mkb7X26z&sz=w200" alt="KLE CTiE"></div>
         <div class="header-meity-logo">
-          <!-- Replace MEITY_LOGO_ID with actual Drive ID when available -->
           <img src="https://drive.google.com/thumbnail?id=MEITY_LOGO_ID&sz=w200" alt="MeitY"
-            onerror="this.outerHTML='<div style=\'color:var(--gold-light);font-size:9px;text-align:center;padding:4px;font-weight:700\'>MeitY<br>TIDE 2.0</div>'">
+            onerror="this.outerHTML='<div style=\'color:var(--gold-light);font-size:8px;text-align:center;padding:2px;font-weight:700\'>MeitY<br>TIDE 2.0</div>'">
         </div>
       </div>
       <div class="header-actions">
@@ -365,6 +349,8 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
   <div class="charts-row">
     <div class="chart-card"><h3>Component-wise Startup Split</h3><div class="chart-wrap"><canvas id="chartComponent"></canvas></div></div>
     <div class="chart-card"><h3>Sector Distribution</h3><div class="chart-wrap"><canvas id="chartSector"></canvas></div></div>
+  </div>
+  <div class="charts-row">
     <div class="chart-card"><h3>Year-wise Fund Utilization (₹ Lakhs)</h3><div class="chart-wrap"><canvas id="chartFund"></canvas></div></div>
     <div class="chart-card"><h3>Key Output Metrics</h3><div class="chart-wrap"><canvas id="chartOutput"></canvas></div></div>
   </div>
@@ -395,21 +381,15 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
   <div class="sig-section">
     <div class="section-title" style="margin-bottom:8px">Declaration &amp; Signatures</div>
     <p style="font-size:12px;color:var(--gray-700);margin-bottom:12px">I hereby declare that the information furnished above is true and correct to the best of my knowledge and belief.</p>
-    <div class="sig-grid">
+    <div class="sig-grid" id="sigGrid">
       <div class="sig-block">
-        <div class="sig-img-wrap">
-          <img src="" alt="Sig" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-          <div class="sig-ph" style="display:none"><div style="font-size:20px;opacity:.25">✍</div><div>Add Drive thumbnail ID for signature</div></div>
-        </div>
+        <div class="sig-img-wrap" id="sig1Wrap"><div class="img-ph"><div class="ico">✍</div><div class="lbl">Signature loading…</div></div></div>
         <div class="sig-line"></div>
         <div class="sig-name">Sunaina Dhanave</div>
         <div class="sig-desig">Program Co-ordinator, KLE CTiE<br>KLE Technological University</div>
       </div>
       <div class="sig-block">
-        <div class="sig-img-wrap">
-          <img src="" alt="Sig" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-          <div class="sig-ph" style="display:none"><div style="font-size:20px;opacity:.25">✍</div><div>Add Drive thumbnail ID for signature</div></div>
-        </div>
+        <div class="sig-img-wrap" id="sig2Wrap"><div class="img-ph"><div class="ico">✍</div><div class="lbl">Signature loading…</div></div></div>
         <div class="sig-line"></div>
         <div class="sig-name">Dr. Vinayak Hosamani</div>
         <div class="sig-desig">Director, KLE CTiE<br>KLE Technological University, Hubballi – 580021</div>
@@ -431,7 +411,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
     <span class="results-count" id="resultsCount">Loading…</span>
   </div>
   <div class="table-wrap">
-    <table>
+    <table id="startupTable">
       <thead><tr>
         <th>#</th><th>Startup Name</th><th>Fund</th><th>Component</th>
         <th>Sector</th><th>One Liner</th><th>Revenue</th>
@@ -447,11 +427,9 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
 <section class="tab-panel" id="tab-financial">
   <div class="section-title">Financial Overview<div class="section-subtitle">Head-wise Fund Utilization | MeitY Sanction No: Meity/IPR/TIDE/16(9)/2019 | Dt: 18.12.2019</div></div>
   <div id="financialStatus"></div>
-  <div class="fin-note">
-    ⚠ <strong>Discrepancy Note:</strong> Funds Received [A] = ₹4,40,50,000 &nbsp;|&nbsp; Funds Utilized [B] = ₹4,40,52,571 &nbsp;|&nbsp; Difference of <strong>₹2,571</strong> to be reconciled with MeitY audited records before final submission.
-  </div>
+  <div class="fin-note">⚠ <strong>Discrepancy Note:</strong> Funds Received [A] = ₹4,40,50,000 &nbsp;|&nbsp; Funds Utilized [B] = ₹4,40,52,571 &nbsp;|&nbsp; Difference of <strong>₹2,571</strong> to be reconciled with MeitY audited records before final submission.</div>
   <div class="table-wrap">
-    <table>
+    <table id="financialTable">
       <thead><tr>
         <th>#</th><th style="min-width:220px">Budget Head</th>
         <th>2018-19</th><th>2019-20</th><th>2020-21</th><th>2021-22</th>
@@ -487,19 +465,9 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
 
 </main>
 
-<!-- FOOTER -->
-<footer class="sticky-footer">
-  Made with <span class="heart">❤</span> &nbsp;~rhc &nbsp;·&nbsp; EE Lab, KLE-CTiE
-</footer>
-
-<!-- TOAST -->
+<footer class="sticky-footer">Made with <span class="heart">❤</span> &nbsp;~rhc &nbsp;·&nbsp; EE Lab, KLE-CTiE</footer>
 <div class="toast-box" id="toastBox"></div>
-
-<!-- LIGHTBOX -->
-<div class="lightbox" id="lightbox" onclick="closeLightbox()">
-  <span class="lightbox-close" onclick="closeLightbox()">✕</span>
-  <img id="lightboxImg" src="" alt="">
-</div>
+<div class="lightbox" id="lightbox" onclick="closeLightbox()"><span class="lightbox-close" onclick="closeLightbox()">✕</span><img id="lightboxImg" src="" alt=""></div>
 
 <!-- PDF MODAL -->
 <div class="modal-overlay" id="pdfModal">
@@ -529,7 +497,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
 <script>
 const GAS_URL='https://script.google.com/macros/s/AKfycbwd54rFxBv2iT8SSybw_aZ8I9vBcmbrpJWLoGo9-y_b8zzMti-E0OSW9dSfQn_APqh_/exec';
 const NAVY='#0C2D6B',GOLD='#C8960C',TEAL='#1A7A6E';
-let charts={},allStartups=[],pwdVerified=false;
+let charts={},allStartups=[],sigIds={sig1:'',sig2:''},pendingSections=[];
 
 /* ── UTILS ── */
 function showTab(id,btn){
@@ -553,50 +521,24 @@ function fmtCrLakh(n){
 function toast(msg){
   const el=document.getElementById('toastBox');
   el.textContent=msg;el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'),2800);
+  setTimeout(()=>el.classList.remove('show'),3200);
 }
 
-/* ── PASSWORD ── */
-function openPwdModal(){document.getElementById('pwdModal').classList.add('open');setTimeout(()=>document.getElementById('pwdInput').focus(),100);}
-function closePwdModal(){document.getElementById('pwdModal').classList.remove('open');document.getElementById('pwdInput').value='';document.getElementById('pwdError').textContent='';}
+/* ── DRIVE IMAGE LOADER ──
+   IMPORTANT: Google Drive thumbnail endpoint does NOT support crossorigin=anonymous,
+   so we never set that attribute. Images load normally in browser. For html2canvas
+   capture we instead fetch the image as base64 via a CORS-friendly proxy approach:
+   convert to dataURL using an Image object + canvas (works because Drive thumbnail
+   serves with permissive headers when NOT requesting credentials). */
+function driveThumbUrl(id,sz){ return `https://drive.google.com/thumbnail?id=${String(id).trim()}&sz=${sz||'w600'}`; }
 
-let pwdLocked=false,pwdTimer=null;
-async function verifyPwd(){
-  if(pwdLocked){toast('Too many attempts — wait 30s');return;}
-  const input=document.getElementById('pwdInput').value;
-  if(!input){document.getElementById('pwdError').textContent='Please enter a password.';return;}
-  document.getElementById('pwdError').textContent='Verifying…';
-  try{
-    const res=await fetch(`${GAS_URL}?action=verifyPassword&pwd=${encodeURIComponent(input)}`);
-    const data=await res.json();
-    if(data.verified){
-      pwdVerified=true;
-      closePwdModal();
-      closePdfModal();
-      generatePDF();
-    } else {
-      document.getElementById('pwdError').textContent='❌ Incorrect password. Try again.';
-      document.getElementById('pwdInput').value='';
-      document.getElementById('pwdInput').focus();
-      // Lock after 3 wrong attempts tracked via sessionStorage
-      const attempts=(parseInt(sessionStorage.getItem('pwdAttempts')||'0'))+1;
-      sessionStorage.setItem('pwdAttempts',attempts);
-      if(attempts>=3){
-        pwdLocked=true;
-        document.getElementById('pwdError').textContent='🔒 Too many attempts. Locked for 30 seconds.';
-        pwdTimer=setTimeout(()=>{pwdLocked=false;sessionStorage.setItem('pwdAttempts','0');document.getElementById('pwdError').textContent='';},30000);
-      }
-    }
-  }catch(e){document.getElementById('pwdError').textContent='Connection error — check GAS deployment.';}
-}
-
-/* ── DRIVE IMAGES ── */
 function driveImg(id,alt='',icon='🖼',style=''){
-  if(!id||String(id).trim()===''||String(id).trim()==='—'||id==='MEITY_LOGO_ID'){
+  id=String(id||'').trim();
+  if(!id||id==='—'||id==='MEITY_LOGO_ID'){
     return `<div class="img-ph"><div class="ico">${icon}</div><div class="lbl">${alt}</div></div>`;
   }
-  const src=`https://drive.google.com/thumbnail?id=${String(id).trim()}&sz=w600`;
-  return `<img src="${src}" alt="${alt}" style="width:100%;border-radius:4px;object-fit:cover;cursor:zoom-in${style?';'+style:''}" onclick="openLightbox(this.src)" crossorigin="anonymous" onerror="this.outerHTML='<div class=\\'img-ph\\'><div class=\\'ico\\'>${icon}</div><div class=\\'lbl\\'>${alt}</div></div>'">`;
+  const src=driveThumbUrl(id,'w600');
+  return `<img src="${src}" alt="${alt}" data-driveid="${id}" style="width:100%;border-radius:4px;object-fit:cover;cursor:zoom-in${style?';'+style:''}" onclick="openLightbox('${id}')" onerror="this.outerHTML='<div class=\\'img-ph\\'><div class=\\'ico\\'>${icon}</div><div class=\\'lbl\\'>${alt}</div></div>'">`;
 }
 
 function carousel(ids,altPfx){
@@ -604,7 +546,7 @@ function carousel(ids,altPfx){
   if(!valid.length)return driveImg('',altPfx,'🖼');
   if(valid.length===1)return driveImg(valid[0],altPfx+' 1','🖼','max-height:120px');
   const uid='c'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
-  const slides=valid.map((id,i)=>`<img src="https://drive.google.com/thumbnail?id=${id}&sz=w600" alt="${altPfx} ${i+1}" crossorigin="anonymous" onclick="openLightbox(this.src)" onerror="this.style.display='none'">`).join('');
+  const slides=valid.map((id,i)=>`<img src="${driveThumbUrl(id,'w600')}" alt="${altPfx} ${i+1}" data-driveid="${id}" onclick="openLightbox('${id}')" onerror="this.style.display='none'">`).join('');
   const dots=valid.map((_,i)=>`<span class="carousel-dot${i===0?' active':''}" onclick="gotoSlide('${uid}',${i})"></span>`).join('');
   return `<div class="carousel" id="${uid}" data-idx="0" data-total="${valid.length}">
     <div class="carousel-inner">${slides}</div>
@@ -617,8 +559,34 @@ function moveCarousel(uid,dir){const el=document.getElementById(uid);if(!el)retu
 function gotoSlide(uid,idx){const el=document.getElementById(uid);if(!el)return;el.dataset.idx=idx;el.querySelector('.carousel-inner').style.transform=`translateX(-${idx*100}%)`;el.querySelectorAll('.carousel-dot').forEach((d,i)=>d.classList.toggle('active',i===idx));}
 
 /* ── LIGHTBOX ── */
-function openLightbox(src){const lb=document.getElementById('lightbox');document.getElementById('lightboxImg').src=src.replace('&sz=w600','&sz=w1600');lb.classList.add('open');document.body.style.overflow='hidden';}
+function openLightbox(id){
+  const lb=document.getElementById('lightbox');
+  document.getElementById('lightboxImg').src=driveThumbUrl(id,'w1600');
+  lb.classList.add('open');document.body.style.overflow='hidden';
+}
 function closeLightbox(){document.getElementById('lightbox').classList.remove('open');document.body.style.overflow='';}
+
+/* ── SIGNATURES ── */
+function renderSignatures(summaryRows){
+  if(!summaryRows||!summaryRows.length)return;
+  summaryRows.forEach(r=>{
+    const label=String(r[0]||'').trim();
+    const val=String(r[1]||'').trim();
+    if(label==='Signature1_DriveID')sigIds.sig1=val;
+    if(label==='Signature2_DriveID')sigIds.sig2=val;
+  });
+  const set=(wrapId,id)=>{
+    const wrap=document.getElementById(wrapId);
+    if(!wrap)return;
+    if(id&&id!=='—'&&id!==''){
+      wrap.innerHTML=`<img src="${driveThumbUrl(id,'w400')}" data-driveid="${id}" alt="Signature" style="cursor:zoom-in" onclick="openLightbox('${id}')" onerror="this.outerHTML='<div class=\\'img-ph\\'><div class=\\'ico\\'>✍</div><div class=\\'lbl\\'>Signature not found</div></div>'">`;
+    } else {
+      wrap.innerHTML=`<div class="img-ph"><div class="ico">✍</div><div class="lbl">Add Signature1_DriveID /<br>Signature2_DriveID row<br>in Overall Summary sheet</div></div>`;
+    }
+  };
+  set('sig1Wrap',sigIds.sig1);
+  set('sig2Wrap',sigIds.sig2);
+}
 
 /* ── GAS FETCH ── */
 function fetchSheet(sheetName){
@@ -632,7 +600,7 @@ async function loadAllData(){
   document.getElementById('loader').classList.remove('hidden');
   document.getElementById('loaderStatus').textContent='Fetching from KLE-CTIE-Office…';
   try{
-    const[,startupTable,finTable,eventsTable,storiesTable,achTable]=await Promise.all([
+    const[summaryTable,startupTable,finTable,eventsTable,storiesTable,achTable]=await Promise.all([
       fetchSheet('Overall Summary').catch(()=>null),
       fetchSheet('Startup Details').catch(()=>null),
       fetchSheet('Financial Overview').catch(()=>null),
@@ -645,6 +613,7 @@ async function loadAllData(){
     renderEventsFromSheet(eventsTable||[],!!eventsTable);
     renderStoriesFromSheet(storiesTable||[],!!storiesTable);
     renderAchievementsFromSheet(achTable||[],!!achTable);
+    renderSignatures(summaryTable||[]);
     updateKPIsFromStartups(allStartups);
     renderCharts();
     statusBadge(document.getElementById('kpiStatus'),true);
@@ -794,7 +763,7 @@ function renderAchievementsFromSheet(rows,live){
   document.getElementById('chalGrid').innerHTML=chalRows.length?chalRows.map(r=>card(r,' chal-card')).join(''):fallbackAch().chal;
 }
 
-/* ── KPIs FROM STARTUPS ── */
+/* ── KPIs ── */
 function updateKPIsFromStartups(rows){
   if(!rows||!rows.length)return;
   const eir=rows.filter(r=>String(r[3]||'').trim()==='EiR').length;
@@ -829,27 +798,111 @@ function renderCharts(){
   charts.output=new Chart(document.getElementById('chartOutput'),{type:'radar',data:{labels:['Startups','Products/MVPs','Employment','Patents','Revenue ₹Cr','Workshops'],datasets:[{label:'Outputs',data:[allStartups.length||52,57,120,8,6.82,13],backgroundColor:'rgba(12,45,107,.15)',borderColor:NAVY,pointBackgroundColor:GOLD,pointRadius:4,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{r:{ticks:{font:{size:8}},pointLabels:{font:{size:9}}}}}});
 }
 
-/* ── PDF MODAL ── */
+/* ── PDF MODAL / PASSWORD ── */
 function openPdfModal(){document.getElementById('pdfModal').classList.add('open');}
 function closePdfModal(){document.getElementById('pdfModal').classList.remove('open');}
 function toggleCheck(el,id){el.classList.toggle('checked');document.getElementById(id).checked=el.classList.contains('checked');}
 
-/* ── PDF GENERATION ── */
-async function generatePDF(){
-  const{jsPDF}=window.jspdf;
-  const SECTIONS=[
-    {id:'sec-kpi',   panelId:'tab-kpi',         label:'KPI Dashboard',     landscape:false,rowsPerPage:null},
-    {id:'sec-summary',panelId:'tab-summary',     label:'Summary',           landscape:false,rowsPerPage:null},
-    {id:'sec-startups',panelId:'tab-startups',   label:'Startup Details',   landscape:true, rowsPerPage:20, tableId:'startupBody', headerSel:'#startupTable thead'},
-    {id:'sec-financial',panelId:'tab-financial', label:'Financial Overview', landscape:true, rowsPerPage:15, tableId:'financialBody', headerSel:'#tab-financial table thead'},
-    {id:'sec-events', panelId:'tab-events',      label:'Events',            landscape:false,rowsPerPage:null},
-    {id:'sec-stories',panelId:'tab-stories',     label:'Success Stories',   landscape:false,rowsPerPage:null},
-    {id:'sec-ach',   panelId:'tab-achievements', label:'Achievements',      landscape:false,rowsPerPage:null},
+function openPwdModal(){
+  pendingSections=[
+    {id:'sec-kpi',   panelId:'tab-kpi',         label:'KPI Dashboard',     landscape:false},
+    {id:'sec-summary',panelId:'tab-summary',     label:'Summary',           landscape:false},
+    {id:'sec-startups',panelId:'tab-startups',   label:'Startup Details',   landscape:true, tableId:'startupBody', headerSel:'#startupTable thead', rowsPerPage:18},
+    {id:'sec-financial',panelId:'tab-financial', label:'Financial Overview', landscape:true, tableId:'financialBody', headerSel:'#financialTable thead', rowsPerPage:14},
+    {id:'sec-events', panelId:'tab-events',      label:'Events',            landscape:false},
+    {id:'sec-stories',panelId:'tab-stories',     label:'Success Stories',   landscape:false},
+    {id:'sec-ach',   panelId:'tab-achievements', label:'Achievements',      landscape:false},
   ].filter(s=>document.getElementById(s.id).checked);
 
-  if(!sections||!SECTIONS.length){toast('Select at least one section');return;}
+  if(!pendingSections.length){toast('Select at least one section');return;}
+  document.getElementById('pwdModal').classList.add('open');
+  setTimeout(()=>document.getElementById('pwdInput').focus(),100);
+}
+function closePwdModal(){
+  document.getElementById('pwdModal').classList.remove('open');
+  document.getElementById('pwdInput').value='';
+  document.getElementById('pwdError').textContent='';
+}
 
+let pwdLocked=false;
+async function verifyPwd(){
+  if(pwdLocked){toast('Too many attempts — wait 30s');return;}
+  const input=document.getElementById('pwdInput').value;
+  if(!input){document.getElementById('pwdError').textContent='Please enter a password.';return;}
+  const btn=document.getElementById('pwdBtn');
+  btn.disabled=true;
+  document.getElementById('pwdError').textContent='Verifying…';
+  document.getElementById('pwdError').style.color='var(--gray-500)';
+  try{
+    const res=await fetch(`${GAS_URL}?action=verifyPassword&pwd=${encodeURIComponent(input)}`);
+    const data=await res.json();
+    btn.disabled=false;
+    if(data.verified){
+      closePwdModal();
+      closePdfModal();
+      await generatePDF(pendingSections);
+    } else {
+      document.getElementById('pwdError').style.color='#E53E3E';
+      document.getElementById('pwdError').textContent='❌ Incorrect password. Try again.';
+      document.getElementById('pwdInput').value='';
+      document.getElementById('pwdInput').focus();
+      const attempts=(parseInt(sessionStorage.getItem('pwdAttempts')||'0'))+1;
+      sessionStorage.setItem('pwdAttempts',attempts);
+      if(attempts>=3){
+        pwdLocked=true;
+        document.getElementById('pwdError').textContent='🔒 Too many attempts. Locked for 30 seconds.';
+        setTimeout(()=>{pwdLocked=false;sessionStorage.setItem('pwdAttempts','0');document.getElementById('pwdError').textContent='';},30000);
+      }
+    }
+  }catch(e){
+    btn.disabled=false;
+    document.getElementById('pwdError').style.color='#E53E3E';
+    document.getElementById('pwdError').textContent='Connection error — check GAS deployment.';
+  }
+}
+
+/* ── DRIVE IMAGE → DATA URL (for PDF canvas capture) ──
+   Fetches image bytes via fetch() and converts to base64 dataURL.
+   This avoids the CORS-tainted-canvas problem entirely since the
+   <img> never needs crossorigin attribute — we replace src with
+   dataURL just before capture. */
+async function toDataURL(url){
+  try{
+    const res=await fetch(url,{mode:'cors'});
+    if(!res.ok)throw new Error('fetch failed');
+    const blob=await res.blob();
+    return await new Promise((resolve,reject)=>{
+      const reader=new FileReader();
+      reader.onload=()=>resolve(reader.result);
+      reader.onerror=reject;
+      reader.readAsDataURL(blob);
+    });
+  }catch(e){return null;}
+}
+
+async function inlineImagesForCapture(container){
+  const imgs=container.querySelectorAll('img[data-driveid]');
+  await Promise.all(Array.from(imgs).map(async img=>{
+    const id=img.getAttribute('data-driveid');
+    if(!id)return;
+    const durl=await toDataURL(driveThumbUrl(id,'w600'));
+    if(durl) img.src=durl;
+  }));
+  // Also inline plain-src images (logos without data-driveid)
+  const plainImgs=container.querySelectorAll('img:not([data-driveid])');
+  await Promise.all(Array.from(plainImgs).map(async img=>{
+    if(img.src.includes('drive.google.com')){
+      const durl=await toDataURL(img.src);
+      if(durl) img.src=durl;
+    }
+  }));
+}
+
+/* ── PDF GENERATION ── */
+async function generatePDF(SECTIONS){
+  const{jsPDF}=window.jspdf;
   const goBtn=document.getElementById('pdfGoBtn');
+  openPdfModal();
   const prog=document.getElementById('pdfProgress');
   const fill=document.getElementById('pdfProgressFill');
   const lbl=document.getElementById('pdfProgressLabel');
@@ -859,195 +912,180 @@ async function generatePDF(){
   const today=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
   const genTime=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
 
-  /* Helper: add page header + footer + watermark */
-  function decoratePage(pdf,orient,label,pageNum,totalPages){
+  function decoratePage(pdf,orient,label,pageNum){
     const pw=orient==='landscape'?297:210,ph=orient==='landscape'?210:297;
-    // Header
     pdf.setFillColor(12,45,107);pdf.rect(0,0,pw,13,'F');
     pdf.setFillColor(200,150,12);pdf.rect(0,13,pw,1,'F');
     pdf.setTextColor(200,150,12);pdf.setFontSize(6.5);pdf.setFont('helvetica','bold');
     pdf.text('TIDE 2.0 — CLOSURE REPORT  |  KLE CTiE, KLE Technological University, Hubballi',8,9);
     pdf.setTextColor(255,255,255);pdf.text(label.toUpperCase(),pw-8,9,'right');
-    // Watermark
     pdf.saveGraphicsState();
     pdf.setGState(new pdf.GState({opacity:0.04}));
-    pdf.setTextColor(12,45,107);pdf.setFontSize(64);pdf.setFont('helvetica','bold');
+    pdf.setTextColor(12,45,107);pdf.setFontSize(60);pdf.setFont('helvetica','bold');
     pdf.text('KLE CTiE',pw/2,ph/2,'center');
     pdf.restoreGraphicsState();
-    // Footer
     pdf.setFillColor(12,45,107);pdf.rect(0,ph-8,pw,8,'F');
     pdf.setTextColor(200,150,12);pdf.setFontSize(6);pdf.setFont('helvetica','normal');
-    pdf.text('Made with ❤  ~rhc  ·  EE Lab, KLE-CTiE',8,ph-3);
+    pdf.text('Made with \u2764  ~rhc  ·  EE Lab, KLE-CTiE',8,ph-3);
     pdf.setTextColor(255,255,255);
     pdf.text(`Generated: ${today} at ${genTime}`,pw/2,ph-3,'center');
-    pdf.text(`Page ${pageNum}${totalPages?' of '+totalPages:''}`,pw-8,ph-3,'right');
+    pdf.text(`Page ${pageNum}`,pw-8,ph-3,'right');
   }
 
-  /* Helper: render element to canvas */
-  async function elToCanvas(el,width){
-    el.style.cssText=`display:block!important;position:fixed;left:-9999px;top:0;width:${width}px;background:#fff;padding:20px;z-index:-1`;
-    await new Promise(r=>setTimeout(r,400));
-    const c=await html2canvas(el,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#fff',width,logging:false});
-    el.style.cssText='';
-    return c;
-  }
-
-  /* Helper: slice table into pages */
   function getTableRows(tableId){
     const tbody=document.getElementById(tableId);
     return tbody?Array.from(tbody.querySelectorAll('tr')):[];
   }
 
-  // --- COVER PAGE ---
-  lbl.textContent='Rendering cover…';fill.style.width='3%';
-  const coverEl=document.createElement('div');
-  coverEl.style.cssText='width:794px;min-height:1123px;background:#0C2D6B;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Segoe UI,Arial,sans-serif;position:fixed;left:-9999px;top:0;padding:60px 40px';
-  coverEl.innerHTML=`
-    <div style="width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:48px">
-      <div style="display:flex;gap:16px;align-items:center">
-        <img src="https://drive.google.com/thumbnail?id=1iAb5PH3CKSHESopoFGPCuW85Mkb7X26z&sz=w200" style="width:80px;height:80px;object-fit:contain;border:2px solid rgba(200,150,12,.5);border-radius:10px;background:rgba(255,255,255,.1)" crossorigin="anonymous">
-        <img src="https://drive.google.com/thumbnail?id=1NKm28T5GmzpGWxaNeihr1wkX-B98xPOy&sz=w200" style="width:80px;height:80px;object-fit:contain;border:2px solid rgba(200,150,12,.5);border-radius:10px;background:rgba(255,255,255,.1)" crossorigin="anonymous">
+  try{
+    // ── COVER PAGE ──
+    lbl.textContent='Rendering cover…';fill.style.width='3%';
+    const kleCtieURL=await toDataURL(driveThumbUrl('1iAb5PH3CKSHESopoFGPCuW85Mkb7X26z','w200'));
+    const kleTuURL=await toDataURL(driveThumbUrl('1NKm28T5GmzpGWxaNeihr1wkX-B98xPOy','w200'));
+
+    const coverEl=document.createElement('div');
+    coverEl.style.cssText='width:794px;min-height:1123px;background:#0C2D6B;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Segoe UI,Arial,sans-serif;position:fixed;left:-9999px;top:0;padding:60px 40px';
+    coverEl.innerHTML=`
+      <div style="width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:48px">
+        <img src="${kleTuURL||''}" style="width:80px;height:80px;object-fit:contain;border:2px solid rgba(200,150,12,.5);border-radius:10px;background:rgba(255,255,255,.1)">
+        <div style="text-align:center">
+          <div style="color:#C8960C;font-size:11px;font-weight:700;letter-spacing:2px">GOVT OF INDIA · MeitY</div>
+        </div>
+        <img src="${kleCtieURL||''}" style="width:80px;height:80px;object-fit:contain;border:2px solid rgba(200,150,12,.5);border-radius:10px;background:rgba(255,255,255,.1)">
       </div>
-      <img src="https://drive.google.com/thumbnail?id=MEITY_LOGO_ID&sz=w200" style="width:100px;height:60px;object-fit:contain;border:2px solid rgba(200,150,12,.3);border-radius:8px;background:rgba(255,255,255,.1)" crossorigin="anonymous" onerror="this.outerHTML='<div style=\\'border:2px solid rgba(200,150,12,.3);border-radius:8px;padding:12px 20px;color:#F5D97A;font-size:13px;font-weight:700\\'>MeitY<br><span style=\\'font-size:10px;opacity:.7\\'>TIDE 2.0</span></div>'">
-    </div>
-    <div style="text-align:center;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center">
-      <div style="color:#C8960C;font-size:12px;font-weight:700;letter-spacing:4px;text-transform:uppercase;margin-bottom:14px">Government of India · Ministry of Electronics & Information Technology</div>
-      <div style="color:#fff;font-size:48px;font-weight:800;line-height:1.1;margin-bottom:6px">TIDE 2.0</div>
-      <div style="color:#F5D97A;font-size:26px;font-weight:600;margin-bottom:8px">Closure Report</div>
-      <div style="width:80px;height:3px;background:#C8960C;margin:16px auto 24px"></div>
-      <div style="color:#fff;font-size:18px;font-weight:700;margin-bottom:4px">KLE Centre for Technology Innovation &amp; Entrepreneurship</div>
-      <div style="color:rgba(255,255,255,.7);font-size:14px;margin-bottom:4px">KLE Technological University, Hubballi – 580031, Karnataka</div>
-      <div style="color:rgba(255,255,255,.6);font-size:12px;margin-bottom:40px">Centre Type: G2 &nbsp;|&nbsp; MeitY Sanction No: Meity/IPR/TIDE/16(9)/2019 &nbsp;|&nbsp; Dt: 18.12.2019</div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;width:100%;max-width:640px;margin-bottom:48px">
-        ${[['Startups\nSupported',allStartups.length||52],['Fund\nUtilized','₹4.40Cr'],['Jobs\nCreated','120+'],['Patents\nFiled',8]].map(([l,v])=>`
-        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(200,150,12,.35);border-radius:10px;padding:18px 12px;text-align:center">
-          <div style="color:#C8960C;font-size:26px;font-weight:800;line-height:1">${v}</div>
-          <div style="color:rgba(255,255,255,.65);font-size:10px;margin-top:5px;white-space:pre-line">${l}</div>
-        </div>`).join('')}
-      </div>
-      <div style="color:rgba(255,255,255,.35);font-size:11px">Generated: ${today} at ${genTime}</div>
-    </div>`;
-  document.body.appendChild(coverEl);
-  await new Promise(r=>setTimeout(r,500));
-  const coverCanvas=await html2canvas(coverEl,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#0C2D6B',logging:false});
-  document.body.removeChild(coverEl);
+      <div style="text-align:center;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center">
+        <div style="color:#fff;font-size:48px;font-weight:800;line-height:1.1;margin-bottom:6px">TIDE 2.0</div>
+        <div style="color:#F5D97A;font-size:26px;font-weight:600;margin-bottom:8px">Closure Report</div>
+        <div style="width:80px;height:3px;background:#C8960C;margin:16px auto 24px"></div>
+        <div style="color:#fff;font-size:18px;font-weight:700;margin-bottom:4px">KLE Centre for Technology Innovation &amp; Entrepreneurship</div>
+        <div style="color:rgba(255,255,255,.7);font-size:14px;margin-bottom:4px">KLE Technological University, Hubballi – 580031, Karnataka</div>
+        <div style="color:rgba(255,255,255,.6);font-size:12px;margin-bottom:40px">Centre Type: G2 &nbsp;|&nbsp; MeitY Sanction No: Meity/IPR/TIDE/16(9)/2019 &nbsp;|&nbsp; Dt: 18.12.2019</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;width:100%;max-width:640px;margin-bottom:48px">
+          ${[['Startups\nSupported',allStartups.length||52],['Fund\nUtilized','₹4.40Cr'],['Jobs\nCreated','120+'],['Patents\nFiled',8]].map(([l,v])=>`
+          <div style="background:rgba(255,255,255,.07);border:1px solid rgba(200,150,12,.35);border-radius:10px;padding:18px 12px;text-align:center">
+            <div style="color:#C8960C;font-size:26px;font-weight:800;line-height:1">${v}</div>
+            <div style="color:rgba(255,255,255,.65);font-size:10px;margin-top:5px;white-space:pre-line">${l}</div>
+          </div>`).join('')}
+        </div>
+        <div style="color:rgba(255,255,255,.35);font-size:11px">Generated: ${today} at ${genTime}</div>
+      </div>`;
+    document.body.appendChild(coverEl);
+    await new Promise(r=>setTimeout(r,300));
+    const coverCanvas=await html2canvas(coverEl,{scale:2,useCORS:false,backgroundColor:'#0C2D6B',logging:false});
+    document.body.removeChild(coverEl);
 
-  let pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-  pdf.addImage(coverCanvas.toDataURL('image/jpeg',0.92),0,0,210,297);
+    let pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    pdf.addImage(coverCanvas.toDataURL('image/jpeg',0.92),0,0,210,297);
 
-  let globalPage=2;
+    let globalPage=2;
 
-  for(let si=0;si<SECTIONS.length;si++){
-    const sec=SECTIONS[si];
-    const pct=3+Math.round(((si+1)/SECTIONS.length)*90);
-    fill.style.width=pct+'%';
-    lbl.textContent=`Rendering ${sec.label}… (${si+1}/${SECTIONS.length})`;
+    for(let si=0;si<SECTIONS.length;si++){
+      const sec=SECTIONS[si];
+      fill.style.width=(3+Math.round(((si+1)/SECTIONS.length)*90))+'%';
+      lbl.textContent=`Rendering ${sec.label}… (${si+1}/${SECTIONS.length})`;
 
-    const orient=sec.landscape?'landscape':'portrait';
-    const pw=sec.landscape?297:210,ph=sec.landscape?210:297;
-    const contentW=sec.landscape?1200:820;
-    const availH=ph-24; // below header(14) above footer(8) = ph-22 — content area in mm
+      const orient=sec.landscape?'landscape':'portrait';
+      const pw=sec.landscape?297:210,ph=sec.landscape?210:297;
+      const headerFooterMM=24; // 13(header)+1(line)+8(footer)+2(pad)
+      const availH=ph-headerFooterMM-4;
+      const contentW=sec.landscape?1300:850;
 
-    const panel=document.getElementById(sec.panelId);
-    const wasActive=panel.classList.contains('active');
+      if(sec.rowsPerPage&&sec.tableId){
+        // ── PAGINATED TABLE ──
+        const allRows=getTableRows(sec.tableId);
+        const rpp=sec.rowsPerPage;
+        const pages=Math.max(1,Math.ceil(allRows.length/rpp));
 
-    if(sec.rowsPerPage&&sec.tableId){
-      // ── PAGINATED TABLE SECTION ──
-      const allRows=getTableRows(sec.tableId);
-      const rpp=sec.rowsPerPage;
-      const pages=Math.ceil(allRows.length/rpp)||1;
+        for(let p=0;p<pages;p++){
+          lbl.textContent=`Rendering ${sec.label} — page ${p+1}/${pages}…`;
+          const pageEl=document.createElement('div');
+          pageEl.style.cssText=`width:${contentW}px;background:#fff;padding:18px;font-family:Segoe UI,Arial,sans-serif;position:fixed;left:-9999px;top:0`;
+          const titleEl=document.createElement('div');
+          titleEl.style.cssText='font-size:16px;font-weight:700;color:#0C2D6B;border-left:4px solid #C8960C;padding:4px 0 4px 12px;margin-bottom:14px';
+          titleEl.textContent=`${sec.label}${pages>1?` (Page ${p+1} of ${pages})`:''}`;
+          pageEl.appendChild(titleEl);
 
-      for(let p=0;p<pages;p++){
-        lbl.textContent=`Rendering ${sec.label} page ${p+1}/${pages}…`;
+          const tbl=document.createElement('table');
+          tbl.style.cssText='width:100%;border-collapse:collapse;font-size:12px';
+          const origHeader=document.querySelector(sec.headerSel);
+          if(origHeader) tbl.appendChild(origHeader.cloneNode(true));
+          const tbody=document.createElement('tbody');
+          allRows.slice(p*rpp,(p+1)*rpp).forEach(tr=>tbody.appendChild(tr.cloneNode(true)));
+          tbl.appendChild(tbody);
+          pageEl.appendChild(tbl);
+          document.body.appendChild(pageEl);
+          await new Promise(r=>setTimeout(r,150));
 
-        // Build a standalone table page element
-        const pageEl=document.createElement('div');
-        pageEl.style.cssText=`width:${contentW}px;background:#fff;padding:16px;font-family:Segoe UI,Arial,sans-serif;position:fixed;left:-9999px;top:0`;
+          const canvas=await html2canvas(pageEl,{scale:2,useCORS:false,backgroundColor:'#fff',logging:false});
+          document.body.removeChild(pageEl);
 
-        // Section title
-        const titleEl=document.createElement('div');
-        titleEl.style.cssText='font-size:15px;font-weight:700;color:#0C2D6B;border-left:4px solid #C8960C;padding:4px 0 4px 12px;margin-bottom:12px';
-        titleEl.textContent=`${sec.label}${pages>1?` (Page ${p+1} of ${pages})`:''}`;
-        pageEl.appendChild(titleEl);
+          pdf.addPage([pw,ph],orient);
+          decoratePage(pdf,orient,sec.label,globalPage);
+          const imgW=pw-16;
+          const natW=canvas.width/2,natH=canvas.height/2;
+          const scale=Math.min(imgW/natW,availH/natH);
+          const dw=natW*scale,dh=Math.min(natH*scale,availH);
+          pdf.addImage(canvas.toDataURL('image/jpeg',0.92),(pw-dw)/2,15,dw,dh);
+          globalPage++;
+        }
+      } else {
+        // ── FULL SECTION (multi-page screenshot split) ──
+        const panel=document.getElementById(sec.panelId);
+        const wasActive=panel.classList.contains('active');
+        const clone=panel.cloneNode(true);
+        clone.classList.add('active');
+        clone.style.cssText=`display:block;width:${contentW}px;background:#fff;padding:20px;position:fixed;left:-9999px;top:0`;
+        document.body.appendChild(clone);
+        await inlineImagesForCapture(clone);
+        await new Promise(r=>setTimeout(r,300));
 
-        // Table
-        const tbl=document.createElement('table');
-        tbl.style.cssText='width:100%;border-collapse:collapse;font-size:11px';
+        const canvas=await html2canvas(clone,{scale:2,useCORS:false,backgroundColor:'#fff',width:contentW,logging:false});
+        document.body.removeChild(clone);
+        if(!wasActive)panel.classList.remove('active');
 
-        // Header
-        const origHeader=document.querySelector(sec.headerSel);
-        if(origHeader) tbl.appendChild(origHeader.cloneNode(true));
+        // mm height of one page worth of canvas pixels
+        const mmToPx=canvas.width/contentW; // px per CSS px (scale=2 already in canvas.width)
+        const pagePxHeight=Math.floor(availH*(canvas.width/(pw-16))); // px equivalent of available height at full image width scale
+        const totalPages=Math.max(1,Math.ceil(canvas.height/pagePxHeight));
 
-        // Rows for this page
-        const tbody=document.createElement('tbody');
-        const pageRows=allRows.slice(p*rpp,(p+1)*rpp);
-        pageRows.forEach(tr=>tbody.appendChild(tr.cloneNode(true)));
-        tbl.appendChild(tbody);
-        pageEl.appendChild(tbl);
-        document.body.appendChild(pageEl);
+        for(let p=0;p<totalPages;p++){
+          pdf.addPage([pw,ph],orient);
+          decoratePage(pdf,orient,sec.label,globalPage);
 
-        await new Promise(r=>setTimeout(r,200));
-        const canvas=await html2canvas(pageEl,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#fff',logging:false});
-        document.body.removeChild(pageEl);
+          const sy=p*pagePxHeight;
+          const sh=Math.min(pagePxHeight,canvas.height-sy);
+          const sliceCanvas=document.createElement('canvas');
+          sliceCanvas.width=canvas.width;
+          sliceCanvas.height=sh;
+          const ctx=sliceCanvas.getContext('2d');
+          ctx.drawImage(canvas,0,sy,canvas.width,sh,0,0,canvas.width,sh);
 
-        pdf.addPage([pw,ph],orient);
-        decoratePage(pdf,orient,sec.label,globalPage,null);
-
-        const imgW=pw-16,imgH=availH;
-        const natW=canvas.width/2,natH=canvas.height/2;
-        const scale=Math.min(imgW/natW,imgH/natH);
-        const dw=natW*scale,dh=natH*scale;
-        pdf.addImage(canvas.toDataURL('image/jpeg',0.9),(pw-dw)/2,15,dw,Math.min(dh,imgH));
-        globalPage++;
-      }
-    } else {
-      // ── FULL SECTION (screenshot) — split if content taller than one page ──
-      panel.style.cssText=`display:block!important;position:fixed;left:-9999px;top:0;width:${contentW}px;background:#fff;padding:20px;z-index:-1`;
-      await new Promise(r=>setTimeout(r,400));
-      const canvas=await html2canvas(panel,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#fff',width:contentW,logging:false});
-      panel.style.cssText='';
-      if(!wasActive)panel.classList.remove('active');
-
-      // Split into pages based on content height
-      const mmPerPx=(ph-22)/(canvas.height/2)*(canvas.height/2)/(ph-22);
-      const pxPerPage=Math.floor((availH/(ph))*(canvas.height));// px of content per page
-      const totalPages=Math.ceil(canvas.height/pxPerPage);
-
-      for(let p=0;p<totalPages;p++){
-        pdf.addPage([pw,ph],orient);
-        decoratePage(pdf,orient,sec.label,globalPage,null);
-
-        // Crop canvas slice
-        const sliceCanvas=document.createElement('canvas');
-        const sy=p*pxPerPage;
-        const sh=Math.min(pxPerPage,canvas.height-sy);
-        sliceCanvas.width=canvas.width;
-        sliceCanvas.height=sh;
-        const ctx=sliceCanvas.getContext('2d');
-        ctx.drawImage(canvas,0,-sy);
-
-        const imgW=pw-16;
-        const natW=sliceCanvas.width/2,natH=sliceCanvas.height/2;
-        const scale=Math.min(imgW/natW,(availH)/natH);
-        const dw=natW*scale,dh=natH*scale;
-        pdf.addImage(sliceCanvas.toDataURL('image/jpeg',0.9),(pw-dw)/2,15,dw,Math.min(dh,availH));
-        globalPage++;
+          const imgW=pw-16;
+          const natW=sliceCanvas.width/2,natH=sliceCanvas.height/2;
+          const scale=Math.min(imgW/natW,availH/natH);
+          const dw=natW*scale,dh=natH*scale;
+          pdf.addImage(sliceCanvas.toDataURL('image/jpeg',0.92),(pw-dw)/2,15,dw,Math.min(dh,availH));
+          globalPage++;
+        }
       }
     }
 
-    if(!wasActive){panel.classList.remove('active');}
+    fill.style.width='100%';lbl.textContent='Saving PDF…';
+    await new Promise(r=>setTimeout(r,200));
+    pdf.save(`TIDE_2_0_Closure_Report_${new Date().toISOString().slice(0,10)}.pdf`);
+    toast('✅ PDF downloaded successfully!');
+  }catch(err){
+    console.error('PDF generation error:',err);
+    toast('❌ PDF generation failed — check console for details');
   }
 
-  fill.style.width='100%';lbl.textContent='Saving PDF…';
-  await new Promise(r=>setTimeout(r,200));
-  pdf.save(`TIDE_2_0_Closure_Report_${new Date().toISOString().slice(0,10)}.pdf`);
   goBtn.disabled=false;goBtn.textContent='Generate PDF';
   prog.style.display='none';fill.style.width='0%';
-  toast('✅ PDF downloaded successfully!');
+  closePdfModal();
 }
 
 /* ── FALLBACKS ── */
-function renderFallback(){renderFallbackStartups();renderFallbackFinancial();renderFallbackEvents();renderFallbackStories();renderFallbackAchievements();renderCharts();}
+function renderFallback(){renderFallbackStartups();renderFallbackFinancial();renderFallbackEvents();renderFallbackStories();renderFallbackAchievements();renderCharts();renderSignatures([]);}
 function renderFallbackStartups(){statusBadge(document.getElementById('startupStatus'),false);document.getElementById('startupBody').innerHTML='<tr><td colspan="13" style="text-align:center;padding:20px;color:#9B4A1C">⚠ Could not load. Check GAS deployment and click ↻ Refresh.</td></tr>';document.getElementById('resultsCount').textContent='— of —';}
 function renderFallbackFinancial(){
   statusBadge(document.getElementById('financialStatus'),false);
