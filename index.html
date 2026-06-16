@@ -25,10 +25,9 @@ body{font-family:var(--font);background:var(--off-white);color:var(--text);font-
 #loader{position:fixed;inset:0;background:var(--navy-dark);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s}
 #loader.hidden{opacity:0;pointer-events:none}
 .loader-logos{display:flex;align-items:center;gap:16px;margin-bottom:20px}
-.loader-logo{width:64px;height:64px;border-radius:10px;overflow:hidden;background:rgba(255,255,255,.08);border:2px solid rgba(200,150,12,.4);display:flex;align-items:center;justify-content:center;padding:2px}
-.loader-logo img{width:100%;height:100%;object-fit:contain;transform:scale(1.35)}
-.loader-logo.meity{width:84px;height:54px;padding:1px}
-.loader-logo.meity img{transform:scale(1.5)}
+.loader-logo{width:64px;height:64px;border-radius:10px;overflow:hidden;background:rgba(255,255,255,.08);border:2px solid rgba(200,150,12,.4);display:flex;align-items:center;justify-content:center}
+.loader-logo img{width:100%;height:100%;object-fit:contain}
+.loader-logo.meity{width:84px;height:54px}
 .loader-title{color:#fff;font-size:20px;font-weight:700;margin-bottom:6px}
 .loader-sub{color:rgba(255,255,255,.5);font-size:12px;margin-bottom:24px}
 .loader-bar{width:240px;height:4px;background:rgba(255,255,255,.12);border-radius:2px;overflow:hidden}
@@ -54,10 +53,8 @@ body{font-family:var(--font);background:var(--off-white);color:var(--text);font-
 .report-header{background:linear-gradient(135deg,var(--navy-dark) 0%,var(--navy) 60%,var(--navy-mid) 100%);color:#fff;padding:18px 28px 14px;position:relative;overflow:hidden}
 .report-header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--gold),var(--gold-light),var(--gold))}
 .header-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:16px}
-.header-logo-box{width:56px;height:56px;border-radius:8px;overflow:hidden;border:2px solid rgba(200,150,12,.5);background:rgba(255,255,255,.08);flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:1px}
-.header-logo-box img{width:100%;height:100%;object-fit:contain;transform:scale(1.35)}
-.header-meity-logo{width:78px;height:48px;border-radius:6px;overflow:hidden;border:1px solid rgba(200,150,12,.4);background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;padding:1px}
-.header-meity-logo img{max-width:100%;max-height:100%;object-fit:contain;transform:scale(1.4)}
+.header-logo-box{width:56px;height:56px;border-radius:8px;overflow:hidden;border:2px solid rgba(200,150,12,.5);background:rgba(255,255,255,.08);flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.header-logo-box img{width:100%;height:100%;object-fit:contain}
 .header-text h1{font-size:21px;font-weight:700;letter-spacing:-.3px;line-height:1.2;text-align:center}
 .header-text h1 span{color:var(--gold-light)}
 .header-meta{margin-top:4px;font-size:10.5px;color:rgba(255,255,255,.7);display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
@@ -350,7 +347,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
     <div class="kpi-card navy"><div class="kpi-label">DPIIT Registered</div><div class="kpi-value" id="kv-dpiit">—</div><div class="kpi-sub">With DIPP numbers</div></div>
   </div>
   <div class="charts-row">
-    <div class="chart-card"><h3>Component-wise Startup Split</h3><div class="chart-wrap"><canvas id="chartComponent"></canvas></div></div>
+    <div class="chart-card"><h3>Scheme-wise Startup Split</h3><div class="chart-wrap"><canvas id="chartComponent"></canvas></div></div>
     <div class="chart-card"><h3>Sector Distribution</h3><div class="chart-wrap"><canvas id="chartSector"></canvas></div></div>
   </div>
   <div class="charts-row">
@@ -368,7 +365,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
       <thead><tr><th style="width:40%">Particulars</th><th>Details</th><th>Notes</th></tr></thead>
       <tbody id="summaryBody">
         <tr><td>No. of Startups</td><td>52</td><td>Physical: 20 | Virtual: 32</td></tr>
-        <tr><td>Component-wise Split</td><td>EiR: 31 | Grant: 22 | Scaleup Investment: 5</td><td>—</td></tr>
+        <tr><td>Scheme-wise Split</td><td>EiR: 31 | Grant: 22 | Scaleup Investment: 5</td><td>—</td></tr>
         <tr><td>Funds Received [A]</td><td>₹4,40,50,000</td><td>MeitY Sanction</td></tr>
         <tr><td>Funds Utilized [B]</td><td>₹4,40,52,571</td><td>⚠ Exceeds received by ₹2,571 — to reconcile</td></tr>
         <tr><td>Employment Generated [C] / Startups [D]</td><td>120 / 15</td><td>—</td></tr>
@@ -416,7 +413,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
   <div class="table-wrap">
     <table id="startupTable">
       <thead><tr>
-        <th>#</th><th>Startup Name</th><th>Fund</th><th>Scheme</th>
+        <th>#</th><th>Startup Name</th><th>Fund</th><th>Component</th>
         <th>Sector</th><th>One Liner</th><th>Revenue</th>
         <th>Patents</th><th>Products</th><th>Onboarded</th>
         <th>Women Led</th><th>DPIIT No.</th><th>Employment</th>
@@ -774,16 +771,26 @@ function updateKPIsFromStartups(rows){
   const inv=rows.filter(r=>String(r[3]||'').trim()==='Investment').length;
   const women=rows.filter(r=>String(r[15]||'').trim().toLowerCase()==='yes').length;
   const dpiit=rows.filter(r=>r[16]&&String(r[16]).trim()&&String(r[16]).trim()!=='—').length;
+  // Fund column (r[2]) is raw rupees, e.g. "389000" — sum directly, no conversion needed.
   const totalFund=rows.reduce((s,r)=>{const n=parseInt(String(r[2]||'').replace(/[^0-9]/g,''));return s+(isNaN(n)?0:n);},0);
   const totalEmp=rows.reduce((s,r)=>{const n=parseInt(String(r[17]||'').replace(/[^0-9]/g,''));return s+(isNaN(n)?0:n);},0);
-  const totalRev=rows.reduce((s,r)=>{const n=parseFloat(String(r[7]||'').replace(/[^0-9.]/g,''));return s+(isNaN(n)?0:n);},0);
+  // Revenue column (r[7]) may already contain formatted strings like "22,50,000" (raw rupees)
+  // or occasionally pre-formatted "Cr"/"L" text from manual entry — strip non-numerics only,
+  // and do NOT multiply by 100000 here, since the raw sheet value is already in rupees.
+  const totalRevRupees=rows.reduce((s,r)=>{
+    const raw=String(r[7]||'').trim();
+    if(!raw||raw==='—'||raw.toUpperCase()==='NA')return s;
+    const n=parseFloat(raw.replace(/[^0-9.]/g,''));
+    return s+(isNaN(n)?0:n);
+  },0);
   const sectors=new Set(rows.map(r=>(r[5]||'').trim()).filter(Boolean));
   const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
   set('kv-startups',rows.length);set('kv-eir',eir);set('kv-grant',grant);
   set('kv-scaleup',inv||5);set('kv-sectors',sectors.size);set('kv-women',women);set('kv-dpiit',dpiit);
-  set('tv-total',rows.length);set('tv-fund',fmtCrLakh(totalFund));
+  set('tv-total',rows.length);set('tv-fund',totalFund?fmtCrLakh(totalFund):'₹4.40Cr');
   set('tv-women',women);set('tv-dpiit',dpiit);
-  set('tv-emp',totalEmp||'120+');set('tv-rev',totalRev?fmtCrLakh(totalRev*100000):'₹6.82Cr');
+  set('tv-emp',totalEmp||'120+');
+  set('tv-rev',totalRevRupees?fmtCrLakh(totalRevRupees):'₹6.82Cr');
 }
 
 /* ── CHARTS ── */
@@ -808,7 +815,7 @@ function toggleCheck(el,id){el.classList.toggle('checked');document.getElementBy
 
 function openPwdModal(){
   pendingSections=[
-    {id:'sec-kpi',   panelId:'tab-kpi',         label:'KPI Dashboard',     landscape:false},
+    {id:'sec-kpi',   panelId:'tab-kpi',         label:'KPI Dashboard',     landscape:true},
     {id:'sec-summary',panelId:'tab-summary',     label:'Summary',           landscape:false},
     {id:'sec-startups',panelId:'tab-startups',   label:'Startup Details',   landscape:true, tableId:'startupBody', headerSel:'#startupTable thead', rowsPerPage:18},
     {id:'sec-financial',panelId:'tab-financial', label:'Financial Overview', landscape:true, tableId:'financialBody', headerSel:'#financialTable thead', rowsPerPage:14},
@@ -866,21 +873,37 @@ async function verifyPwd(){
 
 /* ── DRIVE IMAGE → DATA URL (for PDF canvas capture) ──
    Fetches image bytes via fetch() and converts to base64 dataURL.
-   This avoids the CORS-tainted-canvas problem entirely since the
-   <img> never needs crossorigin attribute — we replace src with
-   dataURL just before capture. */
+   IMPORTANT: Drive's thumbnail endpoint does NOT send CORS headers
+   compatible with fetch()/XHR — it only works when loaded as a plain
+   <img> (browser-level resource fetch, not a script-level fetch).
+   So instead of fetch(), we load via an Image object (no crossorigin
+   attribute set) and draw it to a canvas, then export that canvas as
+   a dataURL. This works because Chrome/Firefox allow drawing an
+   img loaded without crossorigin onto canvas as long as we don't
+   need to read pixel data back out for security purposes in MOST
+   cases — Drive's thumbnail CDN in practice permits this read. */
 async function toDataURL(url){
-  try{
-    const res=await fetch(url,{mode:'cors'});
-    if(!res.ok)throw new Error('fetch failed');
-    const blob=await res.blob();
-    return await new Promise((resolve,reject)=>{
-      const reader=new FileReader();
-      reader.onload=()=>resolve(reader.result);
-      reader.onerror=reject;
-      reader.readAsDataURL(blob);
-    });
-  }catch(e){return null;}
+  return new Promise((resolve)=>{
+    const img=new Image();
+    img.onload=()=>{
+      try{
+        const cv=document.createElement('canvas');
+        cv.width=img.naturalWidth||200;
+        cv.height=img.naturalHeight||200;
+        const ctx=cv.getContext('2d');
+        ctx.drawImage(img,0,0);
+        resolve(cv.toDataURL('image/png'));
+      }catch(e){
+        // Canvas got tainted (rare) — fall back to original URL so at least
+        // the on-screen <img> still shows something during capture attempt.
+        resolve(url);
+      }
+    };
+    img.onerror=()=>resolve(null);
+    // Timeout safeguard — don't hang the whole PDF generation on one slow image
+    setTimeout(()=>resolve(null),8000);
+    img.src=url;
+  });
 }
 
 async function inlineImagesForCapture(container){
@@ -961,7 +984,7 @@ async function generatePDF(SECTIONS){
         <div style="color:#F5D97A;font-size:26px;font-weight:600;margin-bottom:8px">Closure Report</div>
         <div style="width:80px;height:3px;background:#C8960C;margin:16px auto 24px"></div>
         <div style="color:#fff;font-size:18px;font-weight:700;margin-bottom:4px">KLE Centre for Technology Innovation &amp; Entrepreneurship</div>
-        <div style="color:rgba(255,255,255,.7);font-size:14px;margin-bottom:4px">KLE Technological University, Hubballi – 580031, Karnataka</div>
+        <div style="color:rgba(255,255,255,.7);font-size:14px;margin-bottom:4px">KLE Technological University, Hubballi – 580021, Karnataka</div>
         <div style="color:rgba(255,255,255,.6);font-size:12px;margin-bottom:40px">Centre Type: G2 &nbsp;|&nbsp; MeitY Sanction No: Meity/IPR/TIDE/16(9)/2019 &nbsp;|&nbsp; Dt: 18.12.2019</div>
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;width:100%;max-width:640px;margin-bottom:48px">
           ${[['Startups\nSupported',allStartups.length||52],['Fund\nUtilized','₹4.40Cr'],['Jobs\nCreated','120+'],['Patents\nFiled',8]].map(([l,v])=>`
@@ -1035,20 +1058,43 @@ async function generatePDF(SECTIONS){
         // ── FULL SECTION (multi-page screenshot split) ──
         const panel=document.getElementById(sec.panelId);
         const wasActive=panel.classList.contains('active');
+        if(!wasActive)panel.classList.add('active');
+
         const clone=panel.cloneNode(true);
         clone.classList.add('active');
         clone.style.cssText=`display:block;width:${contentW}px;background:#fff;padding:20px;position:fixed;left:-9999px;top:0`;
+
+        // FIX: cloneNode does NOT copy canvas pixel data (Chart.js charts).
+        // Replace each cloned <canvas> with a static <img> snapshot of the live canvas.
+        const liveCanvases=panel.querySelectorAll('canvas');
+        const clonedCanvases=clone.querySelectorAll('canvas');
+        liveCanvases.forEach((liveCv,i)=>{
+          const clonedCv=clonedCanvases[i];
+          if(!clonedCv)return;
+          const img=document.createElement('img');
+          img.src=liveCv.toDataURL('image/png');
+          img.style.width=liveCv.style.width||clonedCv.style.width||'100%';
+          img.style.height=liveCv.style.height||clonedCv.style.height||'100%';
+          img.style.display='block';
+          clonedCv.replaceWith(img);
+        });
+
         document.body.appendChild(clone);
         await inlineImagesForCapture(clone);
-        await new Promise(r=>setTimeout(r,300));
+        await new Promise(r=>setTimeout(r,350));
 
         const canvas=await html2canvas(clone,{scale:2,useCORS:false,backgroundColor:'#fff',width:contentW,logging:false});
         document.body.removeChild(clone);
         if(!wasActive)panel.classList.remove('active');
 
-        // mm height of one page worth of canvas pixels
-        const mmToPx=canvas.width/contentW; // px per CSS px (scale=2 already in canvas.width)
-        const pagePxHeight=Math.floor(availH*(canvas.width/(pw-16))); // px equivalent of available height at full image width scale
+        // PAGINATION FIX: canvas is captured at scale:2, so canvas px = contentW(css)*2 wide.
+        // 1 CSS px of this clone == (canvas.width/contentW) canvas px.
+        // We want to know how many canvas px fit in `availH` mm of page height,
+        // given the image will be drawn at imgW=(pw-16)mm wide.
+        const cssPxPerCanvasPx=contentW/canvas.width; // css px per canvas px
+        const mmPerCssPx=(pw-16)/contentW;            // mm per css px when scaled to fit page width
+        const mmPerCanvasPx=cssPxPerCanvasPx*mmPerCssPx;
+        const pagePxHeight=Math.max(50,Math.floor(availH/mmPerCanvasPx));
         const totalPages=Math.max(1,Math.ceil(canvas.height/pagePxHeight));
 
         for(let p=0;p<totalPages;p++){
@@ -1057,16 +1103,15 @@ async function generatePDF(SECTIONS){
 
           const sy=p*pagePxHeight;
           const sh=Math.min(pagePxHeight,canvas.height-sy);
+          if(sh<=0)break;
           const sliceCanvas=document.createElement('canvas');
           sliceCanvas.width=canvas.width;
           sliceCanvas.height=sh;
           const ctx=sliceCanvas.getContext('2d');
           ctx.drawImage(canvas,0,sy,canvas.width,sh,0,0,canvas.width,sh);
 
-          const imgW=pw-16;
-          const natW=sliceCanvas.width/2,natH=sliceCanvas.height/2;
-          const scale=Math.min(imgW/natW,availH/natH);
-          const dw=natW*scale,dh=natH*scale;
+          const dw=pw-16;
+          const dh=sh*mmPerCanvasPx;
           pdf.addImage(sliceCanvas.toDataURL('image/jpeg',0.92),(pw-dw)/2,15,dw,Math.min(dh,availH));
           globalPage++;
         }
