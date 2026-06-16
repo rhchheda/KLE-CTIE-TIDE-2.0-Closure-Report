@@ -410,7 +410,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
     <input type="text" id="searchInput" placeholder="🔍  Search name, sector, one-liner…" oninput="filterStartups()">
     <select id="sectorFilter" onchange="filterStartups()"><option value="">All Sectors</option></select>
     <select id="componentFilter" onchange="filterStartups()">
-      <option value="">All Components</option><option>EiR</option><option>Grant</option><option>Investment</option>
+      <option value="">All Schemes</option><option>EiR</option><option>Grant</option><option>Investment</option>
     </select>
     <span class="results-count" id="resultsCount">Loading…</span>
   </div>
@@ -639,7 +639,7 @@ async function loadAllData(){
     if(allTimestamps.length){
       const mostRecent=new Date(Math.max(...allTimestamps));
       document.getElementById('headerUpdated').textContent=
-        `Last updated (Google Sheet): ${mostRecent.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})} at ${mostRecent.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}`;
+        `Last updated (CTIE-Office-Data): ${mostRecent.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})} at ${mostRecent.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}`;
     } else {
       document.getElementById('headerUpdated').textContent='Last updated: unavailable — check GAS authorization';
     }
