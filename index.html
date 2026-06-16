@@ -364,10 +364,10 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
     <table>
       <thead><tr><th style="width:40%">Particulars</th><th>Details</th><th>Notes</th></tr></thead>
       <tbody id="summaryBody">
-        <tr><td>No. of Startups</td><td>52</td><td>Physical: 20 | Virtual: 32</td></tr>
-        <tr><td>Scheme-wise Split</td><td>EiR: 31 | Grant: 22 | Scaleup Investment: 5</td><td>—</td></tr>
+        <tr><td>No. of Startups</td><td id="sm-startup-count">52</td><td id="sm-startup-note">Physical: 20 | Virtual: 32</td></tr>
+        <tr><td>Scheme-wise Split</td><td id="sm-component-split">EiR: 31 | Grant: 22 | Scaleup Investment: 5</td><td>—</td></tr>
         <tr><td>Funds Received [A]</td><td>₹4,40,50,000</td><td>MeitY Sanction</td></tr>
-        <tr><td>Funds Utilized [B]</td><td>₹4,40,52,571</td><td>⚠ Exceeds received by ₹2,571 — to reconcile</td></tr>
+        <tr><td>Funds Utilized [B]</td><td id="sm-fund-utilized">₹4,40,52,571</td><td>⚠ Exceeds received by ₹2,571 — to reconcile</td></tr>
         <tr><td>Employment Generated [C] / Startups [D]</td><td>120 / 15</td><td>—</td></tr>
         <tr><td>Patents Filed [E] / Startups [F]</td><td>8 / 7</td><td>—</td></tr>
         <tr><td>Revenue Generated [G] / Startups [H]</td><td>₹6,82,11,210 / 7</td><td>—</td></tr>
@@ -377,6 +377,10 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
         <tr><td>Deep Engagements [O] / Challenge Grants [P] / Hackathons [Q]</td><td colspan="2">Data Awaited</td></tr>
       </tbody>
     </table>
+  </div>
+  <div class="data-status cached" id="summaryDynamicNote" style="margin-bottom:12px">
+    <span class="dot"></span>
+    Startup count auto-deduplicated from Startup Details (component variants of the same startup counted once)
   </div>
   <div class="sig-section">
     <div class="section-title" style="margin-bottom:8px">Declaration &amp; Signatures</div>
@@ -427,7 +431,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
 <section class="tab-panel" id="tab-financial">
   <div class="section-title">Financial Overview<div class="section-subtitle">Head-wise Fund Utilization | MeitY Sanction No: Meity/IPR/TIDE/16(9)/2019 | Dt: 18.12.2019</div></div>
   <div id="financialStatus"></div>
-  <div class="fin-note">⚠ <strong>Discrepancy Note:</strong> Funds Received [A] = ₹4,40,50,000 &nbsp;|&nbsp; Funds Utilized [B] = ₹4,40,52,571 &nbsp;|&nbsp; Difference of <strong>₹2,571</strong> to be reconciled with MeitY audited records before final submission.</div>
+  <div class="fin-note">⚠ <strong>Data Note:</strong> "Total Released" and row-wise year totals shown below are <strong>recalculated live</strong> by summing each year's column (2018-19 through 2024-25), since the source sheet's own Total/2025-26 cells contain known data-entry errors for some rows. "Total Utilized" per budget head is not separately tracked in the source data — only the overall MeitY-reported figure (₹4,40,52,571) exists, which differs from the live-calculated Released total by a reconciliation gap. This does not affect MeitY's officially submitted closure figures, only this dashboard's row-level breakdown.</div>
   <div class="table-wrap">
     <table id="financialTable">
       <thead><tr>
@@ -592,7 +596,7 @@ function renderSignatures(summaryRows){
 function fetchSheet(sheetName){
   return fetch(`${GAS_URL}?sheet=${encodeURIComponent(sheetName)}`)
     .then(r=>{if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.json();})
-    .then(j=>{if(j.error)throw new Error(j.error);return j.data;});
+    .then(j=>{if(j.error)throw new Error(j.error);return j;}); // return full payload, not just .data
 }
 
 /* ── LOAD ALL ── */
@@ -600,7 +604,7 @@ async function loadAllData(){
   document.getElementById('loader').classList.remove('hidden');
   document.getElementById('loaderStatus').textContent='Fetching from KLE-CTIE-Office…';
   try{
-    const[summaryTable,startupTable,finTable,eventsTable,storiesTable,achTable]=await Promise.all([
+    const[summaryRes,startupRes,finRes,eventsRes,storiesRes,achRes]=await Promise.all([
       fetchSheet('Overall Summary').catch(()=>null),
       fetchSheet('Startup Details').catch(()=>null),
       fetchSheet('Financial Overview').catch(()=>null),
@@ -608,6 +612,13 @@ async function loadAllData(){
       fetchSheet('Success Stories').catch(()=>null),
       fetchSheet('Achievements & Challenges').catch(()=>null),
     ]);
+    const summaryTable=summaryRes?summaryRes.data:null;
+    const startupTable=startupRes?startupRes.data:null;
+    const finTable=finRes?finRes.data:null;
+    const eventsTable=eventsRes?eventsRes.data:null;
+    const storiesTable=storiesRes?storiesRes.data:null;
+    const achTable=achRes?achRes.data:null;
+
     renderStartupsFromSheet(startupTable||[],!!startupTable);
     renderFinancialFromSheet(finTable||[],!!finTable);
     renderEventsFromSheet(eventsTable||[],!!eventsTable);
@@ -618,8 +629,19 @@ async function loadAllData(){
     renderCharts();
     statusBadge(document.getElementById('kpiStatus'),true);
     statusBadge(document.getElementById('summaryStatus'),true);
-    const now=new Date();
-    document.getElementById('headerUpdated').textContent=`Last updated: ${now.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})} at ${now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}`;
+
+    // "Last updated" = actual Google Sheet file modification time, not browser load time.
+    // Take the most recent lastUpdated across all fetched sheets (any tab edit counts).
+    const allTimestamps=[summaryRes,startupRes,finRes,eventsRes,storiesRes,achRes]
+      .filter(r=>r&&r.lastUpdated)
+      .map(r=>new Date(r.lastUpdated));
+    if(allTimestamps.length){
+      const mostRecent=new Date(Math.max(...allTimestamps));
+      document.getElementById('headerUpdated').textContent=
+        `Last updated (Google Sheet): ${mostRecent.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})} at ${mostRecent.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}`;
+    } else {
+      document.getElementById('headerUpdated').textContent='Last updated: unavailable (GAS may need redeployment)';
+    }
   }catch(e){console.warn('Fetch failed:',e);renderFallback();}
   setTimeout(()=>document.getElementById('loader').classList.add('hidden'),600);
 }
@@ -676,22 +698,70 @@ function renderFinancialFromSheet(rows,live){
   statusBadge(document.getElementById('financialStatus'),live);
   if(!rows||rows.length<4){renderFallbackFinancial();return;}
   const data=rows.slice(3).filter(r=>r[0]&&String(r[0]).trim());
-  const fL=v=>{
-    if(!v||String(v).trim()===''||String(v).trim()==='NA')return 'NA';
-    const n=parseFloat(String(v).replace(/[^0-9.-]/g,''));
-    if(isNaN(n))return String(v)||'—';
-    return n>=100000?(n/100000).toFixed(2):n===0?'0':n.toString();
+
+  // ── LIVE RECALCULATION ──
+  // Source sheet has known data-entry errors: many rows have a blank
+  // "Total Utilized" (col 11) cell, and at least one row's "2025-26" /
+  // "Total Released" cells contain the full lifetime total instead of
+  // a single year's figure (PDF→Excel conversion misplacement).
+  // Rather than trust the sheet's own Total/2025-26/TotalUtilized cells,
+  // we recompute Total Released as the sum of the 8 year columns
+  // (2018-19 .. 2024-25, i.e. cols 2-9) for every row, live, every load.
+  // This sidesteps the corrupted cells entirely and self-corrects if the
+  // sheet is fixed later, since it's derived rather than read.
+  const parseNum=v=>{
+    if(v===undefined||v===null)return null;
+    const s=String(v).trim();
+    if(!s||s==='NA'||s==='—'||s.toUpperCase()==='NAN')return null;
+    const n=parseFloat(s.replace(/[^0-9.-]/g,''));
+    return isNaN(n)?null:n;
   };
-  document.getElementById('financialBody').innerHTML=data.map(r=>{
-    const isTotal=String(r[0]||'').toUpperCase().includes('TOTAL')||String(r[1]||'').toUpperCase().includes('TOTAL');
-    return `<tr${isTotal?' class="fin-total"':''}>
+  // Detect unit: sheet stores raw rupees in year columns for most rows
+  // (e.g. 270000) — convert to lakhs (÷100000) for display consistency
+  // with the "₹ Lakhs" column headers.
+  const toLakhs=raw=>{
+    const n=parseNum(raw);
+    if(n===null)return null;
+    return n>=1000?n/100000:n; // values already small (e.g. "85.00") stay as-is
+  };
+
+  let grandTotalReleasedLakhs=0;
+  const computedRows=data.map(r=>{
+    const isTotalRow=String(r[0]||'').toUpperCase().includes('TOTAL')||String(r[1]||'').toUpperCase().includes('TOTAL');
+    if(isTotalRow)return {raw:r,isTotal:true};
+    const yearCols=[r[2],r[3],r[4],r[5],r[6],r[7],r[8],r[9]].map(toLakhs);
+    const rowSum=yearCols.reduce((s,v)=>s+(v||0),0);
+    grandTotalReleasedLakhs+=rowSum;
+    return {raw:r,isTotal:false,yearLakhs:yearCols,rowTotalLakhs:rowSum};
+  });
+
+  const fmtCell=v=>v===null?'NA':(v===0?'0':v.toFixed(2));
+
+  document.getElementById('financialBody').innerHTML=computedRows.map(({raw:r,isTotal,yearLakhs,rowTotalLakhs})=>{
+    if(isTotal){
+      // Recomputed grand total row — ignore sheet's own broken Total cell
+      const yearTotals=[2,3,4,5,6,7,8,9].map(ci=>{
+        return computedRows.reduce((s,row)=>row.yearLakhs?s+(row.yearLakhs[ci-2]||0):s,0);
+      });
+      return `<tr class="fin-total">
+        <td colspan="2">TOTAL <span style="font-size:9px;opacity:.7">(recalculated)</span></td>
+        ${yearTotals.map(v=>`<td>${v.toFixed(2)}</td>`).join('')}
+        <td>${grandTotalReleasedLakhs.toFixed(2)}</td>
+        <td>—</td>
+      </tr>`;
+    }
+    const rowReleased=rowTotalLakhs.toFixed(2);
+    return `<tr>
       <td>${fmt(r[0])}</td><td>${fmt(r[1])}</td>
-      <td>${fL(r[2])}</td><td>${fL(r[3])}</td><td>${fL(r[4])}</td>
-      <td>${fL(r[5])}</td><td>${fL(r[6])}</td><td>${fL(r[7])}</td>
-      <td>${fL(r[8])}</td><td>${fL(r[9])}</td>
-      <td>${fL(r[10])}</td><td>${fL(r[11])}</td>
+      ${yearLakhs.map(v=>`<td>${fmtCell(v)}</td>`).join('')}
+      <td style="font-weight:700">${rowReleased}</td>
+      <td style="color:var(--gray-500);font-style:italic">Not reported</td>
     </tr>`;
   }).join('');
+
+  // Surface the live-calculated grand total wherever else it's referenced
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  set('sm-fund-utilized', `₹${(grandTotalReleasedLakhs*100000).toLocaleString('en-IN',{maximumFractionDigits:0})} (recalculated; "Utilized" not separately tracked per row in source)`);
 }
 
 /* ── EVENTS ── */
@@ -784,13 +854,36 @@ function updateKPIsFromStartups(rows){
     return s+(isNaN(n)?0:n);
   },0);
   const sectors=new Set(rows.map(r=>(r[5]||'').trim()).filter(Boolean));
+
+  // ── DEDUPLICATION: same startup can appear multiple times under different
+  // funding components (e.g. "Armtronix IoT Pvt Ltd" under both Grant and
+  // ScaleUp). Count UNIQUE startup names for the official "No. of Startups"
+  // figure, matching how the original PDF's "52" was derived (58 component
+  // rows − 6 duplicate-name rows = 52 unique startups), while still using
+  // the FULL row count for component-wise splits (EiR/Grant/Scaleup counts
+  // are correctly per-component, not per-startup). ──
+  const normalizeName=n=>String(n||'').trim().toLowerCase().replace(/[.,]/g,'').replace(/\s+/g,' ');
+  const uniqueNames=new Set(rows.map(r=>normalizeName(r[1])).filter(Boolean));
+  const uniqueStartupCount=uniqueNames.size;
+
   const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  // KPI Dashboard cards show component-row totals (58) since these track
+  // funding instances, not unique startups — labelled accordingly.
   set('kv-startups',rows.length);set('kv-eir',eir);set('kv-grant',grant);
   set('kv-scaleup',inv||5);set('kv-sectors',sectors.size);set('kv-women',women);set('kv-dpiit',dpiit);
   set('tv-total',rows.length);set('tv-fund',totalFund?fmtCrLakh(totalFund):'₹4.40Cr');
   set('tv-women',women);set('tv-dpiit',dpiit);
   set('tv-emp',totalEmp||'120+');
   set('tv-rev',totalRevRupees?fmtCrLakh(totalRevRupees):'₹6.82Cr');
+
+  // Overall Summary "No. of Startups" — unique count, dynamic, never hardcoded.
+  set('sm-startup-count',uniqueStartupCount);
+  const dupCount=rows.length-uniqueStartupCount;
+  document.getElementById('sm-startup-note').textContent=
+    dupCount>0
+      ? `${rows.length} funding records across components (${dupCount} startup${dupCount>1?'s':''} appear under multiple components)`
+      : `${rows.length} funding records, all unique startups`;
+  set('sm-component-split',`EiR: ${eir} | Grant: ${grant} | Scaleup Investment: ${inv}`);
 }
 
 /* ── CHARTS ── */
