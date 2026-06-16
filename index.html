@@ -347,7 +347,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
     <div class="kpi-card navy"><div class="kpi-label">DPIIT Registered</div><div class="kpi-value" id="kv-dpiit">—</div><div class="kpi-sub">With DIPP numbers</div></div>
   </div>
   <div class="charts-row">
-    <div class="chart-card"><h3>Scheme-wise Startup Split</h3><div class="chart-wrap"><canvas id="chartComponent"></canvas></div></div>
+    <div class="chart-card"><h3>Component-wise Startup Split</h3><div class="chart-wrap"><canvas id="chartComponent"></canvas></div></div>
     <div class="chart-card"><h3>Sector Distribution</h3><div class="chart-wrap"><canvas id="chartSector"></canvas></div></div>
   </div>
   <div class="charts-row">
@@ -365,7 +365,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
       <thead><tr><th style="width:40%">Particulars</th><th>Details</th><th>Notes</th></tr></thead>
       <tbody id="summaryBody">
         <tr><td>No. of Startups</td><td id="sm-startup-count">52</td><td id="sm-startup-note">Physical: 20 | Virtual: 32</td></tr>
-        <tr><td>Scheme-wise Split</td><td id="sm-component-split">EiR: 31 | Grant: 22 | Scaleup Investment: 5</td><td>—</td></tr>
+        <tr><td>Component-wise Split</td><td id="sm-component-split">EiR: 31 | Grant: 22 | Scaleup Investment: 5</td><td>—</td></tr>
         <tr><td>Funds Received [A]</td><td>₹4,40,50,000</td><td>MeitY Sanction</td></tr>
         <tr><td>Funds Utilized [B]</td><td id="sm-fund-utilized">₹4,40,52,571</td><td>⚠ Exceeds received by ₹2,571 — to reconcile</td></tr>
         <tr><td>Employment Generated [C] / Startups [D]</td><td>120 / 15</td><td>—</td></tr>
@@ -396,7 +396,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
         <div class="sig-img-wrap" id="sig2Wrap"><div class="img-ph"><div class="ico">✍</div><div class="lbl">Signature loading…</div></div></div>
         <div class="sig-line"></div>
         <div class="sig-name">Dr. Vinayak Hosamani</div>
-        <div class="sig-desig">Director, KLE CTiE<br>KLE Technological University, Hubballi – 580021</div>
+        <div class="sig-desig">Director, KLE CTiE<br>KLE Technological University, Hubballi – 580031</div>
       </div>
     </div>
   </div>
@@ -410,7 +410,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
     <input type="text" id="searchInput" placeholder="🔍  Search name, sector, one-liner…" oninput="filterStartups()">
     <select id="sectorFilter" onchange="filterStartups()"><option value="">All Sectors</option></select>
     <select id="componentFilter" onchange="filterStartups()">
-      <option value="">All Schemes</option><option>EiR</option><option>Grant</option><option>Investment</option>
+      <option value="">All Components</option><option>EiR</option><option>Grant</option><option>Investment</option>
     </select>
     <span class="results-count" id="resultsCount">Loading…</span>
   </div>
@@ -1077,7 +1077,7 @@ async function generatePDF(SECTIONS){
         <div style="color:#F5D97A;font-size:26px;font-weight:600;margin-bottom:8px">Closure Report</div>
         <div style="width:80px;height:3px;background:#C8960C;margin:16px auto 24px"></div>
         <div style="color:#fff;font-size:18px;font-weight:700;margin-bottom:4px">KLE Centre for Technology Innovation &amp; Entrepreneurship</div>
-        <div style="color:rgba(255,255,255,.7);font-size:14px;margin-bottom:4px">KLE Technological University, Hubballi – 580021, Karnataka</div>
+        <div style="color:rgba(255,255,255,.7);font-size:14px;margin-bottom:4px">KLE Technological University, Hubballi – 580031, Karnataka</div>
         <div style="color:rgba(255,255,255,.6);font-size:12px;margin-bottom:40px">Centre Type: G2 &nbsp;|&nbsp; MeitY Sanction No: Meity/IPR/TIDE/16(9)/2019 &nbsp;|&nbsp; Dt: 18.12.2019</div>
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;width:100%;max-width:640px;margin-bottom:48px">
           ${[['Startups\nSupported',allStartups.length||52],['Fund\nUtilized','₹4.40Cr'],['Jobs\nCreated','120+'],['Patents\nFiled',8]].map(([l,v])=>`
