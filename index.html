@@ -424,7 +424,10 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
 </footer>
 
 <script>
-const PUB_ID = '2PACX-1vQmVtSrekZx_nQm_rZS6i-rESHA8nTMWRVeHBqa5AKzUj0zuaTNFQ_fEIOlH8xYXUQEk--0P9uVn9DZ';
+// Regular Google Sheet ID (the ID in your normal /edit URL).
+// REQUIRED: Share → General access → "Anyone with the link" → Viewer.
+// ("Publish to web" alone is NOT sufficient for this endpoint.)
+const SHEET_ID = '1Af3InPxGXGW_v3O69SrP9Qe3-k8QEqC__YYu1oXrr1o';
 const NAVY='#0C2D6B', GOLD='#C8960C', TEAL='#1A7A6E';
 let charts = {};
 let allStartups = [];
@@ -452,10 +455,15 @@ function fmt(v) {
 
 /* ── GOOGLE SHEETS FETCH ────────────────── */
 async function fetchSheet(sheetName) {
-  const url = `https://docs.google.com/spreadsheets/d/e/${PUB_ID}/pub?output=gviz&tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
+  // The real, working Google Visualization API endpoint.
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
   const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status} fetching "${sheetName}"`);
   const text = await res.text();
-  // Strip Google's callback wrapper
+  if (text.trim().startsWith('<')) {
+    // Got an HTML page (login/error) instead of JSON => sheet not shared publicly
+    throw new Error(`"${sheetName}" returned HTML, not JSON — check sharing settings`);
+  }
   const json = JSON.parse(text.replace(/^[^\(]+\(/, '').replace(/\);?\s*$/, ''));
   return json.table;
 }
@@ -476,42 +484,44 @@ async function loadAllData() {
   document.getElementById('loader').classList.remove('hidden');
   document.getElementById('loaderStatus').textContent = 'Fetching data from Google Sheets…';
 
-  try {
-    // Load each sheet in parallel
-    const [summaryTable, startupTable, finTable, eventsTable, storiesTable, achTable] = await Promise.all([
-      fetchSheet('Overall Summary').catch(() => null),
-      fetchSheet('Startup Details').catch(() => null),
-      fetchSheet('Financial Overview').catch(() => null),
-      fetchSheet('Events Snapshot').catch(() => null),
-      fetchSheet('Success Stories').catch(() => null),
-      fetchSheet('Achievements & Challenges').catch(() => null),
-    ]);
+  const sheetNames = ['Overall Summary','Startup Details','Financial Overview','Events Snapshot','Success Stories','Achievements & Challenges'];
+  const errors = [];
 
-    document.getElementById('loaderStatus').textContent = 'Rendering…';
+  const results = await Promise.all(sheetNames.map(name =>
+    fetchSheet(name).catch(err => {
+      errors.push(`${name}: ${err.message}`);
+      return null;
+    })
+  ));
+  const [summaryTable, startupTable, finTable, eventsTable, storiesTable, achTable] = results;
 
-    const startupRows = tableToRows(startupTable);
-    const finRows     = tableToRows(finTable);
-    const eventRows   = tableToRows(eventsTable);
-    const storyRows   = tableToRows(storiesTable);
-    const achRows     = tableToRows(achTable);
-
-    // Render each section
-    renderStartupsFromSheet(startupRows, !!startupTable);
-    renderFinancialFromSheet(finRows, !!finTable);
-    renderEventsFromSheet(eventRows, !!eventsTable);
-    renderStoriesFromSheet(storyRows, !!storiesTable);
-    renderAchievementsFromSheet(achRows, !!achTable);
-    updateKPIsFromStartups(allStartups);
-    renderCharts();
-
-    statusBadge(document.getElementById('kpiStatus'), true);
-    statusBadge(document.getElementById('summaryStatus'), true);
-
-  } catch (e) {
-    console.warn('Sheet fetch failed:', e);
-    document.getElementById('loaderStatus').textContent = 'Sheet not published — using built-in data';
-    renderFallback();
+  if (errors.length) {
+    console.warn('Sheet fetch issues:\n' + errors.join('\n'));
   }
+  if (errors.length === sheetNames.length) {
+    // Every single sheet failed — show the real reason, not a generic message
+    document.getElementById('loaderStatus').textContent = errors[0] || 'Could not reach Google Sheets';
+  } else {
+    document.getElementById('loaderStatus').textContent = 'Rendering…';
+  }
+
+  const startupRows = tableToRows(startupTable);
+  const finRows     = tableToRows(finTable);
+  const eventRows   = tableToRows(eventsTable);
+  const storyRows   = tableToRows(storiesTable);
+  const achRows     = tableToRows(achTable);
+
+  // Render each section — each one independently falls back if its own sheet failed
+  renderStartupsFromSheet(startupRows, !!startupTable);
+  renderFinancialFromSheet(finRows, !!finTable);
+  renderEventsFromSheet(eventRows, !!eventsTable);
+  renderStoriesFromSheet(storyRows, !!storiesTable);
+  renderAchievementsFromSheet(achRows, !!achTable);
+  updateKPIsFromStartups(allStartups);
+  renderCharts();
+
+  statusBadge(document.getElementById('kpiStatus'), !!startupTable);
+  statusBadge(document.getElementById('summaryStatus'), !!summaryTable);
 
   setTimeout(() => document.getElementById('loader').classList.add('hidden'), 600);
 }
@@ -802,7 +812,7 @@ function renderFallback() {
 function renderFallbackStartups() {
   statusBadge(document.getElementById('startupStatus'), false);
   document.getElementById('startupBody').innerHTML =
-    '<tr><td colspan="13" style="text-align:center;padding:20px;color:#9B4A1C">⚠ Could not load from Google Sheets. Please publish the Sheet (File → Share → Publish to web) then click ↻ Refresh Data.</td></tr>';
+    '<tr><td colspan="13" style="text-align:center;padding:20px;color:#9B4A1C">⚠ Could not load from Google Sheets. In your Sheet, click Share → General access → "Anyone with the link" → Viewer, then click ↻ Refresh Data.</td></tr>';
   document.getElementById('resultsCount').textContent = '— of —';
 }
 
@@ -825,13 +835,13 @@ function renderFallbackFinancial() {
 function renderFallbackEvents() {
   statusBadge(document.getElementById('eventsStatus'), false);
   document.getElementById('eventsGrid').innerHTML =
-    '<div style="text-align:center;padding:30px;color:#9B4A1C">⚠ Could not load events. Publish the Google Sheet and click ↻ Refresh Data.</div>';
+    '<div style="text-align:center;padding:30px;color:#9B4A1C">⚠ Could not load events. Share the Sheet as "Anyone with the link" and click ↻ Refresh Data.</div>';
 }
 
 function renderFallbackStories() {
   statusBadge(document.getElementById('storiesStatus'), false);
   document.getElementById('storiesGrid').innerHTML =
-    '<div style="text-align:center;padding:30px;color:#9B4A1C;grid-column:1/-1">⚠ Could not load success stories. Publish the Google Sheet and click ↻ Refresh Data.</div>';
+    '<div style="text-align:center;padding:30px;color:#9B4A1C;grid-column:1/-1">⚠ Could not load success stories. Share the Sheet as "Anyone with the link" and click ↻ Refresh Data.</div>';
 }
 
 function fallbackAch() {
