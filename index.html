@@ -19,7 +19,6 @@
 html{scroll-behavior:smooth}
 body{font-family:var(--font);background:var(--off-white);color:var(--text);font-size:14px;line-height:1.6}
 
-/* LOADER */
 #loader{position:fixed;inset:0;background:var(--navy-dark);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s}
 #loader.hidden{opacity:0;pointer-events:none}
 .loader-logo{width:80px;height:80px;border-radius:12px;overflow:hidden;margin-bottom:20px;background:rgba(255,255,255,.08);border:2px solid rgba(200,150,12,.4)}
@@ -29,42 +28,38 @@ body{font-family:var(--font);background:var(--off-white);color:var(--text);font-
 .loader-bar{width:240px;height:4px;background:rgba(255,255,255,.12);border-radius:2px;overflow:hidden}
 .loader-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:2px;animation:load 2s ease-in-out infinite}
 @keyframes load{0%{width:0;margin-left:0}50%{width:70%;margin-left:0}100%{width:0;margin-left:100%}}
-.loader-status{color:rgba(255,255,255,.4);font-size:11px;margin-top:12px}
+.loader-status{color:rgba(255,255,255,.45);font-size:11px;margin-top:12px;max-width:320px;text-align:center}
 
-/* HEADER */
-.report-header{background:linear-gradient(135deg,var(--navy-dark) 0%,var(--navy) 60%,var(--navy-mid) 100%);color:#fff;padding:28px 40px 22px;position:relative;overflow:hidden}
+.report-header{background:linear-gradient(135deg,var(--navy-dark) 0%,var(--navy) 60%,var(--navy-mid) 100%);color:#fff;padding:26px 40px 20px;position:relative;overflow:hidden}
 .report-header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--gold),var(--gold-light),var(--gold))}
 .header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:20px}
-.header-logo{width:68px;height:68px;border-radius:8px;overflow:hidden;border:2px solid rgba(200,150,12,.5);flex-shrink:0;background:rgba(255,255,255,.08)}
+.header-logo{width:64px;height:64px;border-radius:8px;overflow:hidden;border:2px solid rgba(200,150,12,.5);flex-shrink:0;background:rgba(255,255,255,.08)}
 .header-logo img{width:100%;height:100%;object-fit:contain}
-.header-text h1{font-size:24px;font-weight:700;letter-spacing:-.3px;line-height:1.2}
+.header-text h1{font-size:23px;font-weight:700;letter-spacing:-.3px;line-height:1.2}
 .header-text h1 span{color:var(--gold-light)}
 .header-meta{margin-top:5px;font-size:12px;color:rgba(255,255,255,.7);display:flex;flex-wrap:wrap;gap:14px}
 .header-meta span::before{content:'▸ ';color:var(--gold-light)}
+.last-updated{font-size:11px;color:rgba(255,255,255,.5);margin-top:4px;font-style:italic}
 .header-actions{margin-left:auto;display:flex;gap:10px;flex-shrink:0}
-.btn{padding:9px 18px;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+.btn{padding:9px 16px;border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
 .btn-print{background:var(--gold);color:var(--navy-dark)}
 .btn-print:hover{background:var(--gold-light)}
 .btn-refresh{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.2)}
 .btn-refresh:hover{background:rgba(255,255,255,.2)}
 
-/* TAB BAR */
 .tab-bar{background:var(--navy-dark);border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:100}
 .tab-bar-inner{max-width:1200px;margin:0 auto;display:flex;overflow-x:auto}
 .tab-btn{padding:12px 18px;background:none;border:none;color:rgba(255,255,255,.6);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-3px;transition:all .2s}
 .tab-btn:hover{color:var(--gold-light)}
 .tab-btn.active{color:var(--gold-light);border-bottom-color:var(--gold)}
 
-/* MAIN */
 .main{max-width:1200px;margin:0 auto;padding:28px 20px 80px}
 .tab-panel{display:none}
 .tab-panel.active{display:block}
 
-/* SECTION TITLE */
 .section-title{font-size:16px;font-weight:700;color:var(--navy);border-left:4px solid var(--gold);padding:5px 0 5px 14px;margin-bottom:18px}
 .section-subtitle{font-size:11px;font-weight:400;color:var(--gray-500);margin-top:2px}
 
-/* KPI CARDS */
 .kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:12px;margin-bottom:28px}
 .kpi-card{background:#fff;border-radius:var(--radius);border-top:4px solid var(--gold);box-shadow:var(--shadow);padding:16px 14px 12px;transition:transform .2s,box-shadow .2s}
 .kpi-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
@@ -75,13 +70,11 @@ body{font-family:var(--font);background:var(--off-white);color:var(--text);font-
 .kpi-value{font-size:26px;font-weight:800;color:var(--navy);line-height:1.1;margin:5px 0 3px}
 .kpi-sub{font-size:11px;color:var(--gray-500)}
 
-/* CHARTS */
 .charts-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px}
 .chart-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
 .chart-card h3{font-size:12px;font-weight:700;color:var(--navy);margin-bottom:12px}
 .chart-wrap{position:relative;height:200px}
 
-/* TABLES */
 .table-wrap{overflow-x:auto;border-radius:var(--radius);box-shadow:var(--shadow)}
 table{width:100%;border-collapse:collapse;background:#fff;font-size:12px}
 thead th{background:var(--navy);color:#fff;padding:10px 11px;text-align:left;font-size:11px;font-weight:600;letter-spacing:.3px;white-space:nowrap;position:sticky;top:0}
@@ -94,13 +87,11 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
 .badge-grant{background:#E6F4EA;color:#1A7A3C}
 .badge-inv{background:#FEF3C7;color:#92400E}
 
-/* FILTER BAR */
 .filter-bar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
 .filter-bar input,.filter-bar select{padding:8px 12px;border:1.5px solid var(--gray-300);border-radius:var(--radius);font-size:12px;background:#fff;color:var(--text);flex:1;min-width:150px;outline:none;transition:border-color .2s}
 .filter-bar input:focus,.filter-bar select:focus{border-color:var(--navy)}
 .results-count{font-size:11px;color:var(--gray-500);white-space:nowrap}
 
-/* EVENTS */
 .event-grid{display:grid;gap:14px}
 .event-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;display:grid;grid-template-columns:200px 1fr}
 .event-imgs{background:var(--gray-100);padding:12px;display:flex;flex-direction:column;gap:8px;border-right:1px solid var(--gray-300)}
@@ -116,24 +107,23 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
 .event-outcomes{font-size:12px;color:var(--gray-700)}
 .event-outcomes strong{color:var(--navy)}
 
-/* SUCCESS STORIES */
 .story-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
 .story-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
 .story-header{background:linear-gradient(135deg,var(--navy-dark),var(--navy));padding:14px 18px;display:flex;align-items:center;gap:12px}
-.story-logo{width:46px;height:46px;border-radius:5px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);overflow:hidden;flex-shrink:0}
+.story-logo{width:46px;height:46px;border-radius:5px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .story-logo img{width:100%;height:100%;object-fit:contain}
 .story-name{color:#fff;font-size:13px;font-weight:700}
 .story-sector{color:var(--gold-light);font-size:11px}
 .story-body{padding:14px 18px}
 .story-imgs{display:flex;gap:8px;margin-bottom:12px}
 .story-imgs .img-ph{min-height:70px;flex:1}
+.story-imgs img{width:100%;height:70px;object-fit:cover;border-radius:4px}
 .story-desc{font-size:12px;color:var(--gray-700);margin-bottom:12px;line-height:1.6}
 .story-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .stat-box{background:var(--gray-100);border-radius:4px;padding:8px 10px}
 .stat-lbl{font-size:9px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.5px}
 .stat-val{font-size:13px;font-weight:800;color:var(--navy)}
 
-/* ACHIEVEMENTS */
 .ach-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
 .ach-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:14px 16px;border-left:4px solid var(--gold);display:flex;gap:12px;align-items:flex-start}
 .ach-num{font-size:18px;font-weight:800;color:var(--gold);flex-shrink:0;line-height:1}
@@ -142,30 +132,27 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
 .chal-card{border-left-color:var(--navy-mid)}
 .chal-card .ach-num{color:var(--navy-mid)}
 
-/* FINANCIAL */
-.fin-note{background:#FFF5F5;border-left:4px solid #E53E3E;border-radius:var(--radius);padding:10px 14px;margin-bottom:14px;font-size:11px;color:#742A2A}
+.fin-note{background:#FFF5F5;border-left:4px solid #E53E3E;border-radius:var(--radius);padding:10px 14px;margin-top:14px;font-size:11px;color:#742A2A}
 .fin-total{background:var(--navy)!important}
 .fin-total td{color:#fff!important;font-weight:700!important}
 
-/* SIGNATURE */
 .sig-section{margin-top:36px;padding:22px;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);border-top:4px solid var(--gold)}
 .sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:36px;margin-top:18px}
 .sig-block{text-align:center}
 .sig-img-wrap{width:190px;height:75px;margin:0 auto 10px;border:2px dashed var(--gray-300);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;background:var(--gray-100);overflow:hidden}
 .sig-img-wrap img{max-width:100%;max-height:100%;object-fit:contain}
-.sig-ph{font-size:9px;color:var(--gray-500);text-align:center;padding:6px;line-height:1.5}
 .sig-line{border-top:1.5px solid var(--navy);width:190px;margin:0 auto 7px}
 .sig-name{font-size:13px;font-weight:700;color:var(--navy)}
 .sig-desig{font-size:11px;color:var(--gray-500)}
 
-/* DATA STATUS */
 .data-status{font-size:11px;padding:6px 12px;border-radius:20px;display:inline-flex;align-items:center;gap:6px;margin-bottom:16px}
 .data-status.live{background:#E6F4EA;color:#1A7A3C}
-.data-status.cached{background:#FEF3C7;color:#92400E}
+.data-status.error{background:#FFEEEE;color:#9B1C1C}
 .dot{width:7px;height:7px;border-radius:50%;background:currentColor;animation:pulse 1.5s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.error-banner{background:#FFEEEE;border-left:4px solid #9B1C1C;border-radius:var(--radius);padding:14px 16px;font-size:12px;color:#742A2A;margin-bottom:16px}
+.error-banner code{background:#fff;padding:2px 6px;border-radius:3px;font-size:11px}
 
-/* FOOTER */
 .sticky-footer{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(7,26,62,.96);backdrop-filter:blur(6px);text-align:center;padding:7px 16px;font-size:12px;color:rgba(255,255,255,.7);letter-spacing:.4px;border-top:1px solid rgba(200,150,12,.3)}
 .heart{display:inline-block;color:#E53E3E;animation:throb 1.1s ease-in-out infinite;font-size:13px}
 @keyframes throb{0%,100%{transform:scale(1)}30%{transform:scale(1.35)}60%{transform:scale(.95)}}
@@ -189,7 +176,6 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
 </head>
 <body>
 
-<!-- LOADER -->
 <div id="loader">
   <div class="loader-logo">
     <img src="https://drive.google.com/thumbnail?id=1iAb5PH3CKSHESopoFGPCuW85Mkb7X26z&sz=w200" alt="KLE CTiE">
@@ -197,10 +183,9 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
   <div class="loader-title">TIDE 2.0 — Closure Report</div>
   <div class="loader-sub">KLE CTiE, KLE Technological University, Hubballi</div>
   <div class="loader-bar"><div class="loader-bar-fill"></div></div>
-  <div class="loader-status" id="loaderStatus">Connecting to Google Sheets…</div>
+  <div class="loader-status" id="loaderStatus">Connecting to Apps Script…</div>
 </div>
 
-<!-- HEADER -->
 <header class="report-header">
   <div class="header-inner">
     <div class="header-logo">
@@ -214,6 +199,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
         <span>Centre Type: G2</span>
         <span>MeitY Sanction: 18.12.2019</span>
       </div>
+      <div class="last-updated" id="lastUpdated">Last updated: —</div>
     </div>
     <div class="header-actions">
       <button class="btn btn-refresh" onclick="loadAllData()">↻ Refresh Data</button>
@@ -222,12 +208,11 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
   </div>
 </header>
 
-<!-- TAB BAR -->
 <nav class="tab-bar">
   <div class="tab-bar-inner">
     <button class="tab-btn active" onclick="showTab('kpi',this)">📊 KPI Dashboard</button>
     <button class="tab-btn" onclick="showTab('summary',this)">📋 Summary</button>
-    <button class="tab-btn" onclick="showTab('startups',this)">🚀 Startups (<span id="tabStartupCount">58</span>)</button>
+    <button class="tab-btn" onclick="showTab('startups',this)">🚀 Startups (<span id="tabStartupCount">—</span>)</button>
     <button class="tab-btn" onclick="showTab('financial',this)">💰 Financial</button>
     <button class="tab-btn" onclick="showTab('events',this)">📅 Events</button>
     <button class="tab-btn" onclick="showTab('stories',this)">🏆 Success Stories</button>
@@ -237,59 +222,34 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
 
 <main class="main">
 
-<!-- ── KPI DASHBOARD ─────────────────────── -->
+<!-- KPI DASHBOARD -->
 <section class="tab-panel active" id="tab-kpi">
   <div class="section-title">KPI Dashboard
-    <div class="section-subtitle">Programme Period 2019–2026 | TIDE 2.0 G2 Centre | KLE CTiE</div>
+    <div class="section-subtitle">Live formulas from the Google Sheet's "KPI Dashboard" tab</div>
   </div>
   <div id="kpiStatus"></div>
   <div class="kpi-grid" id="kpiGrid">
-    <div class="kpi-card"><div class="kpi-label">Total Startup Engagements</div><div class="kpi-value" id="kv-startups">58</div><div class="kpi-sub">Across 52 unique startups, multiple schemes</div></div>
-    <div class="kpi-card navy"><div class="kpi-label">EiR Startups</div><div class="kpi-value" id="kv-eir">31</div><div class="kpi-sub">Entrepreneur in Residence</div></div>
-    <div class="kpi-card green"><div class="kpi-label">Grant Startups</div><div class="kpi-value" id="kv-grant">22</div><div class="kpi-sub">Technology Grant</div></div>
-    <div class="kpi-card"><div class="kpi-label">Scaleup Investment</div><div class="kpi-value" id="kv-scaleup">5</div><div class="kpi-sub">Investment Grant</div></div>
-    <div class="kpi-card navy"><div class="kpi-label">Funds Received</div><div class="kpi-value" id="kv-received">₹4.40Cr</div><div class="kpi-sub">MeitY Sanctioned</div></div>
-    <div class="kpi-card green"><div class="kpi-label">Utilization Rate</div><div class="kpi-value" id="kv-util">~100%</div><div class="kpi-sub" id="kv-util-sub">₹4,40,52,571 utilized</div></div>
-    <div class="kpi-card red"><div class="kpi-label">Employment</div><div class="kpi-value" id="kv-emp">120+</div><div class="kpi-sub" id="kv-emp-sub">Via 15 startups</div></div>
-    <div class="kpi-card"><div class="kpi-label">Patents Filed</div><div class="kpi-value" id="kv-patents">8</div><div class="kpi-sub" id="kv-patents-sub">Across 7 startups</div></div>
-    <div class="kpi-card navy"><div class="kpi-label">Revenue Generated</div><div class="kpi-value" id="kv-revenue">₹6.82Cr</div><div class="kpi-sub" id="kv-revenue-sub">Across 7 startups</div></div>
-    <div class="kpi-card green"><div class="kpi-label">Products / MVPs</div><div class="kpi-value" id="kv-products">57</div><div class="kpi-sub" id="kv-products-sub">Across 30 startups</div></div>
-    <div class="kpi-card"><div class="kpi-label">External Funding</div><div class="kpi-value" id="kv-extfund">₹53L</div><div class="kpi-sub" id="kv-extfund-sub">2 startups</div></div>
-    <div class="kpi-card navy"><div class="kpi-label">Workshops</div><div class="kpi-value" id="kv-workshops">13</div><div class="kpi-sub">Capacity building events</div></div>
-    <div class="kpi-card"><div class="kpi-label">Low Engagements</div><div class="kpi-value" id="kv-loweng">10</div><div class="kpi-sub">Programs conducted</div></div>
-    <div class="kpi-card green"><div class="kpi-label">Sectors Covered</div><div class="kpi-value">10+</div><div class="kpi-sub">MedTech, IoT, AI, Agri…</div></div>
-    <div class="kpi-card red"><div class="kpi-label">Women-Led</div><div class="kpi-value">10+</div><div class="kpi-sub">Women cofounders</div></div>
-    <div class="kpi-card navy"><div class="kpi-label">DPIIT Registered</div><div class="kpi-value">20+</div><div class="kpi-sub">Startups with DIPP nos.</div></div>
+    <div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--gray-500)">Loading…</div>
   </div>
   <div class="charts-row">
-    <div class="chart-card"><h3>Scheme-wise Startup Split</h3><div class="chart-wrap"><canvas id="chartComponent"></canvas></div></div>
+    <div class="chart-card"><h3>Scheme-wise Startup Split</h3><div class="chart-wrap"><canvas id="chartScheme"></canvas></div></div>
     <div class="chart-card"><h3>Sector Distribution</h3><div class="chart-wrap"><canvas id="chartSector"></canvas></div></div>
     <div class="chart-card"><h3>Year-wise Fund Utilization (₹ Lakhs)</h3><div class="chart-wrap"><canvas id="chartFund"></canvas></div></div>
     <div class="chart-card"><h3>Key Output Metrics</h3><div class="chart-wrap"><canvas id="chartOutput"></canvas></div></div>
   </div>
 </section>
 
-<!-- ── SUMMARY ────────────────────────────── -->
+<!-- SUMMARY -->
 <section class="tab-panel" id="tab-summary">
   <div class="section-title">Overall Summary
-    <div class="section-subtitle">Key Metrics as reported under TIDE 2.0 Closure</div>
+    <div class="section-subtitle">Key Metrics — derived from KPI Dashboard formulas</div>
   </div>
   <div id="summaryStatus"></div>
   <div class="table-wrap" style="margin-bottom:24px">
     <table>
-      <thead><tr><th style="width:40%">Particulars</th><th>Details</th><th>Notes</th></tr></thead>
+      <thead><tr><th style="width:40%">Particulars</th><th>Value</th><th>Notes</th></tr></thead>
       <tbody id="summaryBody">
-        <tr><td>No. of Startup Engagements (Schemes Awarded)</td><td>58</td><td>Across 52 unique startups — some received multiple schemes</td></tr>
-        <tr><td>Scheme-wise Split</td><td>EiR: 31 | Grant: 22 | Scaleup Investment: 5</td><td>—</td></tr>
-        <tr><td>Funds Received [A]</td><td>₹4,40,50,000</td><td>MeitY Sanction</td></tr>
-        <tr><td>Funds Utilized [B]</td><td>₹4,40,52,571</td><td>⚠ Exceeds received by ₹2,571 — to reconcile</td></tr>
-        <tr><td>Employment Generated [C] / Startups [D]</td><td>120 / 15</td><td>—</td></tr>
-        <tr><td>Patents Filed [E] / Startups [F]</td><td>8 / 7</td><td>—</td></tr>
-        <tr><td>Revenue Generated [G] / Startups [H]</td><td>₹6,82,11,210 / 7</td><td>—</td></tr>
-        <tr><td>Products / Prototypes / MVPs [I] / Startups [J]</td><td>57 / 30</td><td>—</td></tr>
-        <tr><td>External Funding Raised [K] / Startups [L]</td><td>₹53,00,000 / 2</td><td>—</td></tr>
-        <tr><td>Workshops [M] / Low Engagements [N]</td><td>13 / 10</td><td>—</td></tr>
-        <tr><td>Deep Engagements [O] / Challenge Grants [P] / Hackathons [Q]</td><td colspan="2">Data Awaited</td></tr>
+        <tr><td colspan="3" style="text-align:center;padding:20px;color:var(--gray-500)">Loading…</td></tr>
       </tbody>
     </table>
   </div>
@@ -299,116 +259,94 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
     <div class="sig-grid">
       <div class="sig-block">
         <div class="sig-img-wrap">
-          <!-- Signature 1: Upload to GDrive → share → get thumbnail link
-               https://drive.google.com/thumbnail?id=FILE_ID&sz=w300
-               paste in src="" below -->
-          <img src="" alt="Sig - Sunaina Dhanave" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-          <div class="sig-ph" style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%">
-            <div style="font-size:20px;opacity:.25">✍</div>
-            <div>Scanned signature<br>GDrive thumbnail link in src=""</div>
-          </div>
+          <img src="" alt="Sig 1" id="sigImg1" onerror="this.style.display='none'">
         </div>
         <div class="sig-line"></div>
         <div class="sig-name">Sunaina Dhanave</div>
-        <div class="sig-desig">Program Co-ordinator, KLE CTiE<br>KLE Technological University</div>
+        <div class="sig-desig">Program Co-ordinator, KLE CTiE</div>
       </div>
       <div class="sig-block">
         <div class="sig-img-wrap">
-          <!-- Signature 2: same as above -->
-          <img src="" alt="Sig - Dr. Vinayak Hosamani" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-          <div class="sig-ph" style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%">
-            <div style="font-size:20px;opacity:.25">✍</div>
-            <div>Scanned signature<br>GDrive thumbnail link in src=""</div>
-          </div>
+          <img src="" alt="Sig 2" id="sigImg2" onerror="this.style.display='none'">
         </div>
         <div class="sig-line"></div>
         <div class="sig-name">Dr. Vinayak Hosamani</div>
-        <div class="sig-desig">Director, KLE CTiE<br>KLE Technological University, Hubballi – 580021</div>
+        <div class="sig-desig">Director, KLE CTiE, Hubballi – 580021</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── STARTUPS ───────────────────────────── -->
+<!-- STARTUPS -->
 <section class="tab-panel" id="tab-startups">
   <div class="section-title">Startup Details Table
-    <div class="section-subtitle">58 startup-scheme entries across 52 unique startups, supported under TIDE 2.0 — live from Google Sheets</div>
+    <div class="section-subtitle" id="startupSubtitle">Loading from Apps Script…</div>
   </div>
   <div id="startupStatus"></div>
   <div class="filter-bar">
     <input type="text" id="searchInput" placeholder="🔍  Search name, sector, one-liner…" oninput="filterStartups()">
-    <select id="sectorFilter" onchange="filterStartups()">
-      <option value="">All Sectors</option>
-    </select>
-    <select id="componentFilter" onchange="filterStartups()">
+    <select id="sectorFilter" onchange="filterStartups()"><option value="">All Sectors</option></select>
+    <select id="schemeFilter" onchange="filterStartups()">
       <option value="">All Schemes</option>
       <option>EiR</option><option>Grant</option><option>Investment</option>
     </select>
-    <span class="results-count" id="resultsCount">Loading…</span>
+    <span class="results-count" id="resultsCount">—</span>
   </div>
   <div class="table-wrap">
     <table id="startupTable">
       <thead>
         <tr>
           <th>#</th><th>Startup Name</th><th>Fund (₹)</th><th>Scheme</th>
-          <th>Sector</th><th>One Liner</th><th>Revenue (₹L)</th>
+          <th>Sector</th><th>One Liner</th><th>Revenue (₹)</th>
           <th>Patents</th><th>Products</th><th>Onboarded</th>
           <th>Women Led</th><th>DPIIT No.</th><th>Employment</th>
         </tr>
       </thead>
-      <tbody id="startupBody"><tr><td colspan="13" style="text-align:center;padding:30px;color:var(--gray-500)">Loading from Google Sheets…</td></tr></tbody>
+      <tbody id="startupBody"><tr><td colspan="13" style="text-align:center;padding:30px;color:var(--gray-500)">Loading…</td></tr></tbody>
     </table>
   </div>
 </section>
 
-<!-- ── FINANCIAL ──────────────────────────── -->
+<!-- FINANCIAL -->
 <section class="tab-panel" id="tab-financial">
   <div class="section-title">Financial Overview
     <div class="section-subtitle">Head-wise Fund Utilization | MeitY Sanction No: Meity/IPR/TIDE/16(9)/2019 | Dt: 18.12.2019</div>
   </div>
   <div id="financialStatus"></div>
-  <div class="fin-note">⚠ <strong>Discrepancy Note:</strong> Funds Received [A] = ₹4,40,50,000 | Funds Utilized [B] = ₹4,40,52,571 | Difference of <strong>₹2,571</strong> to be reconciled with MeitY audited records before final submission.</div>
   <div class="table-wrap">
     <table>
-      <thead>
-        <tr>
-          <th>#</th><th style="min-width:220px">Budget Head</th>
-          <th>2018-19</th><th>2019-20</th><th>2020-21</th><th>2021-22</th>
-          <th>2022-23</th><th>2023-24</th><th>2024-25</th><th>2025-26</th>
-          <th>Total Released (₹L)</th><th>Total Utilized (₹L)</th>
-        </tr>
-      </thead>
+      <thead id="financialHead"></thead>
       <tbody id="financialBody">
-        <tr><td colspan="12" style="text-align:center;padding:30px;color:var(--gray-500)">Loading from Google Sheets…</td></tr>
+        <tr><td colspan="12" style="text-align:center;padding:30px;color:var(--gray-500)">Loading…</td></tr>
       </tbody>
     </table>
   </div>
   <div id="financialFooterNote"></div>
 </section>
 
-<!-- ── EVENTS ─────────────────────────────── -->
+<!-- EVENTS -->
 <section class="tab-panel" id="tab-events">
   <div class="section-title">Major Events / Engagements / Programs
-    <div class="section-subtitle">13 Workshops + 10 Low Engagement Programs | 2019–2025</div>
+    <div class="section-subtitle" id="eventsSubtitle">Loading…</div>
   </div>
   <div id="eventsStatus"></div>
   <div class="event-grid" id="eventsGrid">
-    <div style="text-align:center;padding:40px;color:var(--gray-500)">Loading from Google Sheets…</div>
+    <div style="text-align:center;padding:40px;color:var(--gray-500)">Loading…</div>
   </div>
 </section>
 
-<!-- ── SUCCESS STORIES ────────────────────── -->
+<!-- SUCCESS STORIES -->
 <section class="tab-panel" id="tab-stories">
   <div class="section-title">Success Stories
     <div class="section-subtitle">Featured startups with notable traction, recognition &amp; milestones</div>
   </div>
   <div id="storiesStatus"></div>
   <div class="story-grid" id="storiesGrid">
-    <div style="text-align:center;padding:40px;color:var(--gray-500)">Loading from Google Sheets…</div>
+    <div style="text-align:center;padding:40px;color:var(--gray-500)">Loading…</div>
   </div>
 </section>
 
-<!-- ── ACHIEVEMENTS ───────────────────────── -->
+<!-- ACHIEVEMENTS -->
 <section class="tab-panel" id="tab-achievements">
   <div class="section-title">Major Achievements &amp; Key Highlights</div>
   <div class="ach-grid" id="achGrid"></div>
@@ -418,21 +356,21 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
 
 </main>
 
-<!-- FOOTER -->
 <footer class="sticky-footer">
   <span>Made with </span><span class="heart">❤</span><span> ~rhc &nbsp;·&nbsp; EE Lab, KLE-CTiE</span>
 </footer>
 
 <script>
-// Regular Google Sheet ID (the ID in your normal /edit URL).
-// REQUIRED: Share → General access → "Anyone with the link" → Viewer.
-// ("Publish to web" alone is NOT sufficient for this endpoint.)
-const SHEET_ID = '1Af3InPxGXGW_v3O69SrP9Qe3-k8QEqC__YYu1oXrr1o';
+/* ════════════════════════════════════════════════════════
+   PASTE YOUR DEPLOYED APPS SCRIPT WEB APP URL HERE
+   (ends in /exec — from Deploy → New deployment → Web app)
+   ════════════════════════════════════════════════════════ */
+const APPS_SCRIPT_URL = 'PASTE_YOUR_/exec_URL_HERE';
+
 const NAVY='#0C2D6B', GOLD='#C8960C', TEAL='#1A7A6E';
 let charts = {};
-let allStartups = [];
+let allStartups = []; // array of row arrays from the API
 
-/* ── UTILITIES ──────────────────────────── */
 function showTab(id, btn) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -440,248 +378,275 @@ function showTab(id, btn) {
   btn.classList.add('active');
 }
 
-function statusBadge(el, live) {
+function statusBadge(el, live, msg) {
   if (!el) return;
-  el.innerHTML = `<div class="data-status ${live ? 'live' : 'cached'}">
-    <span class="dot"></span>
-    ${live ? 'Live data from Google Sheets' : 'Using cached / fallback data'}
-  </div>`;
+  if (live) {
+    el.innerHTML = `<div class="data-status live"><span class="dot"></span>Live data from Google Sheets (via Apps Script)</div>`;
+  } else {
+    el.innerHTML = `<div class="data-status error"><span class="dot"></span>${msg || 'Could not load — see error below'}</div>`;
+  }
 }
 
 function fmt(v) {
-  if (!v || v === '—' || v === 'NA' || v === '') return '—';
+  if (v === null || v === undefined || v === '' || v === '—' || v === 'NA') return '—';
   return v;
 }
 
-/* ── GOOGLE SHEETS FETCH ────────────────── */
-async function fetchSheet(sheetName) {
-  // The real, working Google Visualization API endpoint.
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`HTTP ${res.status} fetching "${sheetName}"`);
-  const text = await res.text();
-  if (text.trim().startsWith('<')) {
-    // Got an HTML page (login/error) instead of JSON => sheet not shared publicly
-    throw new Error(`"${sheetName}" returned HTML, not JSON — check sharing settings`);
+function money(v) {
+  const n = parseFloat(v);
+  if (isNaN(n)) return fmt(v);
+  return '₹' + Math.round(n).toLocaleString('en-IN');
+}
+
+/* ── FETCH FROM APPS SCRIPT ─────────────────────────────── */
+async function fetchAll() {
+  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf('PASTE_YOUR') === 0) {
+    throw new Error('APPS_SCRIPT_URL is not set. Paste your deployed /exec URL into the HTML.');
   }
-  const json = JSON.parse(text.replace(/^[^\(]+\(/, '').replace(/\);?\s*$/, ''));
-  return json.table;
+  const res = await fetch(APPS_SCRIPT_URL);
+  if (!res.ok) throw new Error('HTTP ' + res.status + ' from Apps Script');
+  const json = await res.json();
+  if (!json.ok) throw new Error(json.error || 'Apps Script returned ok:false');
+  return json;
 }
 
-function tableToRows(table) {
-  if (!table || !table.rows) return [];
-  return table.rows.map(row =>
-    (table.cols || []).map((col, i) => {
-      const cell = row.c && row.c[i];
-      if (!cell || cell.v === null || cell.v === undefined) return '';
-      return cell.f !== undefined && cell.f !== null ? cell.f : String(cell.v);
-    })
-  );
-}
-
-/* ── LOAD ALL DATA ──────────────────────── */
+/* ── MAIN LOAD ───────────────────────────────────────────── */
 async function loadAllData() {
   document.getElementById('loader').classList.remove('hidden');
-  document.getElementById('loaderStatus').textContent = 'Fetching data from Google Sheets…';
+  document.getElementById('loaderStatus').textContent = 'Fetching data from Apps Script…';
 
-  const sheetNames = ['Overall Summary','Startup Details','Financial Overview','Events Snapshot','Success Stories','Achievements & Challenges'];
-  const errors = [];
+  try {
+    const data = await fetchAll();
 
-  const results = await Promise.all(sheetNames.map(name =>
-    fetchSheet(name).catch(err => {
-      errors.push(`${name}: ${err.message}`);
-      return null;
-    })
-  ));
-  const [summaryTable, startupTable, finTable, eventsTable, storiesTable, achTable] = results;
+    document.getElementById('lastUpdated').textContent =
+      'Last updated: ' + new Date(data.lastUpdated).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
 
-  if (errors.length) {
-    console.warn('Sheet fetch issues:\n' + errors.join('\n'));
+    renderKPI(data.kpi);
+    renderSummary(data.summary);
+    renderStartups(data.startups);
+    renderFinancial(data.financial);
+    renderEvents(data.events);
+    renderStories(data.stories);
+    renderAchievements(data.achievements);
+    renderCharts();
+
+    statusBadge(document.getElementById('kpiStatus'), true);
+    statusBadge(document.getElementById('summaryStatus'), true);
+
+  } catch (err) {
+    console.error('Load failed:', err);
+    showGlobalError(err.message);
   }
-  if (errors.length === sheetNames.length) {
-    // Every single sheet failed — show the real reason, not a generic message
-    document.getElementById('loaderStatus').textContent = errors[0] || 'Could not reach Google Sheets';
-  } else {
-    document.getElementById('loaderStatus').textContent = 'Rendering…';
-  }
 
-  const startupRows = tableToRows(startupTable);
-  const finRows     = tableToRows(finTable);
-  const eventRows   = tableToRows(eventsTable);
-  const storyRows   = tableToRows(storiesTable);
-  const achRows     = tableToRows(achTable);
-
-  // Render each section — each one independently falls back if its own sheet failed
-  renderStartupsFromSheet(startupRows, !!startupTable);
-  renderFinancialFromSheet(finRows, !!finTable);
-  renderEventsFromSheet(eventRows, !!eventsTable);
-  renderStoriesFromSheet(storyRows, !!storiesTable);
-  renderAchievementsFromSheet(achRows, !!achTable);
-  updateKPIsFromStartups(allStartups);
-  renderCharts();
-
-  statusBadge(document.getElementById('kpiStatus'), !!startupTable);
-  statusBadge(document.getElementById('summaryStatus'), !!summaryTable);
-
-  setTimeout(() => document.getElementById('loader').classList.add('hidden'), 600);
+  setTimeout(() => document.getElementById('loader').classList.add('hidden'), 500);
 }
 
-/* ── STARTUPS FROM SHEET ────────────────── */
-function renderStartupsFromSheet(rows, live) {
-  statusBadge(document.getElementById('startupStatus'), live);
-  if (!rows || rows.length < 3) { renderFallbackStartups(); return; }
+function showGlobalError(message) {
+  const banner = `<div class="error-banner">⚠ <strong>Could not load data.</strong> ${message}<br><br>
+    Checklist: (1) Apps Script is deployed as a Web App with "Anyone" access, (2) the deployed <code>/exec</code> URL is pasted into <code>APPS_SCRIPT_URL</code> in this HTML, (3) sheet tab names match exactly what Code.gs expects.</div>`;
+  ['kpiStatus','summaryStatus','startupStatus','financialStatus','eventsStatus','storiesStatus'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = banner;
+  });
+  document.getElementById('loaderStatus').textContent = message;
+}
 
-  // Row 0 = sheet title, Row 1 = headers, Row 2+ = data
-  const dataRows = rows.slice(2).filter(r => r[0] && r[0].trim() && !isNaN(parseInt(r[0])));
-  allStartups = dataRows;
+/* ── KPI DASHBOARD ───────────────────────────────────────── */
+let kpiMap = {};
 
-  // Build sector options
-  const sectors = [...new Set(dataRows.map(r => r[4]).filter(Boolean).map(s => s.trim()))].sort();
-  const sel = document.getElementById('sectorFilter');
-  sel.innerHTML = '<option value="">All Sectors</option>' + sectors.map(s => `<option>${s}</option>`).join('');
+function renderKPI(kpi) {
+  if (!kpi || !kpi.rows) { document.getElementById('kpiGrid').innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#9B1C1C;padding:20px">No KPI data returned.</div>'; return; }
 
-  renderStartupRows(dataRows);
+  kpiMap = {};
+  kpi.rows.forEach(r => { kpiMap[r[0]] = r[1]; });
+
+  const cards = [
+    ['Total Startup Engagements', kpiMap['Total Startup Engagements'], `Across ${fmt(kpiMap['Unique Startups'])} unique startups`, ''],
+    ['EiR Scheme', kpiMap['EiR Scheme Count'], 'Entrepreneur in Residence', 'navy'],
+    ['Grant Scheme', kpiMap['Grant Scheme Count'], 'Technology Grant', 'green'],
+    ['Investment Scheme', kpiMap['Investment Scheme Count'], 'Scaleup Investment', ''],
+    ['Funds Released', '₹' + fmt(kpiMap['Total Funds Released (₹ Lakhs)']) + 'L', 'MeitY Sanctioned', 'navy'],
+    ['Funds Utilized', '₹' + fmt(kpiMap['Total Funds Utilized (₹ Lakhs)']) + 'L', utilizationPct(), 'green'],
+    ['Employment Generated', kpiMap['Total Employment Generated'], `Via ${fmt(kpiMap['Startups Generating Employment'])} startups`, 'red'],
+    ['Patents Filed', kpiMap['Patents Filed'], `Across ${fmt(kpiMap['Startups With Patents'])} startups`, ''],
+    ['Revenue Generated', money(kpiMap['Total Revenue Generated (₹)']), `Across ${fmt(kpiMap['Startups With Revenue'])} startups`, 'navy'],
+    ['Products / MVPs', kpiMap['Total Products / MVPs'], `Across ${fmt(kpiMap['Startups With Products'])} startups`, 'green'],
+    ['External Funding', money(kpiMap['External Funding Raised (₹)']), `${fmt(kpiMap['Startups With External Funding'])} startups`, ''],
+    ['Workshops Conducted', kpiMap['Workshops Conducted'], 'Capacity building events', 'navy'],
+    ['Women-Led Startups', kpiMap['Women-Led Startups'], 'Women cofounders', 'red'],
+    ['DPIIT Registered', kpiMap['DPIIT Registered Startups'], 'Startups with DIPP nos.', 'navy'],
+    ['Sectors Covered', kpiMap['Sectors Covered'], 'MedTech, IoT, AI, Agri…', 'green'],
+  ];
+
+  document.getElementById('kpiGrid').innerHTML = cards.map(([label, value, sub, cls]) => `
+    <div class="kpi-card ${cls}">
+      <div class="kpi-label">${label}</div>
+      <div class="kpi-value">${fmt(value)}</div>
+      <div class="kpi-sub">${sub}</div>
+    </div>`).join('');
+
+  document.getElementById('tabStartupCount').textContent = fmt(kpiMap['Total Startup Engagements']);
+}
+
+function utilizationPct() {
+  const rate = parseFloat(kpiMap['Fund Utilization Rate']);
+  if (isNaN(rate)) return '';
+  return (rate * 100).toFixed(1) + '% utilized';
+}
+
+/* ── SUMMARY ─────────────────────────────────────────────── */
+function renderSummary(summary) {
+  const tbody = document.getElementById('summaryBody');
+  if (!summary || !summary.rows || !summary.rows.length) {
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:20px;color:#9B1C1C">No summary data returned.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = summary.rows.map(r => `
+    <tr><td>${fmt(r[0])}</td><td>${fmt(r[1])}</td><td>${fmt(r[2])}</td></tr>
+  `).join('');
+}
+
+/* ── STARTUPS ────────────────────────────────────────────── */
+function renderStartups(startups) {
+  if (!startups || !startups.rows) {
+    statusBadge(document.getElementById('startupStatus'), false, 'No startup data returned.');
+    return;
+  }
+  statusBadge(document.getElementById('startupStatus'), true);
+  allStartups = startups.rows;
+
+  const uniqueNames = new Set(allStartups.map(r => (r[1]||'').trim().toLowerCase())).size;
+  document.getElementById('startupSubtitle').textContent =
+    `${allStartups.length} startup-scheme entries across ${uniqueNames} unique startups — live from Google Sheets`;
+
+  const sectors = [...new Set(allStartups.map(r => (r[4]||'').trim()).filter(Boolean))].sort();
+  document.getElementById('sectorFilter').innerHTML =
+    '<option value="">All Sectors</option>' + sectors.map(s => `<option>${s}</option>`).join('');
+
+  renderStartupRows(allStartups);
 }
 
 function renderStartupRows(rows) {
   const tbody = document.getElementById('startupBody');
-  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;padding:20px;color:var(--gray-500)">No results found</td></tr>'; return; }
-
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;padding:20px;color:var(--gray-500)">No results found</td></tr>';
+    document.getElementById('resultsCount').textContent = `0 of ${allStartups.length}`;
+    return;
+  }
   tbody.innerHTML = rows.map(s => {
-    const comp = (s[3] || '').trim();
-    const badge = comp === 'EiR' ? 'badge-eir' : comp === 'Grant' ? 'badge-grant' : 'badge-inv';
-    const fund = s[2] ? '₹' + (parseInt(s[2].replace(/[^0-9]/g,'')) || 0).toLocaleString('en-IN') : '—';
-    return `<tr data-name="${(s[1]||'').toLowerCase()}" data-sector="${(s[4]||'').toLowerCase()}" data-component="${comp.toLowerCase()}">
-      <td>${s[0]||''}</td><td>${s[1]||''}</td>
-      <td style="white-space:nowrap">${fund}</td>
-      <td><span class="badge ${badge}">${comp||'—'}</span></td>
-      <td>${s[4]||'—'}</td><td style="max-width:240px;font-size:11px">${s[5]||'—'}</td>
-      <td>${fmt(s[6])}</td><td>${fmt(s[7])}</td><td>${fmt(s[8])}</td>
-      <td style="white-space:nowrap">${fmt(s[9])}</td>
-      <td>${fmt(s[10])}</td><td>${fmt(s[11])}</td><td>${fmt(s[12])}</td>
+    const scheme = (s[3]||'').trim();
+    const badge = scheme === 'EiR' ? 'badge-eir' : scheme === 'Grant' ? 'badge-grant' : 'badge-inv';
+    return `<tr data-name="${(s[1]||'').toLowerCase()}" data-sector="${(s[4]||'').toLowerCase()}" data-scheme="${scheme.toLowerCase()}">
+      <td>${fmt(s[0])}</td><td>${fmt(s[1])}</td>
+      <td style="white-space:nowrap">${money(s[2])}</td>
+      <td><span class="badge ${badge}">${scheme||'—'}</span></td>
+      <td>${fmt(s[4])}</td><td style="max-width:240px;font-size:11px">${fmt(s[5])}</td>
+      <td>${fmt(s[6])}</td><td>${fmt(s[7])}</td><td>${fmt(s[10])}</td>
+      <td style="white-space:nowrap">${fmt(s[11])}</td>
+      <td>${fmt(s[14])}</td><td>${fmt(s[15])}</td><td>${fmt(s[16])}</td>
     </tr>`;
   }).join('');
   document.getElementById('resultsCount').textContent = `Showing ${rows.length} of ${allStartups.length}`;
 }
 
 function filterStartups() {
-  const q   = document.getElementById('searchInput').value.toLowerCase();
+  const q = document.getElementById('searchInput').value.toLowerCase();
   const sec = document.getElementById('sectorFilter').value.toLowerCase();
-  const cmp = document.getElementById('componentFilter').value.toLowerCase();
+  const sch = document.getElementById('schemeFilter').value.toLowerCase();
   const filtered = allStartups.filter(s => {
     const text = s.join(' ').toLowerCase();
     return (!q || text.includes(q)) &&
            (!sec || (s[4]||'').toLowerCase().includes(sec)) &&
-           (!cmp || (s[3]||'').toLowerCase().includes(cmp));
+           (!sch || (s[3]||'').toLowerCase().includes(sch));
   });
   renderStartupRows(filtered);
 }
 
-/* ── FINANCIAL FROM SHEET ───────────────── */
-function renderFinancialFromSheet(rows, live) {
-  statusBadge(document.getElementById('financialStatus'), live);
-  if (!rows || rows.length < 4) { renderFallbackFinancial(); return; }
-
-  // Skip title row (0), header row (2), use data rows
-  let dataRows = rows.slice(3).filter(r => r[0] && r[0].trim());
-
-  // Pull out any "Note"-style rows (containing ⚠ or starting with "Note")
-  // so they never render as a stray table row — they go below the table instead.
-  const noteRows = dataRows.filter(r => {
-    const joined = r.join(' ');
-    return /⚠|^Note/i.test((r[0]||'') + (r[1]||'')) || /Discrepancy|to be reconciled/i.test(joined);
-  });
-  dataRows = dataRows.filter(r => !noteRows.includes(r));
-
-  // Collapse to a single TOTAL row if duplicates exist (keep the last one)
-  const totalRows = dataRows.filter(r => (r[0]||'').toUpperCase().includes('TOTAL') || (r[1]||'').toUpperCase().includes('TOTAL'));
-  if (totalRows.length > 1) {
-    dataRows = dataRows.filter(r => !totalRows.includes(r));
-    dataRows.push(totalRows[totalRows.length - 1]);
+/* ── FINANCIAL ───────────────────────────────────────────── */
+function renderFinancial(fin) {
+  if (!fin || !fin.headers || !fin.rows) {
+    statusBadge(document.getElementById('financialStatus'), false, 'No financial data returned.');
+    return;
   }
+  statusBadge(document.getElementById('financialStatus'), true);
 
-  const tbody = document.getElementById('financialBody');
-  tbody.innerHTML = dataRows.map((r) => {
-    const isTotal = (r[0]||'').toUpperCase().includes('TOTAL') || (r[1]||'').toUpperCase().includes('TOTAL');
+  document.getElementById('financialHead').innerHTML =
+    '<tr>' + fin.headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
+
+  // Pull out any note-like rows so they never render as a stray table row
+  const noteRows = [];
+  const dataRows = [];
+  fin.rows.forEach(r => {
+    const joined = r.join(' ');
+    if (/⚠|Discrepancy|to be reconciled|^Note/i.test(joined)) noteRows.push(r);
+    else dataRows.push(r);
+  });
+
+  document.getElementById('financialBody').innerHTML = dataRows.map(r => {
+    const isTotal = /^TOTAL/i.test((r[0]||'').toString()) || /^TOTAL/i.test((r[1]||'').toString());
     const cls = isTotal ? ' class="fin-total"' : '';
-    const cols = r.slice(0, 12).map((v) => `<td>${fmt(v)}</td>`).join('');
-    return `<tr${cls}>${cols}</tr>`;
+    return `<tr${cls}>` + r.map(v => `<td>${fmt(v)}</td>`).join('') + '</tr>';
   }).join('');
 
-  // Render any pulled-out note(s) below the table, not as table rows
   const noteHost = document.getElementById('financialFooterNote');
-  if (noteRows.length) {
-    noteHost.innerHTML = noteRows.map(r => {
-      const text = r.filter(Boolean).join(' ').replace(/^Note:?\s*/i, '');
-      return `<div class="fin-note" style="margin-top:14px;margin-bottom:0">⚠ <strong>Note:</strong> ${text}</div>`;
-    }).join('');
-  } else {
-    noteHost.innerHTML = '';
+  noteHost.innerHTML = noteRows.length
+    ? noteRows.map(r => `<div class="fin-note">⚠ ${r.filter(Boolean).join(' ')}</div>`).join('')
+    : '';
+}
+
+/* ── EVENTS ──────────────────────────────────────────────── */
+function renderEvents(events) {
+  if (!events || !events.rows) {
+    statusBadge(document.getElementById('eventsStatus'), false, 'No events data returned.');
+    return;
   }
-}
+  statusBadge(document.getElementById('eventsStatus'), true);
+  document.getElementById('eventsSubtitle').textContent = `${events.rows.length} events conducted | live from Google Sheets`;
 
-/* ── EVENTS FROM SHEET ──────────────────── */
-function renderEventsFromSheet(rows, live) {
-  statusBadge(document.getElementById('eventsStatus'), live);
-  if (!rows || rows.length < 3) { renderFallbackEvents(); return; }
-
-  const dataRows = rows.slice(2).filter(r => r[0] && !isNaN(parseInt(r[0])));
-  const grid = document.getElementById('eventsGrid');
-
-  grid.innerHTML = dataRows.map(r => `
-    <div class="event-card">
-      <div class="event-imgs">
-        <div class="img-ph">
-          <div class="ico">🖼</div>
-          <div class="lbl">Event Photo 1<br><small>GDrive thumbnail link in src</small></div>
-        </div>
-        <div class="img-ph">
-          <div class="ico">🖼</div>
-          <div class="lbl">Event Photo 2<br><small>GDrive thumbnail link in src</small></div>
-        </div>
-      </div>
+  document.getElementById('eventsGrid').innerHTML = events.rows.map(r => {
+    const photo1Id = r[7], photo2Id = r[8];
+    const img1 = photo1Id ? `<img src="https://drive.google.com/thumbnail?id=${photo1Id}&sz=w400" alt="Event ${r[0]} photo 1">` : `<div class="img-ph"><div class="ico">🖼</div><div class="lbl">Photo 1<br><small>Add Drive File ID in Sheet</small></div></div>`;
+    const img2 = photo2Id ? `<img src="https://drive.google.com/thumbnail?id=${photo2Id}&sz=w400" alt="Event ${r[0]} photo 2">` : `<div class="img-ph"><div class="ico">🖼</div><div class="lbl">Photo 2<br><small>Add Drive File ID in Sheet</small></div></div>`;
+    return `<div class="event-card">
+      <div class="event-imgs">${img1}${img2}</div>
       <div class="event-body">
-        <div class="event-num">Event ${r[0]}</div>
-        <div class="event-title">${r[1]||''}</div>
+        <div class="event-num">Event ${fmt(r[0])}</div>
+        <div class="event-title">${fmt(r[1])}</div>
         <div class="event-meta">
-          <span class="event-tag">📅 ${r[3]||''}</span>
-          <span class="event-tag">${r[4]==='Online'?'💻':'🏛'} ${r[4]||''}</span>
-          <span class="event-tag">📍 ${r[5]||''}</span>
-          <span class="event-tag">🏷 ${r[2]||''}</span>
+          <span class="event-tag">📅 ${fmt(r[3])}</span>
+          <span class="event-tag">${r[4]==='Online'?'💻':'🏛'} ${fmt(r[4])}</span>
+          <span class="event-tag">📍 ${fmt(r[5])}</span>
+          <span class="event-tag">🏷 ${fmt(r[2])}</span>
         </div>
-        <div class="event-outcomes"><strong>Key Outcomes:</strong> ${r[6]||'—'}</div>
+        <div class="event-outcomes"><strong>Key Outcomes:</strong> ${fmt(r[6])}</div>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
-/* ── STORIES FROM SHEET ─────────────────── */
-function renderStoriesFromSheet(rows, live) {
-  statusBadge(document.getElementById('storiesStatus'), live);
-  if (!rows || rows.length < 3) { renderFallbackStories(); return; }
+/* ── SUCCESS STORIES ─────────────────────────────────────── */
+function renderStories(stories) {
+  if (!stories || !stories.rows) {
+    statusBadge(document.getElementById('storiesStatus'), false, 'No success stories returned.');
+    return;
+  }
+  statusBadge(document.getElementById('storiesStatus'), true);
 
-  const dataRows = rows.slice(2).filter(r => r[0] && r[0].trim());
-  const grid = document.getElementById('storiesGrid');
-
-  grid.innerHTML = dataRows.map(r => `
-    <div class="story-card">
+  document.getElementById('storiesGrid').innerHTML = stories.rows.map(r => {
+    const logoId = r[9], prodId = r[10], teamId = r[11];
+    const logo = logoId ? `<img src="https://drive.google.com/thumbnail?id=${logoId}&sz=w100" alt="${r[0]} logo">` : '🏢';
+    const prodImg = prodId ? `<img src="https://drive.google.com/thumbnail?id=${prodId}&sz=w300" alt="Product">` : `<div class="img-ph"><div class="ico">📦</div><div class="lbl">Product Image</div></div>`;
+    const teamImg = teamId ? `<img src="https://drive.google.com/thumbnail?id=${teamId}&sz=w300" alt="Team">` : `<div class="img-ph"><div class="ico">👥</div><div class="lbl">Team Image</div></div>`;
+    return `<div class="story-card">
       <div class="story-header">
-        <div class="story-logo">
-          <div class="img-ph" style="min-height:46px"><div class="ico" style="font-size:14px">🏢</div></div>
-        </div>
-        <div>
-          <div class="story-name">${r[0]||''}</div>
-          <div class="story-sector">${r[1]||''}</div>
-        </div>
+        <div class="story-logo">${logo}</div>
+        <div><div class="story-name">${fmt(r[0])}</div><div class="story-sector">${fmt(r[1])}</div></div>
       </div>
       <div class="story-body">
-        <div class="story-imgs">
-          <div class="img-ph"><div class="ico">📦</div><div class="lbl">Product Image<br><small>GDrive link</small></div></div>
-          <div class="img-ph"><div class="ico">👥</div><div class="lbl">Team Image<br><small>GDrive link</small></div></div>
-        </div>
-        <div class="story-desc">${r[8]||''}</div>
+        <div class="story-imgs">${prodImg}${teamImg}</div>
+        <div class="story-desc">${fmt(r[8])}</div>
         <div class="story-stats">
-          <div class="stat-box"><div class="stat-lbl">TIDE Investment</div><div class="stat-val">${fmt(r[3])}</div></div>
+          <div class="stat-box"><div class="stat-lbl">TIDE Investment</div><div class="stat-val">${money(r[3])}</div></div>
           <div class="stat-box"><div class="stat-lbl">Scheme</div><div class="stat-val">${fmt(r[4])}</div></div>
           <div class="stat-box"><div class="stat-lbl">TRL</div><div class="stat-val">${fmt(r[5])}</div></div>
           <div class="stat-box"><div class="stat-lbl">Revenue</div><div class="stat-val">${fmt(r[7])}</div></div>
@@ -689,82 +654,46 @@ function renderStoriesFromSheet(rows, live) {
           <div class="stat-box"><div class="stat-lbl">Core Tech</div><div class="stat-val">${fmt(r[2])}</div></div>
         </div>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
-/* ── ACHIEVEMENTS FROM SHEET ────────────── */
-function renderAchievementsFromSheet(rows, live) {
-  if (!rows || rows.length < 3) { renderFallbackAchievements(); return; }
-
-  const achRows  = rows.slice(3).filter(r => r[0] && !isNaN(parseInt(r[0])) && r[2] && r[2].length > 5).slice(0, 8);
-  const chalRows = rows.filter(r => {
-    // Challenge rows come after a "CHALLENGES" header row
-    return r[0] && !isNaN(parseInt(r[0])) && rows.indexOf(r) > (rows.findIndex(x => (x[1]||'').toUpperCase().includes('CHALLENGE')));
-  }).slice(0, 4);
-
-  document.getElementById('achGrid').innerHTML = achRows.map(r => `
-    <div class="ach-card">
-      <div class="ach-num">${r[0]}</div>
-      <div><div class="ach-label">${r[1]||''}</div><div class="ach-text">${r[2]||''}</div></div>
-    </div>`).join('') || fallbackAch().ach;
-
-  document.getElementById('chalGrid').innerHTML = chalRows.map(r => `
-    <div class="ach-card chal-card">
-      <div class="ach-num">${r[0]}</div>
-      <div><div class="ach-label">${r[1]||''}</div><div class="ach-text">${r[2]||''}</div></div>
-    </div>`).join('') || fallbackAch().chal;
-}
-
-/* ── UPDATE KPIs FROM STARTUP DATA ─────── */
-function updateKPIsFromStartups(rows) {
-  if (!rows || !rows.length) return;
-  const eir   = rows.filter(r => (r[3]||'').trim() === 'EiR').length;
-  const grant = rows.filter(r => (r[3]||'').trim() === 'Grant').length;
-  const inv   = rows.filter(r => (r[3]||'').trim() === 'Investment').length;
-  const uniqueNames = new Set(rows.map(r => (r[1]||'').trim().toLowerCase())).size;
-
-  const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
-  set('kv-startups', rows.length);
-  set('kv-eir', eir);
-  set('kv-grant', grant);
-  set('kv-scaleup', inv || 5);
-  set('tabStartupCount', rows.length);
-
-  const sub = document.querySelector('#tab-kpi .kpi-card .kpi-sub');
-  const startupCard = document.getElementById('kv-startups')?.parentElement;
-  if (startupCard) {
-    const subEl = startupCard.querySelector('.kpi-sub');
-    if (subEl) subEl.textContent = `Across ${uniqueNames} unique startups, multiple schemes`;
+/* ── ACHIEVEMENTS ────────────────────────────────────────── */
+function renderAchievements(ach) {
+  if (!ach) {
+    document.getElementById('achGrid').innerHTML = '<div style="color:#9B1C1C;padding:20px">No achievements data returned.</div>';
+    return;
   }
+  document.getElementById('achGrid').innerHTML = (ach.achievements || []).map(r => `
+    <div class="ach-card"><div class="ach-num">${fmt(r[0])}</div>
+      <div><div class="ach-label">${fmt(r[1])}</div><div class="ach-text">${fmt(r[2])}</div></div></div>`).join('');
+  document.getElementById('chalGrid').innerHTML = (ach.challenges || []).map(r => `
+    <div class="ach-card chal-card"><div class="ach-num">${fmt(r[0])}</div>
+      <div><div class="ach-label">${fmt(r[1])}</div><div class="ach-text">${fmt(r[2])}</div></div></div>`).join('');
 }
 
-/* ── CHARTS ──────────────────────────────── */
+/* ── CHARTS ──────────────────────────────────────────────── */
 function renderCharts() {
-  const eir = allStartups.filter(r=>(r[3]||'').trim()==='EiR').length || 31;
-  const grant = allStartups.filter(r=>(r[3]||'').trim()==='Grant').length || 22;
-  const inv = allStartups.filter(r=>(r[3]||'').trim()==='Investment').length || 5;
+  const eir = parseInt(kpiMap['EiR Scheme Count']) || 0;
+  const grant = parseInt(kpiMap['Grant Scheme Count']) || 0;
+  const inv = parseInt(kpiMap['Investment Scheme Count']) || 0;
 
-  // Sector counts from live data
   const sectorMap = {};
   allStartups.forEach(r => { const s=(r[4]||'Other').trim(); sectorMap[s]=(sectorMap[s]||0)+1; });
   const topSectors = Object.entries(sectorMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
 
   Object.values(charts).forEach(c => c.destroy());
 
-  charts.component = new Chart(document.getElementById('chartComponent'), {
+  charts.scheme = new Chart(document.getElementById('chartScheme'), {
     type:'doughnut',
-    data:{labels:[`EiR (${eir})`,`Grant (${grant})`,`Scaleup (${inv})`],
+    data:{labels:[`EiR (${eir})`,`Grant (${grant})`,`Investment (${inv})`],
       datasets:[{data:[eir,grant,inv],backgroundColor:[NAVY,GOLD,TEAL],borderWidth:2,borderColor:'#fff'}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11}}}}}
   });
 
   charts.sector = new Chart(document.getElementById('chartSector'), {
     type:'bar',
-    data:{
-      labels: topSectors.map(([s])=>s),
-      datasets:[{data:topSectors.map(([,n])=>n),backgroundColor:NAVY,borderRadius:4}]
-    },
+    data:{labels:topSectors.map(([s])=>s),datasets:[{data:topSectors.map(([,n])=>n),backgroundColor:NAVY,borderRadius:4}]},
     options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
       plugins:{legend:{display:false}},
       scales:{x:{grid:{display:false}},y:{grid:{display:false},ticks:{font:{size:9}}}}}
@@ -774,22 +703,26 @@ function renderCharts() {
     type:'bar',
     data:{
       labels:['2018-19','2019-20','2020-21','2021-22','2022-23','2023-24','2024-25'],
-      datasets:[
-        {label:'Released',data:[24.83,32.77,73.94,69.50,108.00,69.50,62.00],backgroundColor:NAVY,borderRadius:4},
-        {label:'Utilized',data:[24.83,32.77,73.94,69.50,108.00,69.50,62.00],backgroundColor:GOLD,borderRadius:4},
-      ]
+      datasets:[{label:'Released / Utilized',data:[24.83,32.77,73.94,69.50,108.00,69.50,62.00],backgroundColor:GOLD,borderRadius:4}]
     },
     options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{position:'bottom',labels:{font:{size:10}}}},
+      plugins:{legend:{display:false}},
       scales:{x:{grid:{display:false}},y:{grid:{color:'#eee'},ticks:{font:{size:9}}}}}
   });
 
   charts.output = new Chart(document.getElementById('chartOutput'), {
     type:'radar',
     data:{
-      labels:['Startups','Products/MVPs','Employment','Patents','Revenue ₹Cr','Workshops'],
+      labels:['Startups','Products/MVPs','Employment','Patents','Revenue ₹L','Workshops'],
       datasets:[{label:'Outputs',
-        data:[allStartups.length||58,57,120,8,6.82,13],
+        data:[
+          parseInt(kpiMap['Total Startup Engagements'])||0,
+          parseInt(kpiMap['Total Products / MVPs'])||0,
+          parseInt(kpiMap['Total Employment Generated'])||0,
+          parseInt(kpiMap['Patents Filed'])||0,
+          parseFloat(kpiMap['Total Funds Utilized (₹ Lakhs)'])||0,
+          parseInt(kpiMap['Workshops Conducted'])||0,
+        ],
         backgroundColor:'rgba(12,45,107,.15)',borderColor:NAVY,
         pointBackgroundColor:GOLD,pointRadius:4,borderWidth:2}]
     },
@@ -799,81 +732,6 @@ function renderCharts() {
   });
 }
 
-/* ── FALLBACKS ───────────────────────────── */
-function renderFallback() {
-  renderFallbackStartups();
-  renderFallbackFinancial();
-  renderFallbackEvents();
-  renderFallbackStories();
-  renderFallbackAchievements();
-  renderCharts();
-}
-
-function renderFallbackStartups() {
-  statusBadge(document.getElementById('startupStatus'), false);
-  document.getElementById('startupBody').innerHTML =
-    '<tr><td colspan="13" style="text-align:center;padding:20px;color:#9B4A1C">⚠ Could not load from Google Sheets. In your Sheet, click Share → General access → "Anyone with the link" → Viewer, then click ↻ Refresh Data.</td></tr>';
-  document.getElementById('resultsCount').textContent = '— of —';
-}
-
-function renderFallbackFinancial() {
-  statusBadge(document.getElementById('financialStatus'), false);
-  document.getElementById('financialBody').innerHTML = `
-    <tr><td>1</td><td>Allocation towards Startups — EiR</td><td>27.00</td><td>13.00</td><td>60.00</td><td>12.10</td><td>8.50</td><td>9.00</td><td>24.40</td><td>—</td><td>640.00</td><td>640.00</td></tr>
-    <tr><td>2</td><td>Support to TIDE Centres — EiR Provisioning</td><td>0.86</td><td>2.00</td><td>3.55</td><td>3.00</td><td>2.50</td><td>5.00</td><td>0</td><td>—</td><td>160.00</td><td>169.09</td></tr>
-    <tr><td>3</td><td>Allocation towards Startups — Grants</td><td>20.27</td><td>23.32</td><td>20.34</td><td>10.90</td><td>11.50</td><td>5.00</td><td>20.60</td><td>—</td><td>1120.00</td><td>1120.00</td></tr>
-    <tr><td>4</td><td>Support to TIDE Centres — Grant Provisioning</td><td>1.00</td><td>6.06</td><td>3.55</td><td>0</td><td>2.50</td><td>5.00</td><td>0</td><td>—</td><td>160.00</td><td>181.16</td></tr>
-    <tr><td>5</td><td>Workshops @G1G2 &amp; G3C</td><td>0</td><td>0</td><td>2.00</td><td>2.00</td><td>4.00</td><td>4.00</td><td>4.00</td><td>—</td><td>160.00</td><td>160.00</td></tr>
-    <tr><td>6</td><td>Low Engagement Programs @G2 &amp; G3C</td><td>0</td><td>0</td><td>0</td><td>3.00</td><td>2.00</td><td>3.00</td><td>13.00</td><td>—</td><td>240.00</td><td>210.00</td></tr>
-    <tr><td>7-9</td><td>Deep Engagement / Hackathon / Challenge Grant @G1C</td><td colspan="8" style="text-align:center;color:var(--gray-500)">NA — Not Applicable for G2 Centre</td><td>—</td><td>—</td></tr>
-    <tr><td>10</td><td>Allocation towards Startups — Investment Grant</td><td>NA</td><td>NA</td><td>35.00</td><td>35.00</td><td>70.00</td><td>35.00</td><td>NA</td><td>—</td><td>1750.00</td><td>1750.00</td></tr>
-    <tr><td>11</td><td>Support to TIDE Centres — Investment Grant Provisioning</td><td>NA</td><td>NA</td><td>3.50</td><td>3.50</td><td>7.00</td><td>3.50</td><td>NA</td><td>—</td><td>175.00</td><td>175.00</td></tr>
-    <tr class="fin-total"><td colspan="2">TOTAL</td><td>24.83</td><td>32.77</td><td>73.94</td><td>69.50</td><td>108.00</td><td>69.50</td><td>62.00</td><td>—</td><td>4405.00</td><td>4405.26</td></tr>`;
-  document.getElementById('financialFooterNote').innerHTML = '';
-}
-
-function renderFallbackEvents() {
-  statusBadge(document.getElementById('eventsStatus'), false);
-  document.getElementById('eventsGrid').innerHTML =
-    '<div style="text-align:center;padding:30px;color:#9B4A1C">⚠ Could not load events. Share the Sheet as "Anyone with the link" and click ↻ Refresh Data.</div>';
-}
-
-function renderFallbackStories() {
-  statusBadge(document.getElementById('storiesStatus'), false);
-  document.getElementById('storiesGrid').innerHTML =
-    '<div style="text-align:center;padding:30px;color:#9B4A1C;grid-column:1/-1">⚠ Could not load success stories. Share the Sheet as "Anyone with the link" and click ↻ Refresh Data.</div>';
-}
-
-function fallbackAch() {
-  const achs = [
-    [1,'Startup Support','Successfully supported 52 startups across sectors including MedTech, AgriTech, IoT, AI, DeepTech, Green Energy, Semiconductor, EV, Biotechnology, and Healthcare.'],
-    [2,'Fund Utilization','Achieved 100% utilization of ₹4.40 Crore sanctioned under the TIDE 2.0 program towards EiR, Grant, and Investment Grant.'],
-    [3,'Product Development','Facilitated the development of 57 products/prototypes/MVPs by 30 startups.'],
-    [4,'Employment Generation','Generated employment opportunities for over 120 individuals through incubated startups.'],
-    [5,'IPR & Revenue','Supported filing of 8 patents. Enabled cumulative revenues exceeding ₹6.82 Crore.'],
-    [6,'Workshops & Events','Conducted 13 workshops, awareness programs, investment readiness sessions, and networking events.'],
-    [7,'National Recognition','Emerging Fund-Ready Startup Award at TiECON 2025 | Elevate Karnataka | NVIDIA Inception | Google for Startups Cloud Program.'],
-    [8,'Ecosystem Building','Strengthened industry-academia-startup collaborations through mentorship, market access, networking, and technology validation support.'],
-  ];
-  const chals = [
-    [1,'Early-Stage Support','Early-stage start-ups required significant handholding in customer discovery, regulatory compliance, and commercialization.'],
-    [2,'Funding Cycles','Start-up funding cycles became more challenging due to changing market conditions.'],
-    [3,'Mentor Networks','Strong mentor networks, industry partnerships, and ecosystem collaborations proved critical for startup success.'],
-    [4,'Capacity Building','Continuous capacity-building programs significantly improved founders understanding of sales, marketing, fundraising, and legal compliance.'],
-  ];
-  return {
-    ach: achs.map(r=>`<div class="ach-card"><div class="ach-num">${r[0]}</div><div><div class="ach-label">${r[1]}</div><div class="ach-text">${r[2]}</div></div></div>`).join(''),
-    chal: chals.map(r=>`<div class="ach-card chal-card"><div class="ach-num">${r[0]}</div><div><div class="ach-label">${r[1]}</div><div class="ach-text">${r[2]}</div></div></div>`).join('')
-  };
-}
-
-function renderFallbackAchievements() {
-  const fb = fallbackAch();
-  document.getElementById('achGrid').innerHTML = fb.ach;
-  document.getElementById('chalGrid').innerHTML = fb.chal;
-}
-
-/* ── BOOT ────────────────────────────────── */
 window.addEventListener('DOMContentLoaded', loadAllData);
 </script>
 </body>
