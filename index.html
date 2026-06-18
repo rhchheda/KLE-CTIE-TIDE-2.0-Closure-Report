@@ -347,7 +347,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
     <div class="kpi-card navy"><div class="kpi-label">DPIIT Registered</div><div class="kpi-value" id="kv-dpiit">—</div><div class="kpi-sub">With DIPP numbers</div></div>
   </div>
   <div class="charts-row">
-    <div class="chart-card"><h3>Component-wise Startup Split</h3><div class="chart-wrap"><canvas id="chartComponent"></canvas></div></div>
+    <div class="chart-card"><h3>Scheme-wise Startup Split</h3><div class="chart-wrap"><canvas id="chartComponent"></canvas></div></div>
     <div class="chart-card"><h3>Sector Distribution</h3><div class="chart-wrap"><canvas id="chartSector"></canvas></div></div>
   </div>
   <div class="charts-row">
@@ -365,7 +365,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
       <thead><tr><th style="width:40%">Particulars</th><th>Details</th><th>Notes</th></tr></thead>
       <tbody id="summaryBody">
         <tr><td>No. of Startups</td><td id="sm-startup-count">52</td><td id="sm-startup-note">Physical: 20 | Virtual: 32</td></tr>
-        <tr><td>Component-wise Split</td><td id="sm-component-split">EiR: 31 | Grant: 22 | Scaleup Investment: 5</td><td>—</td></tr>
+        <tr><td>Scheme-wise Split</td><td id="sm-component-split">EiR: 31 | Grant: 22 | Scaleup Investment: 5</td><td>—</td></tr>
         <tr><td>Funds Received [A]</td><td>₹4,40,50,000</td><td>MeitY Sanction</td></tr>
         <tr><td>Funds Utilized [B]</td><td id="sm-fund-utilized">₹4,40,52,571</td><td>⚠ Exceeds received by ₹2,571 — to reconcile</td></tr>
         <tr><td>Employment Generated [C] / Startups [D]</td><td>120 / 15</td><td>—</td></tr>
@@ -410,7 +410,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
     <input type="text" id="searchInput" placeholder="🔍  Search name, sector, one-liner…" oninput="filterStartups()">
     <select id="sectorFilter" onchange="filterStartups()"><option value="">All Sectors</option></select>
     <select id="componentFilter" onchange="filterStartups()">
-      <option value="">All Components</option><option>EiR</option><option>Grant</option><option>Investment</option>
+      <option value="">All Schemes</option><option>EiR</option><option>Grant</option><option>Investment</option>
     </select>
     <span class="results-count" id="resultsCount">Loading…</span>
   </div>
