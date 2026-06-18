@@ -67,7 +67,6 @@ body{font-family:var(--font);background:var(--off-white);color:var(--text);font-
 .pwd-error{font-size:12px;color:#E53E3E;margin-top:8px;min-height:18px}
 .pwd-lock{font-size:36px;margin-bottom:12px}
 
-/* Rest of your existing CSS remains unchanged */
 /* HEADER */
 .report-header{background:linear-gradient(135deg,var(--navy-dark) 0%,var(--navy) 60%,var(--navy-mid) 100%);color:#fff;padding:18px 28px 14px;position:relative;overflow:hidden}
 .report-header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--gold),var(--gold-light),var(--gold))}
@@ -280,7 +279,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
   </div>
 </div>
 
-<!-- LOADER (hidden until password is verified) -->
+<!-- LOADER -->
 <div id="loader" style="display:none">
   <div class="loader-logos">
     <div class="loader-logo"><img src="https://drive.google.com/thumbnail?id=1NKm28T5GmzpGWxaNeihr1wkX-B98xPOy&sz=w200" alt="KLE TU"></div>
@@ -1314,7 +1313,6 @@ let devOpen=false;
 setInterval(()=>{const w=window.outerWidth-window.innerWidth>100,h=window.outerHeight-window.innerHeight>100;if((w||h)&&!devOpen){devOpen=true;toast('👀 DevTools detected!');}if(!w&&!h)devOpen=false;},1000);
 
 window.addEventListener('DOMContentLoaded',()=>{
-  // Show view password modal, hide everything else initially
   document.getElementById('viewPwdModal').classList.remove('hidden');
 });
 </script>
