@@ -21,8 +21,26 @@
 html{scroll-behavior:smooth}
 body{font-family:var(--font);background:var(--off-white);color:var(--text);font-size:14px;line-height:1.6}
 
+/* VIEW PASSWORD MODAL - shown first */
+.view-pwd-modal{position:fixed;inset:0;background:rgba(7,26,62,.95);z-index:99999;display:flex;align-items:center;justify-content:center}
+.view-pwd-modal.hidden{display:none}
+.view-pwd-box{background:#fff;border-radius:12px;padding:40px 36px;width:380px;text-align:center;box-shadow:0 12px 48px rgba(0,0,0,.4);max-width:95vw}
+.view-pwd-box .logo-row{display:flex;justify-content:center;gap:16px;margin-bottom:20px}
+.view-pwd-box .logo-row img{width:56px;height:56px;object-fit:contain;border-radius:8px;border:2px solid rgba(200,150,12,.3);background:rgba(12,45,107,.05)}
+.view-pwd-box h2{font-size:20px;font-weight:800;color:var(--navy);margin-bottom:4px}
+.view-pwd-box .sub{font-size:12px;color:var(--gray-500);margin-bottom:6px}
+.view-pwd-box .lock-icon{font-size:40px;margin-bottom:12px}
+.view-pwd-box p{font-size:13px;color:var(--gray-700);margin-bottom:20px;line-height:1.5}
+.view-pwd-input{width:100%;padding:12px 16px;border:2px solid var(--gray-300);border-radius:8px;font-size:15px;outline:none;text-align:center;letter-spacing:3px;margin-bottom:12px;font-weight:600}
+.view-pwd-input:focus{border-color:var(--gold)}
+.view-pwd-btn{width:100%;padding:12px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;transition:background .2s}
+.view-pwd-btn:hover{background:var(--navy-mid)}
+.view-pwd-btn:disabled{opacity:.6;cursor:not-allowed}
+.view-pwd-error{font-size:12px;color:#E53E3E;margin-top:8px;min-height:20px;font-weight:600}
+.view-pwd-hint{font-size:10px;color:var(--gray-500);margin-top:10px;border-top:1px solid var(--gray-100);padding-top:10px}
+
 /* LOADER */
-#loader{position:fixed;inset:0;background:var(--navy-dark);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s}
+#loader{position:fixed;inset:0;background:var(--navy-dark);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9998;transition:opacity .4s}
 #loader.hidden{opacity:0;pointer-events:none}
 .loader-logos{display:flex;align-items:center;gap:16px;margin-bottom:20px}
 .loader-logo{width:64px;height:64px;border-radius:10px;overflow:hidden;background:rgba(255,255,255,.08);border:2px solid rgba(200,150,12,.4);display:flex;align-items:center;justify-content:center}
@@ -35,7 +53,7 @@ body{font-family:var(--font);background:var(--off-white);color:var(--text);font-
 @keyframes load{0%{width:0;margin-left:0}50%{width:70%;margin-left:0}100%{width:0;margin-left:100%}}
 .loader-status{color:rgba(255,255,255,.4);font-size:11px;margin-top:12px}
 
-/* PASSWORD MODAL */
+/* PASSWORD MODAL (for PDF) */
 .pwd-modal{position:fixed;inset:0;background:rgba(7,26,62,.92);z-index:8800;display:none;align-items:center;justify-content:center}
 .pwd-modal.open{display:flex}
 .pwd-box{background:#fff;border-radius:12px;padding:32px;width:360px;text-align:center;box-shadow:0 12px 48px rgba(0,0,0,.3)}
@@ -49,6 +67,7 @@ body{font-family:var(--font);background:var(--off-white);color:var(--text);font-
 .pwd-error{font-size:12px;color:#E53E3E;margin-top:8px;min-height:18px}
 .pwd-lock{font-size:36px;margin-bottom:12px}
 
+/* Rest of your existing CSS remains unchanged */
 /* HEADER */
 .report-header{background:linear-gradient(135deg,var(--navy-dark) 0%,var(--navy) 60%,var(--navy-mid) 100%);color:#fff;padding:18px 28px 14px;position:relative;overflow:hidden}
 .report-header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--gold),var(--gold-light),var(--gold))}
@@ -243,8 +262,26 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
 </head>
 <body>
 
-<!-- LOADER -->
-<div id="loader">
+<!-- VIEW PASSWORD MODAL -->
+<div class="view-pwd-modal" id="viewPwdModal">
+  <div class="view-pwd-box">
+    <div class="logo-row">
+      <img src="https://drive.google.com/thumbnail?id=1NKm28T5GmzpGWxaNeihr1wkX-B98xPOy&sz=w200" alt="KLE TU">
+      <img src="https://drive.google.com/thumbnail?id=1iAb5PH3CKSHESopoFGPCuW85Mkb7X26z&sz=w200" alt="KLE CTiE">
+    </div>
+    <div class="lock-icon">🔒</div>
+    <h2>TIDE 2.0 — Closure Report</h2>
+    <div class="sub">KLE Centre for Technology Innovation &amp; Entrepreneurship</div>
+    <p>This report is password protected. Please enter the authorised password to view the dashboard.</p>
+    <input type="password" class="view-pwd-input" id="viewPwdInput" placeholder="Enter view password" onkeydown="if(event.key==='Enter')verifyViewPwd()" autofocus>
+    <button class="view-pwd-btn" id="viewPwdBtn" onclick="verifyViewPwd()">🔓 Unlock Dashboard</button>
+    <div class="view-pwd-error" id="viewPwdError"></div>
+    <div class="view-pwd-hint">Contact KLE CTiE office for access</div>
+  </div>
+</div>
+
+<!-- LOADER (hidden until password is verified) -->
+<div id="loader" style="display:none">
   <div class="loader-logos">
     <div class="loader-logo"><img src="https://drive.google.com/thumbnail?id=1NKm28T5GmzpGWxaNeihr1wkX-B98xPOy&sz=w200" alt="KLE TU"></div>
     <div class="loader-logo"><img src="https://drive.google.com/thumbnail?id=1iAb5PH3CKSHESopoFGPCuW85Mkb7X26z&sz=w200" alt="KLE CTiE"></div>
@@ -256,7 +293,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
   <div class="loader-status" id="loaderStatus">Connecting…</div>
 </div>
 
-<!-- PASSWORD MODAL -->
+<!-- PASSWORD MODAL (for PDF export) -->
 <div class="pwd-modal" id="pwdModal">
   <div class="pwd-box">
     <div class="pwd-lock">🔐</div>
@@ -269,11 +306,9 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
 </div>
 
 <!-- HEADER -->
-<header class="report-header">
+<header class="report-header" style="display:none" id="mainHeader">
   <div class="header-inner">
-    <!-- LHS: KLE TU logo -->
     <div class="header-logo-box"><img src="https://drive.google.com/thumbnail?id=1NKm28T5GmzpGWxaNeihr1wkX-B98xPOy&sz=w200" alt="KLE TU"></div>
-    <!-- CENTRE -->
     <div class="header-text">
       <h1>TIDE 2.0 — <span>Closure Report</span></h1>
       <div class="header-meta">
@@ -284,7 +319,6 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
       </div>
       <div class="header-updated" id="headerUpdated"></div>
     </div>
-    <!-- RHS: CTiE logo (top) + MeitY + buttons -->
     <div class="header-right">
       <div style="display:flex;align-items:center;gap:8px">
         <div class="header-logo-box"><img src="https://drive.google.com/thumbnail?id=1iAb5PH3CKSHESopoFGPCuW85Mkb7X26z&sz=w200" alt="KLE CTiE"></div>
@@ -302,7 +336,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
 </header>
 
 <!-- TAB BAR -->
-<nav class="tab-bar">
+<nav class="tab-bar" style="display:none" id="tabBar">
   <div class="tab-bar-inner">
     <button class="tab-btn active" onclick="showTab('kpi',this)">📊 KPI Dashboard</button>
     <button class="tab-btn" onclick="showTab('summary',this)">📋 Summary</button>
@@ -314,7 +348,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
   </div>
 </nav>
 
-<main class="main">
+<main class="main" id="mainContent" style="display:none">
 
 <!-- KPI DASHBOARD -->
 <section class="tab-panel active" id="tab-kpi">
@@ -469,7 +503,7 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
 
 </main>
 
-<footer class="sticky-footer">Made with <span class="heart">❤</span> &nbsp;~rhc &nbsp;·&nbsp; EE Lab, KLE-CTiE</footer>
+<footer class="sticky-footer" id="mainFooter" style="display:none">Made with <span class="heart">❤</span> &nbsp;~rhc &nbsp;·&nbsp; EE Lab, KLE-CTiE</footer>
 <div class="toast-box" id="toastBox"></div>
 <div class="lightbox" id="lightbox" onclick="closeLightbox()"><span class="lightbox-close" onclick="closeLightbox()">✕</span><img id="lightboxImg" src="" alt=""></div>
 
@@ -502,6 +536,53 @@ tbody td:first-child{font-weight:600;color:var(--navy)}
 const GAS_URL='https://script.google.com/macros/s/AKfycbwd54rFxBv2iT8SSybw_aZ8I9vBcmbrpJWLoGo9-y_b8zzMti-E0OSW9dSfQn_APqh_/exec';
 const NAVY='#0C2D6B',GOLD='#C8960C',TEAL='#1A7A6E';
 let charts={},allStartups=[],sigIds={sig1:'',sig2:''},pendingSections=[];
+let viewPwdLocked=false, pdfPwdLocked=false;
+
+/* ── VIEW PASSWORD VERIFICATION ── */
+async function verifyViewPwd(){
+  if(viewPwdLocked){toast('Too many attempts — wait 30s');return;}
+  const input=document.getElementById('viewPwdInput').value;
+  if(!input){document.getElementById('viewPwdError').textContent='Please enter the password.';return;}
+  const btn=document.getElementById('viewPwdBtn');
+  btn.disabled=true;
+  document.getElementById('viewPwdError').textContent='Verifying…';
+  document.getElementById('viewPwdError').style.color='var(--gray-500)';
+  try{
+    const res=await fetch(`${GAS_URL}?action=verifyViewPassword&pwd=${encodeURIComponent(input)}`);
+    const data=await res.json();
+    btn.disabled=false;
+    if(data.verified){
+      document.getElementById('viewPwdModal').classList.add('hidden');
+      document.getElementById('viewPwdError').textContent='';
+      // Show the dashboard
+      document.getElementById('loader').style.display='flex';
+      document.getElementById('loaderStatus').textContent='Loading dashboard…';
+      // Load data and show UI
+      await loadAllData();
+      document.getElementById('mainHeader').style.display='block';
+      document.getElementById('tabBar').style.display='block';
+      document.getElementById('mainContent').style.display='block';
+      document.getElementById('mainFooter').style.display='block';
+      setTimeout(()=>document.getElementById('loader').classList.add('hidden'),500);
+    } else {
+      document.getElementById('viewPwdError').style.color='#E53E3E';
+      document.getElementById('viewPwdError').textContent='❌ Incorrect password. Please try again.';
+      document.getElementById('viewPwdInput').value='';
+      document.getElementById('viewPwdInput').focus();
+      const attempts=(parseInt(sessionStorage.getItem('viewPwdAttempts')||'0'))+1;
+      sessionStorage.setItem('viewPwdAttempts',attempts);
+      if(attempts>=5){
+        viewPwdLocked=true;
+        document.getElementById('viewPwdError').textContent='🔒 Too many attempts. Locked for 60 seconds.';
+        setTimeout(()=>{viewPwdLocked=false;sessionStorage.setItem('viewPwdAttempts','0');document.getElementById('viewPwdError').textContent='';},60000);
+      }
+    }
+  }catch(e){
+    btn.disabled=false;
+    document.getElementById('viewPwdError').style.color='#E53E3E';
+    document.getElementById('viewPwdError').textContent='Connection error — check GAS deployment.';
+  }
+}
 
 /* ── UTILS ── */
 function showTab(id,btn){
@@ -528,12 +609,7 @@ function toast(msg){
   setTimeout(()=>el.classList.remove('show'),3200);
 }
 
-/* ── DRIVE IMAGE LOADER ──
-   IMPORTANT: Google Drive thumbnail endpoint does NOT support crossorigin=anonymous,
-   so we never set that attribute. Images load normally in browser. For html2canvas
-   capture we instead fetch the image as base64 via a CORS-friendly proxy approach:
-   convert to dataURL using an Image object + canvas (works because Drive thumbnail
-   serves with permissive headers when NOT requesting credentials). */
+/* ── DRIVE IMAGE LOADER ── */
 function driveThumbUrl(id,sz){ return `https://drive.google.com/thumbnail?id=${String(id).trim()}&sz=${sz||'w600'}`; }
 
 function driveImg(id,alt='',icon='🖼',style=''){
@@ -596,12 +672,11 @@ function renderSignatures(summaryRows){
 function fetchSheet(sheetName){
   return fetch(`${GAS_URL}?sheet=${encodeURIComponent(sheetName)}`)
     .then(r=>{if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.json();})
-    .then(j=>{if(j.error)throw new Error(j.error);return j;}); // return full payload, not just .data
+    .then(j=>{if(j.error)throw new Error(j.error);return j;});
 }
 
 /* ── LOAD ALL ── */
 async function loadAllData(){
-  document.getElementById('loader').classList.remove('hidden');
   document.getElementById('loaderStatus').textContent='Fetching from KLE-CTIE-Office…';
   try{
     const[summaryRes,startupRes,finRes,eventsRes,storiesRes,achRes]=await Promise.all([
@@ -630,9 +705,6 @@ async function loadAllData(){
     statusBadge(document.getElementById('kpiStatus'),true);
     statusBadge(document.getElementById('summaryStatus'),true);
 
-    // "Last updated" = actual Google Sheet file modification time (DriveApp),
-    // not browser load time. Take the most recent lastUpdated across all
-    // fetched sheets, since any tab edit updates the whole file's timestamp.
     const allTimestamps=[summaryRes,startupRes,finRes,eventsRes,storiesRes,achRes]
       .filter(r=>r&&r.lastUpdated)
       .map(r=>new Date(r.lastUpdated));
@@ -644,7 +716,6 @@ async function loadAllData(){
       document.getElementById('headerUpdated').textContent='Last updated: unavailable — check GAS authorization';
     }
   }catch(e){console.warn('Fetch failed:',e);renderFallback();}
-  setTimeout(()=>document.getElementById('loader').classList.add('hidden'),600);
 }
 
 /* ── STARTUPS ── */
@@ -699,17 +770,6 @@ function renderFinancialFromSheet(rows,live){
   statusBadge(document.getElementById('financialStatus'),live);
   if(!rows||rows.length<4){renderFallbackFinancial();return;}
   const data=rows.slice(3).filter(r=>r[0]&&String(r[0]).trim());
-
-  // ── LIVE RECALCULATION ──
-  // Source sheet has known data-entry errors: many rows have a blank
-  // "Total Utilized" (col 11) cell, and at least one row's "2025-26" /
-  // "Total Released" cells contain the full lifetime total instead of
-  // a single year's figure (PDF→Excel conversion misplacement).
-  // Rather than trust the sheet's own Total/2025-26/TotalUtilized cells,
-  // we recompute Total Released as the sum of the 8 year columns
-  // (2018-19 .. 2024-25, i.e. cols 2-9) for every row, live, every load.
-  // This sidesteps the corrupted cells entirely and self-corrects if the
-  // sheet is fixed later, since it's derived rather than read.
   const parseNum=v=>{
     if(v===undefined||v===null)return null;
     const s=String(v).trim();
@@ -717,15 +777,11 @@ function renderFinancialFromSheet(rows,live){
     const n=parseFloat(s.replace(/[^0-9.-]/g,''));
     return isNaN(n)?null:n;
   };
-  // Detect unit: sheet stores raw rupees in year columns for most rows
-  // (e.g. 270000) — convert to lakhs (÷100000) for display consistency
-  // with the "₹ Lakhs" column headers.
   const toLakhs=raw=>{
     const n=parseNum(raw);
     if(n===null)return null;
-    return n>=1000?n/100000:n; // values already small (e.g. "85.00") stay as-is
+    return n>=1000?n/100000:n;
   };
-
   let grandTotalReleasedLakhs=0;
   const computedRows=data.map(r=>{
     const isTotalRow=String(r[0]||'').toUpperCase().includes('TOTAL')||String(r[1]||'').toUpperCase().includes('TOTAL');
@@ -735,12 +791,9 @@ function renderFinancialFromSheet(rows,live){
     grandTotalReleasedLakhs+=rowSum;
     return {raw:r,isTotal:false,yearLakhs:yearCols,rowTotalLakhs:rowSum};
   });
-
   const fmtCell=v=>v===null?'NA':(v===0?'0':v.toFixed(2));
-
   document.getElementById('financialBody').innerHTML=computedRows.map(({raw:r,isTotal,yearLakhs,rowTotalLakhs})=>{
     if(isTotal){
-      // Recomputed grand total row — ignore sheet's own broken Total cell
       const yearTotals=[2,3,4,5,6,7,8,9].map(ci=>{
         return computedRows.reduce((s,row)=>row.yearLakhs?s+(row.yearLakhs[ci-2]||0):s,0);
       });
@@ -759,8 +812,6 @@ function renderFinancialFromSheet(rows,live){
       <td style="color:var(--gray-500);font-style:italic">Not reported</td>
     </tr>`;
   }).join('');
-
-  // Surface the live-calculated grand total wherever else it's referenced
   const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
   set('sm-fund-utilized', `₹${(grandTotalReleasedLakhs*100000).toLocaleString('en-IN',{maximumFractionDigits:0})} (recalculated; "Utilized" not separately tracked per row in source)`);
 }
@@ -842,12 +893,8 @@ function updateKPIsFromStartups(rows){
   const inv=rows.filter(r=>String(r[3]||'').trim()==='Investment').length;
   const women=rows.filter(r=>String(r[15]||'').trim().toLowerCase()==='yes').length;
   const dpiit=rows.filter(r=>r[16]&&String(r[16]).trim()&&String(r[16]).trim()!=='—').length;
-  // Fund column (r[2]) is raw rupees, e.g. "389000" — sum directly, no conversion needed.
   const totalFund=rows.reduce((s,r)=>{const n=parseInt(String(r[2]||'').replace(/[^0-9]/g,''));return s+(isNaN(n)?0:n);},0);
   const totalEmp=rows.reduce((s,r)=>{const n=parseInt(String(r[17]||'').replace(/[^0-9]/g,''));return s+(isNaN(n)?0:n);},0);
-  // Revenue column (r[7]) may already contain formatted strings like "22,50,000" (raw rupees)
-  // or occasionally pre-formatted "Cr"/"L" text from manual entry — strip non-numerics only,
-  // and do NOT multiply by 100000 here, since the raw sheet value is already in rupees.
   const totalRevRupees=rows.reduce((s,r)=>{
     const raw=String(r[7]||'').trim();
     if(!raw||raw==='—'||raw.toUpperCase()==='NA')return s;
@@ -855,29 +902,16 @@ function updateKPIsFromStartups(rows){
     return s+(isNaN(n)?0:n);
   },0);
   const sectors=new Set(rows.map(r=>(r[5]||'').trim()).filter(Boolean));
-
-  // ── DEDUPLICATION: same startup can appear multiple times under different
-  // funding components (e.g. "Armtronix IoT Pvt Ltd" under both Grant and
-  // ScaleUp). Count UNIQUE startup names for the official "No. of Startups"
-  // figure, matching how the original PDF's "52" was derived (58 component
-  // rows − 6 duplicate-name rows = 52 unique startups), while still using
-  // the FULL row count for component-wise splits (EiR/Grant/Scaleup counts
-  // are correctly per-component, not per-startup). ──
   const normalizeName=n=>String(n||'').trim().toLowerCase().replace(/[.,]/g,'').replace(/\s+/g,' ');
   const uniqueNames=new Set(rows.map(r=>normalizeName(r[1])).filter(Boolean));
   const uniqueStartupCount=uniqueNames.size;
-
   const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
-  // KPI Dashboard cards show component-row totals (58) since these track
-  // funding instances, not unique startups — labelled accordingly.
   set('kv-startups',rows.length);set('kv-eir',eir);set('kv-grant',grant);
   set('kv-scaleup',inv||5);set('kv-sectors',sectors.size);set('kv-women',women);set('kv-dpiit',dpiit);
   set('tv-total',rows.length);set('tv-fund',totalFund?fmtCrLakh(totalFund):'₹4.40Cr');
   set('tv-women',women);set('tv-dpiit',dpiit);
   set('tv-emp',totalEmp||'120+');
   set('tv-rev',totalRevRupees?fmtCrLakh(totalRevRupees):'₹6.82Cr');
-
-  // Overall Summary "No. of Startups" — unique count, dynamic, never hardcoded.
   set('sm-startup-count',uniqueStartupCount);
   const dupCount=rows.length-uniqueStartupCount;
   document.getElementById('sm-startup-note').textContent=
@@ -902,7 +936,7 @@ function renderCharts(){
   charts.output=new Chart(document.getElementById('chartOutput'),{type:'radar',data:{labels:['Startups','Products/MVPs','Employment','Patents','Revenue ₹Cr','Workshops'],datasets:[{label:'Outputs',data:[allStartups.length||52,57,120,8,6.82,13],backgroundColor:'rgba(12,45,107,.15)',borderColor:NAVY,pointBackgroundColor:GOLD,pointRadius:4,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{r:{ticks:{font:{size:8}},pointLabels:{font:{size:9}}}}}});
 }
 
-/* ── PDF MODAL / PASSWORD ── */
+/* ── PDF MODAL ── */
 function openPdfModal(){document.getElementById('pdfModal').classList.add('open');}
 function closePdfModal(){document.getElementById('pdfModal').classList.remove('open');}
 function toggleCheck(el,id){el.classList.toggle('checked');document.getElementById(id).checked=el.classList.contains('checked');}
@@ -917,7 +951,6 @@ function openPwdModal(){
     {id:'sec-stories',panelId:'tab-stories',     label:'Success Stories',   landscape:false},
     {id:'sec-ach',   panelId:'tab-achievements', label:'Achievements',      landscape:false},
   ].filter(s=>document.getElementById(s.id).checked);
-
   if(!pendingSections.length){toast('Select at least one section');return;}
   document.getElementById('pwdModal').classList.add('open');
   setTimeout(()=>document.getElementById('pwdInput').focus(),100);
@@ -928,9 +961,9 @@ function closePwdModal(){
   document.getElementById('pwdError').textContent='';
 }
 
-let pwdLocked=false;
+/* ── PDF PASSWORD VERIFICATION ── */
 async function verifyPwd(){
-  if(pwdLocked){toast('Too many attempts — wait 30s');return;}
+  if(pdfPwdLocked){toast('Too many attempts — wait 30s');return;}
   const input=document.getElementById('pwdInput').value;
   if(!input){document.getElementById('pwdError').textContent='Please enter a password.';return;}
   const btn=document.getElementById('pwdBtn');
@@ -950,12 +983,12 @@ async function verifyPwd(){
       document.getElementById('pwdError').textContent='❌ Incorrect password. Try again.';
       document.getElementById('pwdInput').value='';
       document.getElementById('pwdInput').focus();
-      const attempts=(parseInt(sessionStorage.getItem('pwdAttempts')||'0'))+1;
-      sessionStorage.setItem('pwdAttempts',attempts);
+      const attempts=(parseInt(sessionStorage.getItem('pdfPwdAttempts')||'0'))+1;
+      sessionStorage.setItem('pdfPwdAttempts',attempts);
       if(attempts>=3){
-        pwdLocked=true;
+        pdfPwdLocked=true;
         document.getElementById('pwdError').textContent='🔒 Too many attempts. Locked for 30 seconds.';
-        setTimeout(()=>{pwdLocked=false;sessionStorage.setItem('pwdAttempts','0');document.getElementById('pwdError').textContent='';},30000);
+        setTimeout(()=>{pdfPwdLocked=false;sessionStorage.setItem('pdfPwdAttempts','0');document.getElementById('pwdError').textContent='';},30000);
       }
     }
   }catch(e){
@@ -965,17 +998,7 @@ async function verifyPwd(){
   }
 }
 
-/* ── DRIVE IMAGE → DATA URL (for PDF canvas capture) ──
-   Fetches image bytes via fetch() and converts to base64 dataURL.
-   IMPORTANT: Drive's thumbnail endpoint does NOT send CORS headers
-   compatible with fetch()/XHR — it only works when loaded as a plain
-   <img> (browser-level resource fetch, not a script-level fetch).
-   So instead of fetch(), we load via an Image object (no crossorigin
-   attribute set) and draw it to a canvas, then export that canvas as
-   a dataURL. This works because Chrome/Firefox allow drawing an
-   img loaded without crossorigin onto canvas as long as we don't
-   need to read pixel data back out for security purposes in MOST
-   cases — Drive's thumbnail CDN in practice permits this read. */
+/* ── DRIVE IMAGE → DATA URL ── */
 async function toDataURL(url){
   return new Promise((resolve)=>{
     const img=new Image();
@@ -988,13 +1011,10 @@ async function toDataURL(url){
         ctx.drawImage(img,0,0);
         resolve(cv.toDataURL('image/png'));
       }catch(e){
-        // Canvas got tainted (rare) — fall back to original URL so at least
-        // the on-screen <img> still shows something during capture attempt.
         resolve(url);
       }
     };
     img.onerror=()=>resolve(null);
-    // Timeout safeguard — don't hang the whole PDF generation on one slow image
     setTimeout(()=>resolve(null),8000);
     img.src=url;
   });
@@ -1008,7 +1028,6 @@ async function inlineImagesForCapture(container){
     const durl=await toDataURL(driveThumbUrl(id,'w600'));
     if(durl) img.src=durl;
   }));
-  // Also inline plain-src images (logos without data-driveid)
   const plainImgs=container.querySelectorAll('img:not([data-driveid])');
   await Promise.all(Array.from(plainImgs).map(async img=>{
     if(img.src.includes('drive.google.com')){
@@ -1058,7 +1077,6 @@ async function generatePDF(SECTIONS){
   }
 
   try{
-    // ── COVER PAGE ──
     lbl.textContent='Rendering cover…';fill.style.width='3%';
     const kleCtieURL=await toDataURL(driveThumbUrl('1iAb5PH3CKSHESopoFGPCuW85Mkb7X26z','w200'));
     const kleTuURL=await toDataURL(driveThumbUrl('1NKm28T5GmzpGWxaNeihr1wkX-B98xPOy','w200'));
@@ -1106,12 +1124,11 @@ async function generatePDF(SECTIONS){
 
       const orient=sec.landscape?'landscape':'portrait';
       const pw=sec.landscape?297:210,ph=sec.landscape?210:297;
-      const headerFooterMM=24; // 13(header)+1(line)+8(footer)+2(pad)
+      const headerFooterMM=24;
       const availH=ph-headerFooterMM-4;
       const contentW=sec.landscape?1300:850;
 
       if(sec.rowsPerPage&&sec.tableId){
-        // ── PAGINATED TABLE ──
         const allRows=getTableRows(sec.tableId);
         const rpp=sec.rowsPerPage;
         const pages=Math.max(1,Math.ceil(allRows.length/rpp));
@@ -1149,7 +1166,6 @@ async function generatePDF(SECTIONS){
           globalPage++;
         }
       } else {
-        // ── FULL SECTION (multi-page screenshot split) ──
         const panel=document.getElementById(sec.panelId);
         const wasActive=panel.classList.contains('active');
         if(!wasActive)panel.classList.add('active');
@@ -1158,8 +1174,6 @@ async function generatePDF(SECTIONS){
         clone.classList.add('active');
         clone.style.cssText=`display:block;width:${contentW}px;background:#fff;padding:20px;position:fixed;left:-9999px;top:0`;
 
-        // FIX: cloneNode does NOT copy canvas pixel data (Chart.js charts).
-        // Replace each cloned <canvas> with a static <img> snapshot of the live canvas.
         const liveCanvases=panel.querySelectorAll('canvas');
         const clonedCanvases=clone.querySelectorAll('canvas');
         liveCanvases.forEach((liveCv,i)=>{
@@ -1181,12 +1195,8 @@ async function generatePDF(SECTIONS){
         document.body.removeChild(clone);
         if(!wasActive)panel.classList.remove('active');
 
-        // PAGINATION FIX: canvas is captured at scale:2, so canvas px = contentW(css)*2 wide.
-        // 1 CSS px of this clone == (canvas.width/contentW) canvas px.
-        // We want to know how many canvas px fit in `availH` mm of page height,
-        // given the image will be drawn at imgW=(pw-16)mm wide.
-        const cssPxPerCanvasPx=contentW/canvas.width; // css px per canvas px
-        const mmPerCssPx=(pw-16)/contentW;            // mm per css px when scaled to fit page width
+        const cssPxPerCanvasPx=contentW/canvas.width;
+        const mmPerCssPx=(pw-16)/contentW;
         const mmPerCanvasPx=cssPxPerCanvasPx*mmPerCssPx;
         const pagePxHeight=Math.max(50,Math.floor(availH/mmPerCanvasPx));
         const totalPages=Math.max(1,Math.ceil(canvas.height/pagePxHeight));
@@ -1267,7 +1277,10 @@ document.addEventListener('selectstart',e=>{e.preventDefault();});
 let devOpen=false;
 setInterval(()=>{const w=window.outerWidth-window.innerWidth>100,h=window.outerHeight-window.innerHeight>100;if((w||h)&&!devOpen){devOpen=true;toast('👀 DevTools detected!');}if(!w&&!h)devOpen=false;},1000);
 
-window.addEventListener('DOMContentLoaded',loadAllData);
+window.addEventListener('DOMContentLoaded',()=>{
+  // Show view password modal, hide everything else initially
+  document.getElementById('viewPwdModal').classList.remove('hidden');
+});
 </script>
 </body>
 </html>
