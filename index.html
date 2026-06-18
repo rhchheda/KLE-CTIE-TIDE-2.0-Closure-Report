@@ -875,14 +875,51 @@ function renderStoriesFromSheet(rows,live){
 }
 
 /* ── ACHIEVEMENTS ── */
+/* ── ACHIEVEMENTS ── */
 function renderAchievementsFromSheet(rows,live){
   if(!rows||rows.length<4){renderFallbackAchievements();return;}
-  const chalIdx=rows.findIndex(r=>String(r[0]||r[1]||'').toUpperCase().includes('CHALLENGE'));
-  const achRows=rows.slice(3,chalIdx>0?chalIdx:rows.length).filter(r=>r[0]&&!isNaN(parseInt(String(r[0]).trim())));
-  const chalRows=chalIdx>0?rows.slice(chalIdx+2).filter(r=>r[0]&&!isNaN(parseInt(String(r[0]).trim()))):[];
-  const card=(r,cls='')=>`<div class="ach-card${cls}"><div class="ach-num">${r[0]}</div><div><div class="ach-label">${r[1]||''}</div><div class="ach-text">${r[2]||''}</div></div></div>`;
-  document.getElementById('achGrid').innerHTML=achRows.length?achRows.map(r=>card(r)).join(''):fallbackAch().ach;
-  document.getElementById('chalGrid').innerHTML=chalRows.length?chalRows.map(r=>card(r,' chal-card')).join(''):fallbackAch().chal;
+  
+  // Find where the CHALLENGES section starts - look for a row containing "CHALLENGE" in the first column
+  let chalIdx = -1;
+  for(let i = 0; i < rows.length; i++){
+    const firstCol = String(rows[i][0] || '').toUpperCase().trim();
+    const secondCol = String(rows[i][1] || '').toUpperCase().trim();
+    if(firstCol.includes('CHALLENGE') || secondCol.includes('CHALLENGE')){
+      chalIdx = i;
+      break;
+    }
+  }
+  
+  // If we found the challenges section, achievements are rows 3 to chalIdx-1
+  // Otherwise, achievements are rows 3 onwards
+  let achRows = [];
+  let chalRows = [];
+  
+  if(chalIdx > 0){
+    // Achievements: from row 3 (index 3) up to chalIdx
+    achRows = rows.slice(3, chalIdx).filter(r => r[0] && !isNaN(parseInt(String(r[0]).trim())));
+    // Challenges: from chalIdx+2 onwards (skip the header row)
+    chalRows = rows.slice(chalIdx + 2).filter(r => r[0] && !isNaN(parseInt(String(r[0]).trim())));
+  } else {
+    // No challenges section found, treat all as achievements
+    achRows = rows.slice(3).filter(r => r[0] && !isNaN(parseInt(String(r[0]).trim())));
+  }
+  
+  const card = (r, cls = '') => {
+    const num = String(r[0] || '').trim();
+    const label = String(r[1] || '').trim();
+    const text = String(r[2] || '').trim();
+    return `<div class="ach-card${cls}">
+      <div class="ach-num">${num}</div>
+      <div>
+        <div class="ach-label">${label || '—'}</div>
+        <div class="ach-text">${text || '—'}</div>
+      </div>
+    </div>`;
+  };
+  
+  document.getElementById('achGrid').innerHTML = achRows.length ? achRows.map(r => card(r)).join('') : fallbackAch().ach;
+  document.getElementById('chalGrid').innerHTML = chalRows.length ? chalRows.map(r => card(r, ' chal-card')).join('') : fallbackAch().chal;
 }
 
 /* ── KPIs ── */
