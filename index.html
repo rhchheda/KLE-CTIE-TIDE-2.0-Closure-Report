@@ -639,7 +639,7 @@ async function loadAllData(){
     if(allTimestamps.length){
       const mostRecent=new Date(Math.max(...allTimestamps));
       document.getElementById('headerUpdated').textContent=
-        `Last updated (Google Sheet): ${mostRecent.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})} at ${mostRecent.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}`;
+        `Last updated (CTIE-Office): ${mostRecent.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})} at ${mostRecent.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}`;
     } else {
       document.getElementById('headerUpdated').textContent='Last updated: unavailable — check GAS authorization';
     }
